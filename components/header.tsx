@@ -1,8 +1,14 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
 export default function Header() {
+  const [selectedLanguage, setSelectedLanguage] = useState("Français");
+
+  const languages = ["Français", "Anglais", "Allemand"];
+
   return (
     <header className="w-full py-4 px-6 flex items-center justify-between border-b border-gray-200/50 shadow-sm bg-[var(--blue)]/20 backdrop-blur-md">
       <div className="flex items-center gap-3">
@@ -22,7 +28,7 @@ export default function Header() {
         <div className="relative group">
           {/* Le bouton principal */}
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 cursor-pointer text-[var(--blue)] font-medium hover:bg-gray-50 transition-all">
-            <span>Français</span>
+            <span>{selectedLanguage}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -40,12 +46,15 @@ export default function Header() {
 
           {/* La liste d'options qui apparaît au survol ou au clic */}
           <div className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block z-50 overflow-hidden">
-            <div className="px-4 py-2 hover:bg-[var(--blue)]/10 cursor-pointer text-sm text-[var(--blue)]">
-              Anglais
-            </div>
-            <div className="px-4 py-2 hover:bg-[var(--blue)]/10 cursor-pointer text-sm text-[var(--blue)]">
-              Allemand
-            </div>
+            {languages.map((language) => (
+              <div
+                key={language}
+                onClick={() => setSelectedLanguage(language)}
+                className="px-4 py-2 hover:bg-[var(--blue)]/10 cursor-pointer text-sm text-[var(--blue)] transition-colors"
+              >
+                {language}
+              </div>
+            ))}
           </div>
         </div>
 
