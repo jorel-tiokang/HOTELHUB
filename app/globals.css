@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@source "../app";
+
+:root {
+  --background: #ffffff;
+  --blue: rgb(212, 175, 55);
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-blue: var(--blue);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --black: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  text-align: center;
+  font-size:;
+  align-items: center;
+  color: #000;
+  font-family: "Times New Roman", Arial, Helvetica, sans-serif;
+}
+
+/* Animation pour le défilement horizontal */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  display: flex;
+  width: max-content; /* Force le ruban à prendre toute la place de ses enfants */
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+.mask-gradient {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
