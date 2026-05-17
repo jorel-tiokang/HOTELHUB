@@ -4,6 +4,29 @@ import HotelScroll from "@/components/hotelCarousel";
 import { Feature1, Feature2 } from "@/components/features";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
+// Helper: wraps a section with a scroll-reveal observer and stagger delay
+function RevealSection({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const { ref, isVisible } = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className={`${isVisible ? "reveal-visible" : "reveal-hidden"} ${className}`}
+      style={{ animationDelay: isVisible ? `${delay}ms` : undefined }}
+    >
+      {children}
+    </div>
+  );
+}
 
 const page = () => {
   return (
@@ -13,7 +36,9 @@ const page = () => {
         <Header />
       </div>
       <br />
-      <div>
+
+      {/* Hero text */}
+      <RevealSection>
         <h1 className="font-bold text-[35px]">
           Trouvez l'hotêl parfait{" "}
           <span className="text-[color:var(--blue)]">où que vous soyez</span>
@@ -25,11 +50,11 @@ const page = () => {
         <p>
           Services exclusifs, Évasion garantie, Disponibilité en temps réel.
         </p>
-        <p>Des centaines d'hôtels au Cameroun, à portée de main.</p>
-      </div>
+        <p>Des centaines d&apos;hôtels au Cameroun, à portée de main.</p>
+      </RevealSection>
 
       {/* Section Statistiques */}
-      <div className="flex justify-center w-full px-4 mt-12">
+      <RevealSection delay={80} className="flex justify-center w-full px-4 mt-12">
         <div className="bg-[rgb(150,130,120,.2)]/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/10 w-full max-w-4xl flex flex-wrap justify-around items-center gap-y-8 gap-x-4">
           <div className="flex flex-col items-center min-w-[120px]">
             <span className="text-white text-4xl font-bold mb-1 tracking-tight">
@@ -67,24 +92,29 @@ const page = () => {
             </span>
           </div>
         </div>
-      </div>
+      </RevealSection>
 
-      {/* Hotels */}
-      <div>
+      {/* Hotels carousel */}
+      <RevealSection delay={60}>
         <HotelScroll />
-      </div>
+      </RevealSection>
+
       <br />
-      <div>
+
+      {/* Feature 1 */}
+      <RevealSection delay={0}>
         <Feature1 />
-      </div>
+      </RevealSection>
 
-      <div>
+      {/* Feature 2 */}
+      <RevealSection delay={80}>
         <Feature2 />
-      </div>
+      </RevealSection>
 
-      <div>
+      {/* Footer */}
+      <RevealSection delay={40}>
         <Footer />
-      </div>
+      </RevealSection>
     </div>
   );
 };
