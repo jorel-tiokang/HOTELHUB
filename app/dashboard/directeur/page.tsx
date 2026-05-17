@@ -184,12 +184,13 @@ export default function DashboardDirecteurPage() {
           />
         )}
 
+        {/* Mobile drawer (unchanged) */}
         <aside
           className={`
             fixed top-0 left-0 h-full z-30 w-60 bg-[#120F0D] border-r border-[#D4AF37]/10
             flex flex-col transition-transform duration-300
+            lg:hidden
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            lg:translate-x-0 lg:static lg:z-auto
           `}
         >
           {/* Logo */}
@@ -199,17 +200,11 @@ export default function DashboardDirecteurPage() {
                 <span className="font-serif text-[#0F0C0E] font-bold text-base">H</span>
               </div>
               <div>
-                <p className="font-serif text-[#F5EFE6] font-bold text-lg leading-none tracking-wide">
-                  HotelHub
-                </p>
-                <p className="text-[#F5EFE6]/30 text-[10px] mt-0.5 uppercase tracking-widest">
-                  {mockDirecteurHotel.nom}
-                </p>
+                <p className="font-serif text-[#F5EFE6] font-bold text-lg leading-none tracking-wide">HotelHub</p>
+                <p className="text-[#F5EFE6]/30 text-[10px] mt-0.5 uppercase tracking-widest">{mockDirecteurHotel.nom}</p>
               </div>
             </div>
           </div>
-
-          {/* Nav */}
           <nav className="flex-1 py-5 px-3 flex flex-col gap-1">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
@@ -217,13 +212,11 @@ export default function DashboardDirecteurPage() {
                 <button
                   key={item.id}
                   onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-                  className={`
-                    flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left
-                    ${isActive
+                  className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
+                    isActive
                       ? "bg-[#D4AF37]/10 text-[#D4AF37] border-l-2 border-[#D4AF37]"
                       : "text-[#F5EFE6]/45 hover:text-[#F5EFE6]/80 hover:bg-white/5 border-l-2 border-transparent"
-                    }
-                  `}
+                  }`}
                 >
                   <span className={isActive ? "text-[#D4AF37]" : "text-[#F5EFE6]/35"}>{item.icon}</span>
                   {item.label}
@@ -231,23 +224,92 @@ export default function DashboardDirecteurPage() {
               );
             })}
           </nav>
+          <div className="px-4 py-5 border-t border-[#D4AF37]/10">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#4B2D6E]/60 border border-[#D4AF37]/25 flex items-center justify-center shrink-0">
+                <span className="font-serif text-[#D4AF37] text-sm font-bold">{(user?.nom ?? "D").charAt(0).toUpperCase()}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[#F5EFE6] text-sm font-semibold truncate">{user?.nom ?? "Directeur"}</p>
+                <p className="text-[#F5EFE6]/30 text-[10px] uppercase tracking-widest">Directeur</p>
+              </div>
+              <button onClick={logout} title="Déconnexion" className="text-[#F5EFE6]/30 hover:text-red-400 transition-colors">
+                <LogOut size={16} />
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Desktop hover-to-expand sidebar */}
+        <aside
+          className="
+            hidden lg:flex flex-col
+            relative z-auto
+            h-screen sticky top-0
+            w-[64px] hover:w-60
+            overflow-hidden
+            bg-[#120F0D] border-r border-[#D4AF37]/10
+            transition-[width] duration-300 ease-in-out
+            group
+            shrink-0
+          "
+        >
+          {/* Logo */}
+          <div className="px-3.5 pt-7 pb-6 border-b border-[#D4AF37]/10">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#D4AF37] flex items-center justify-center shrink-0">
+                <span className="font-serif text-[#0F0C0E] font-bold text-base">H</span>
+              </div>
+              {/* Text revealed on expand */}
+              <div className="overflow-hidden whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">
+                <p className="font-serif text-[#F5EFE6] font-bold text-lg leading-none tracking-wide">HotelHub</p>
+                <p className="text-[#F5EFE6]/30 text-[10px] mt-0.5 uppercase tracking-widest">{mockDirecteurHotel.nom}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Nav */}
+          <nav className="flex-1 py-5 px-2 flex flex-col gap-1">
+            {navItems.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  title={item.label}
+                  className={`
+                    flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left
+                    ${isActive
+                      ? "bg-[#D4AF37]/10 text-[#D4AF37] border-l-2 border-[#D4AF37]"
+                      : "text-[#F5EFE6]/45 hover:text-[#F5EFE6]/80 hover:bg-white/5 border-l-2 border-transparent"
+                    }
+                  `}
+                >
+                  <span className={`shrink-0 ${isActive ? "text-[#D4AF37]" : "text-[#F5EFE6]/35"}`}>{item.icon}</span>
+                  <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
 
           {/* Director profile */}
-          <div className="px-4 py-5 border-t border-[#D4AF37]/10">
+          <div className="px-2 py-5 border-t border-[#D4AF37]/10">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#4B2D6E]/60 border border-[#D4AF37]/25 flex items-center justify-center shrink-0">
                 <span className="font-serif text-[#D4AF37] text-sm font-bold">
                   {(user?.nom ?? "D").charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">
                 <p className="text-[#F5EFE6] text-sm font-semibold truncate">{user?.nom ?? "Directeur"}</p>
                 <p className="text-[#F5EFE6]/30 text-[10px] uppercase tracking-widest">Directeur</p>
               </div>
               <button
                 onClick={logout}
                 title="Déconnexion"
-                className="text-[#F5EFE6]/30 hover:text-red-400 transition-colors"
+                className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 text-[#F5EFE6]/30 hover:text-red-400 transition-colors"
               >
                 <LogOut size={16} />
               </button>
