@@ -475,6 +475,12 @@ export default function DashboardDirecteurPage() {
                       <div className="h-px bg-[#D4AF37]/8 mt-1" />
                     </div>
                   ))}
+                  <button
+                    onClick={() => setActiveSection("reviews")}
+                    className="self-start mt-2 text-[#D4AF37] text-xs font-semibold hover:underline flex items-center gap-1"
+                  >
+                    Voir Plus <ChevronRight size={12} />
+                  </button>
                 </div>
               </div>
 
