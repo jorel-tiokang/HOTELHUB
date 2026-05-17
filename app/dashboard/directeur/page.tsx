@@ -9,6 +9,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
+  LineChart,
+  Line,
+  Legend,
 } from "recharts";
 import {
   LayoutDashboard,
@@ -32,6 +37,11 @@ import {
   Send,
   LogOut,
   Menu,
+  BarChart2,
+  ArrowUpRight,
+  ArrowDownRight,
+  Wallet,
+  Receipt,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import {
@@ -74,9 +84,60 @@ const extendedReviews = [
   { id: "V003", guest: "Christelle Mballa", rating: 4, date: "2026-05-01", text: "Hôtel très agréable, petit-déjeuner excellent. Quelques détails d'entretien à améliorer.", reply: null },
 ];
 
+// ─── Financial mock data ─────────────────────────────────────────────────────
+
+const weeklyFinancial = [
+  { label: "Lun", gains: 185000, pertes: 42000 },
+  { label: "Mar", gains: 310000, pertes: 28000 },
+  { label: "Mer", gains: 240000, pertes: 95000 },
+  { label: "Jeu", gains: 420000, pertes: 31000 },
+  { label: "Ven", gains: 560000, pertes: 47000 },
+  { label: "Sam", gains: 740000, pertes: 60000 },
+  { label: "Dim", gains: 390000, pertes: 38000 },
+];
+
+const monthlyFinancial = [
+  { label: "Jan", gains: 4200000, pertes: 820000 },
+  { label: "Fév", gains: 3750000, pertes: 710000 },
+  { label: "Mar", gains: 5100000, pertes: 940000 },
+  { label: "Avr", gains: 4800000, pertes: 650000 },
+  { label: "Mai", gains: 6200000, pertes: 1100000 },
+  { label: "Jun", gains: 7400000, pertes: 1250000 },
+  { label: "Jul", gains: 8100000, pertes: 1380000 },
+  { label: "Aoû", gains: 7600000, pertes: 1200000 },
+  { label: "Sep", gains: 5900000, pertes: 980000 },
+  { label: "Oct", gains: 5100000, pertes: 870000 },
+  { label: "Nov", gains: 4600000, pertes: 760000 },
+  { label: "Déc", gains: 6800000, pertes: 1050000 },
+];
+
+const yearlyFinancial = [
+  { label: "2021", gains: 38000000, pertes: 9200000 },
+  { label: "2022", gains: 45000000, pertes: 10500000 },
+  { label: "2023", gains: 52000000, pertes: 11800000 },
+  { label: "2024", gains: 61000000, pertes: 13200000 },
+  { label: "2025", gains: 68000000, pertes: 14100000 },
+  { label: "2026", gains: 34000000, pertes: 7600000 },
+];
+
+const transactionsMock = [
+  { id: "T001", date: "2026-05-16", label: "Réservation — Suite Présidentielle", type: "gain", amount: 740000, ref: "R001" },
+  { id: "T002", date: "2026-05-15", label: "Maintenance climatisation — Chambre 204", type: "perte", amount: 95000, ref: "MNT-042" },
+  { id: "T003", date: "2026-05-14", label: "Réservation — Chambre Double", type: "gain", amount: 170000, ref: "R004" },
+  { id: "T004", date: "2026-05-13", label: "Achat fournitures restauration", type: "perte", amount: 240000, ref: "ACH-118" },
+  { id: "T005", date: "2026-05-12", label: "Réservation — Junior Suite", type: "gain", amount: 360000, ref: "R003" },
+  { id: "T006", date: "2026-05-11", label: "Salaires personnel — Mai S2", type: "perte", amount: 1850000, ref: "SAL-052" },
+  { id: "T007", date: "2026-05-10", label: "Réservation — Chambre Standard", type: "gain", amount: 110000, ref: "R002" },
+  { id: "T008", date: "2026-05-09", label: "Facture électricité — Mai", type: "perte", amount: 320000, ref: "FCT-091" },
+  { id: "T009", date: "2026-05-08", label: "Réservation — Suite Deluxe", type: "gain", amount: 520000, ref: "R005" },
+  { id: "T010", date: "2026-05-07", label: "Rénovation salle de bain — 305", type: "perte", amount: 480000, ref: "MNT-039" },
+];
+
+type StatRange = "weekly" | "monthly" | "yearly";
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type NavSection = "overview" | "rooms" | "bookings" | "reviews" | "staff" | "settings";
+type NavSection = "overview" | "rooms" | "bookings" | "reviews" | "staff" | "settings" | "statistics";
 type BookingFilter = "ALL" | "CONFIRMEE" | "EN_ATTENTE" | "ANNULEE";
 
 // ─── Status helpers ──────────────────────────────────────────────────────────
@@ -119,6 +180,7 @@ export default function DashboardDirecteurPage() {
   const [replies, setReplies] = useState<Record<string, string>>({});
   const [reviews, setReviews] = useState(extendedReviews);
   const [reservations, setReservations] = useState(extendedReservations);
+  const [statRange, setStatRange] = useState<StatRange>("monthly");
 
   const toggleStatut = (id: string) => {
     setChambres((prev) =>
@@ -159,6 +221,7 @@ export default function DashboardDirecteurPage() {
     { id: "bookings", label: "Réservations", icon: <CalendarCheck size={18} /> },
     { id: "reviews", label: "Avis", icon: <Star size={18} /> },
     { id: "staff", label: "Personnel", icon: <Users size={18} /> },
+    { id: "statistics", label: "Statistiques", icon: <BarChart2 size={18} /> },
     { id: "settings", label: "Paramètres", icon: <Settings size={18} /> },
   ];
 
@@ -802,6 +865,234 @@ export default function DashboardDirecteurPage() {
               ))}
             </div>
           )}
+
+          {/* ── STATISTICS ── */}
+          {activeSection === "statistics" && (() => {
+            const rangeData =
+              statRange === "weekly"
+                ? weeklyFinancial
+                : statRange === "monthly"
+                ? monthlyFinancial
+                : yearlyFinancial;
+
+            const totalGains = rangeData.reduce((s, d) => s + d.gains, 0);
+            const totalPertes = rangeData.reduce((s, d) => s + d.pertes, 0);
+            const net = totalGains - totalPertes;
+            const netPositive = net >= 0;
+
+            const fmt = (n: number) =>
+              n >= 1_000_000
+                ? `${(n / 1_000_000).toFixed(1)} M`
+                : `${n.toLocaleString("fr-FR")}`;
+
+            const rangeLabelMap: Record<StatRange, string> = {
+              weekly: "cette semaine",
+              monthly: "cette année",
+              yearly: "par année",
+            };
+
+            return (
+              <div className="flex flex-col gap-8">
+
+                {/* Range controls */}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <p className="text-[#F5EFE6]/40 text-sm">
+                    Analyse financière — <span className="text-[#F5EFE6]/65">{rangeLabelMap[statRange]}</span>
+                  </p>
+                  <div className="flex gap-1.5 bg-[#1C1714] border border-[#D4AF37]/10 rounded-2xl p-1.5">
+                    {(["weekly", "monthly", "yearly"] as StatRange[]).map((r) => {
+                      const labels: Record<StatRange, string> = {
+                        weekly: "Semaine",
+                        monthly: "Mois",
+                        yearly: "Année",
+                      };
+                      return (
+                        <button
+                          key={r}
+                          onClick={() => setStatRange(r)}
+                          className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                            statRange === r
+                              ? "bg-[#D4AF37] text-[#0F0C0E]"
+                              : "text-[#F5EFE6]/45 hover:text-[#F5EFE6]/75"
+                          }`}
+                        >
+                          {labels[r]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* KPI summary cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    {
+                      label: "Total Gains",
+                      value: fmt(totalGains),
+                      icon: <Wallet size={20} />,
+                      color: "text-emerald-400",
+                      bg: "bg-emerald-500/10 border-emerald-400/15",
+                      trend: <ArrowUpRight size={14} />,
+                    },
+                    {
+                      label: "Total Pertes",
+                      value: fmt(totalPertes),
+                      icon: <Receipt size={20} />,
+                      color: "text-red-400",
+                      bg: "bg-red-500/10 border-red-400/15",
+                      trend: <ArrowDownRight size={14} />,
+                    },
+                    {
+                      label: "Résultat Net",
+                      value: fmt(Math.abs(net)),
+                      icon: netPositive ? <TrendingUp size={20} /> : <TrendingDown size={20} />,
+                      color: netPositive ? "text-[#D4AF37]" : "text-red-400",
+                      bg: netPositive ? "bg-[#D4AF37]/10 border-[#D4AF37]/15" : "bg-red-500/10 border-red-400/15",
+                      trend: netPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />,
+                    },
+                  ].map((kpi) => (
+                    <div
+                      key={kpi.label}
+                      className={`rounded-2xl border p-5 flex flex-col gap-3 ${kpi.bg}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`${kpi.color} opacity-60`}>{kpi.icon}</span>
+                        <span className={`flex items-center gap-0.5 text-xs font-bold ${kpi.color}`}>
+                          {kpi.trend}
+                        </span>
+                      </div>
+                      <div>
+                        <p className={`text-3xl font-bold font-serif ${kpi.color}`}>
+                          {kpi.label === "Résultat Net" && !netPositive && "−"}{kpi.value}
+                        </p>
+                        <p className="text-[#F5EFE6]/35 text-xs uppercase tracking-widest mt-1">{kpi.label} <span className="normal-case">FCFA</span></p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="h-px bg-[#D4AF37]/10" />
+
+                {/* Area chart — gains vs pertes */}
+                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6">
+                  <p className="font-serif text-[#F5EFE6] font-semibold text-base mb-1">
+                    Gains & Pertes
+                  </p>
+                  <p className="text-[#F5EFE6]/35 text-xs mb-5">
+                    Évolution des flux financiers ({rangeLabelMap[statRange]})
+                  </p>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <AreaChart data={rangeData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorGains" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorPertes" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#D4AF3712" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fill: "#F5EFE660", fontSize: 11, fontFamily: "DM Sans, sans-serif" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fill: "#F5EFE640", fontSize: 11, fontFamily: "DM Sans, sans-serif" }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) =>
+                          v >= 1_000_000 ? `${(v / 1_000_000).toFixed(0)}M` : `${(v / 1000).toFixed(0)}k`
+                        }
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#1C1714",
+                          border: "1px solid rgba(212,175,55,0.2)",
+                          borderRadius: "12px",
+                          fontSize: "12px",
+                          fontFamily: "DM Sans, sans-serif",
+                        }}
+                        labelStyle={{ color: "#F5EFE699", marginBottom: 4 }}
+                        formatter={(value: number, name: string) => [
+                          `${value.toLocaleString("fr-FR")} FCFA`,
+                          name === "gains" ? "Gains" : "Pertes",
+                        ]}
+                        cursor={{ stroke: "#D4AF3730" }}
+                      />
+                      <Legend
+                        wrapperStyle={{ fontSize: "12px", fontFamily: "DM Sans, sans-serif", paddingTop: "16px" }}
+                        formatter={(value) => (
+                          <span style={{ color: "#F5EFE699" }}>
+                            {value === "gains" ? "Gains" : "Pertes"}
+                          </span>
+                        )}
+                      />
+                      <Area type="monotone" dataKey="gains" stroke="#D4AF37" strokeWidth={2} fill="url(#colorGains)" dot={false} activeDot={{ r: 4, fill: "#D4AF37" }} />
+                      <Area type="monotone" dataKey="pertes" stroke="#ef4444" strokeWidth={2} fill="url(#colorPertes)" dot={false} activeDot={{ r: 4, fill: "#ef4444" }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Transaction log */}
+                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6">
+                  <p className="font-serif text-[#F5EFE6] font-semibold text-base mb-4">
+                    Transactions récentes
+                  </p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm min-w-[560px]">
+                      <thead>
+                        <tr className="border-b border-[#D4AF37]/10">
+                          {["Date", "Description", "Réf.", "Type", "Montant"].map((h) => (
+                            <th
+                              key={h}
+                              className="text-[#F5EFE6]/35 text-xs uppercase tracking-widest font-semibold text-left pb-3 pr-4"
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {transactionsMock.map((t) => (
+                          <tr key={t.id} className="border-b border-[#D4AF37]/6 last:border-0">
+                            <td className="py-3 pr-4 text-[#F5EFE6]/45 text-xs whitespace-nowrap">{t.date}</td>
+                            <td className="py-3 pr-4 text-[#F5EFE6]/80 font-medium">{t.label}</td>
+                            <td className="py-3 pr-4 text-[#F5EFE6]/30 text-xs font-mono">{t.ref}</td>
+                            <td className="py-3 pr-4">
+                              <span
+                                className={`inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full border font-semibold ${
+                                  t.type === "gain"
+                                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-400/20"
+                                    : "bg-red-500/10 text-red-300 border-red-400/20"
+                                }`}
+                              >
+                                {t.type === "gain" ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                                {t.type === "gain" ? "Gain" : "Perte"}
+                              </span>
+                            </td>
+                            <td
+                              className={`py-3 font-bold text-sm whitespace-nowrap ${
+                                t.type === "gain" ? "text-emerald-400" : "text-red-400"
+                              }`}
+                            >
+                              {t.type === "gain" ? "+" : "−"}
+                              {t.amount.toLocaleString("fr-FR")}{" "}
+                              <span className="text-[#F5EFE6]/25 font-normal text-xs">FCFA</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            );
+          })()}
 
           {/* ── SETTINGS ── */}
           {activeSection === "settings" && (
