@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -44,6 +44,42 @@ import {
   Receipt,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+
+// ─── Custom hook for scroll animations ────────────────────────────────────────
+const useScrollAnimation = () => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) {
+      element.classList.add("visible");
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          element.classList.add("visible");
+          observer.unobserve(element);
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return ref;
+};
+
 import {
   mockChambres,
   mockReservations,
@@ -891,11 +927,16 @@ export default function DashboardDirecteurPage() {
               yearly: "par année",
             };
 
+            // Create refs for each animatable section
+            const kpiRef = useScrollAnimation();
+            const chartRef = useScrollAnimation();
+            const transactionRef = useScrollAnimation();
+
             return (
               <div className="flex flex-col gap-8">
 
                 {/* Range controls */}
-                <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center justify-between flex-wrap gap-4 scroll-animate visible">
                   <p className="text-[#F5EFE6]/40 text-sm">
                     Analyse financière — <span className="text-[#F5EFE6]/65">{rangeLabelMap[statRange]}</span>
                   </p>
@@ -924,7 +965,7 @@ export default function DashboardDirecteurPage() {
                 </div>
 
                 {/* KPI summary cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div ref={kpiRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4 scroll-animate">
                   {[
                     {
                       label: "Total Gains",
@@ -974,7 +1015,7 @@ export default function DashboardDirecteurPage() {
                 <div className="h-px bg-[#D4AF37]/10" />
 
                 {/* Area chart — gains vs pertes */}
-                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6 chart-gains-pertes">
+                <div ref={chartRef} className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6 chart-gains-pertes scroll-animate">
                   <p className="font-serif text-[#F5EFE6] font-semibold text-base mb-1">
                     Gains & Pertes
                   </p>
@@ -1038,7 +1079,7 @@ export default function DashboardDirecteurPage() {
                 </div>
 
                 {/* Transaction log */}
-                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6">
+                <div ref={transactionRef} className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6 scroll-animate">
                   <p className="font-serif text-[#F5EFE6] font-semibold text-base mb-4">
                     Transactions récentes
                   </p>
