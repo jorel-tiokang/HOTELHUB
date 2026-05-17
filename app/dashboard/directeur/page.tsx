@@ -218,6 +218,11 @@ export default function DashboardDirecteurPage() {
   const [reservations, setReservations] = useState(extendedReservations);
   const [statRange, setStatRange] = useState<StatRange>("monthly");
 
+  // Scroll animation refs (must be at top level, not inside conditionals)
+  const kpiRef = useScrollAnimation();
+  const chartRef = useScrollAnimation();
+  const transactionRef = useScrollAnimation();
+
   const toggleStatut = (id: string) => {
     setChambres((prev) =>
       prev.map((c) =>
@@ -926,11 +931,6 @@ export default function DashboardDirecteurPage() {
               monthly: "cette année",
               yearly: "par année",
             };
-
-            // Create refs for each animatable section
-            const kpiRef = useScrollAnimation();
-            const chartRef = useScrollAnimation();
-            const transactionRef = useScrollAnimation();
 
             return (
               <div className="flex flex-col gap-8">
