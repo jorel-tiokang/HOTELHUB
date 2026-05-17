@@ -154,7 +154,7 @@ const STATUS_ROOM: Record<string, { label: string; dot: string }> = {
   MAINTENANCE: { label: "Maintenance", dot: "bg-red-500" },
 };
 
-// ─── Custom Tooltip for Recharts ─────────────────────────────────────────────
+// ─── Custom Tooltip for Recharts ──��──────────────────────────────────────────
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -974,7 +974,7 @@ export default function DashboardDirecteurPage() {
                 <div className="h-px bg-[#D4AF37]/10" />
 
                 {/* Area chart — gains vs pertes */}
-                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6">
+                <div className="bg-[#1C1714] border border-[#D4AF37]/12 rounded-2xl p-6 chart-gains-pertes">
                   <p className="font-serif text-[#F5EFE6] font-semibold text-base mb-1">
                     Gains & Pertes
                   </p>

@@ -67,3 +67,8 @@ body {
     transparent
   );
 }
+
+/* Chart SVG line-height adjustment */
+.chart-gains-pertes svg {
+  line-height: 2;
+}
