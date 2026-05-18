@@ -20,6 +20,7 @@ import {
   TrendingUp,
   TrendingDown,
   ChevronRight,
+  ChevronLeft,
   Plus,
   Edit3,
   Trash2,
@@ -199,6 +200,40 @@ export default function DashboardDirecteurPage() {
   const [reviewFilter, setReviewFilter] = useState<string>("all");
   const [reviewPeriod, setReviewPeriod] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+  const [roomImageIndices, setRoomImageIndices] = useState<Record<string, number>>({});
+
+  // Helper function to get room images array
+  const getRoomImages = (roomNumber: number): string[] => {
+    const images: string[] = [];
+    const roomNum = roomNumber % 100; // Get last 2 digits for image numbering
+    // Add room image if exists
+    images.push(`/rooms/room${roomNum}.jpeg`);
+    // Add bathroom image if exists
+    images.push(`/rooms/bathroom${roomNum}.jpeg`);
+    // Add balcony image if exists (optional)
+    images.push(`/rooms/balcony${roomNum}.jpeg`);
+    return images;
+  };
+
+  // Navigate carousel images
+  const handlePrevImage = (roomId: string, totalImages: number) => {
+    setRoomImageIndices((prev) => ({
+      ...prev,
+      [roomId]: prev[roomId] === undefined || prev[roomId] === 0
+        ? totalImages - 1
+        : prev[roomId] - 1,
+    }));
+  };
+
+  const handleNextImage = (roomId: string, totalImages: number) => {
+    setRoomImageIndices((prev) => ({
+      ...prev,
+      [roomId]:
+        prev[roomId] === undefined || prev[roomId] === totalImages - 1
+          ? 0
+          : prev[roomId] + 1,
+    }));
+  };
 
   const toggleStatut = (id: string) => {
     setChambres((prev) =>
@@ -664,11 +699,61 @@ export default function DashboardDirecteurPage() {
 
               {/* Room Cards Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {chambres.map((room) => (
+                {chambres.map((room) => {
+                  const roomImages = getRoomImages(room.numero);
+                  const currentImageIndex = roomImageIndices[room.id] || 0;
+                  const currentImage = roomImages[currentImageIndex];
+
+                  return (
                   <div
                     key={room.id}
-                    className="bg-charcoal rounded-2xl p-6 shadow-lg hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 group"
+                    className="bg-charcoal rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 group"
                   >
+                    {/* Image Carousel */}
+                    <div className="relative w-full h-48 bg-warm-gray group/carousel">
+                      <img
+                        src={currentImage}
+                        alt={`Chambre ${room.numero} - Image ${currentImageIndex + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/landscape.jpg";
+                        }}
+                      />
+                      {roomImages.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => handlePrevImage(room.id, roomImages.length)}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
+                            aria-label="Image précédente"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleNextImage(room.id, roomImages.length)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
+                            aria-label="Image suivante"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                          {/* Image indicators */}
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {roomImages.map((_, idx) => (
+                              <div
+                                key={idx}
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                  idx === currentImageIndex
+                                    ? "bg-gold w-6"
+                                    : "bg-white/40"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Room Details */}
+                    <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <h4
@@ -728,8 +813,10 @@ export default function DashboardDirecteurPage() {
                         </button>
                       </div>
                     </div>
+                    </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
