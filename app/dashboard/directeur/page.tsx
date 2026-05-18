@@ -88,7 +88,7 @@ const recentBookings = [
   {
     id: "B002",
     guest: "Marie Nguesso",
-    roomType: "Chambre Double",
+    roomType: "Chambre Dohuble",
     checkIn: "16 Mai 2026",
     checkOut: "19 Mai 2026",
     status: "EN_ATTENTE",
