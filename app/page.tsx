@@ -2,13 +2,13 @@
 
 import HotelScroll from "@/components/hotelCarousel";
 import { Feature1, Feature2 } from "@/components/features";
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
 import Header from "@/components/header";
+import RevealSection from "@/components/revealSection";
 
 const page = () => {
   return (
     <div className="min-h-screen w-full bg-[url('/landscape.jpg')] bg-cover bg-bottom bg-fixed bg-no-repeat">
-      
       <div>
         <Header />
       </div>
@@ -51,7 +51,7 @@ const page = () => {
 
           <div className="flex flex-col items-center min-w-[120px]">
             <div className="flex items-center text-white text-4xl font-bold mb-1 tracking-tight">
-              4.2<span className="text-2xl ml-1 text-white">★</span>
+              4.2<span className="text-2xl ml-1 text-yellow-400">★</span>
             </div>
             <span className="text-[0.65rem] uppercase tracking-[0.2em] font-semibold text-center">
               Note moyenne
@@ -70,21 +70,21 @@ const page = () => {
       </div>
 
       {/* Hotels */}
-      <div>
+      <RevealSection delay={100}>
         <HotelScroll />
-      </div>
+      </RevealSection>
       <br />
-      <div>
+      <RevealSection delay={60}>
         <Feature1 />
-      </div>
+      </RevealSection>
 
-      <div>
+      <RevealSection delay={60}>
         <Feature2 />
-      </div>
+      </RevealSection>
 
-      <div>
+      <RevealSection delay={80}>
         <Footer />
-      </div>
+      </RevealSection>
     </div>
   );
 };

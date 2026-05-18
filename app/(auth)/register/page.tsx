@@ -157,7 +157,7 @@ onClick={handleSubmit}
 
 disabled={isLoading}
 
-className="mt-6 w-full bg-[var(--blue)] hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg"
+className="mt-6 w-full bg-[var(--blue)] hover:bg-(--blue)/90 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg"
 
 >
 

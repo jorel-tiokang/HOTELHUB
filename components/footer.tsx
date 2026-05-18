@@ -1,110 +1,199 @@
-import React from "react";
+import * as React from "react";
+import { ChevronDown, Mail, Globe } from "lucide-react";
+import {
+  SiFacebook,
+  SiInstagram,
+  SiYoutube,
+  SiWhatsapp
+} from "@icons-pack/react-simple-icons";
+import { cn } from "@/lib/utils";
 
-export default function Footer() {
+// Types
+interface FooterLink {
+  label: string;
+  href: string;
+}
+interface FooterColumn {
+  title: string;
+  links: FooterLink[];
+}
+
+// Data
+const COMPANY_LINKS: FooterLink[] = [
+  {
+    label: "Entreprise",
+    href: "#",
+  },
+  {
+    label: "Emploi",
+    href: "#",
+  },
+  {
+    label: "Presse",
+    href: "#",
+  },
+  {
+    label: "Relations investisseur",
+    href: "#",
+  },
+  {
+    label: "Appli mobile",
+    href: "#",
+  },
+  {
+    label: "hotelhub pour hoteliers",
+    href: "#",
+  },
+  {
+    label: "Affiliation",
+    href: "#",
+  },
+];
+const HELP_LEGAL_LINKS: FooterLink[] = [
+  {
+    label: "Aide",
+    href: "#",
+  },
+  {
+    label: "Apprednre comment hotelhub fonctionne",
+    href: "#",
+  },
+  {
+    label: "Termes et conditions",
+    href: "#",
+  },
+  {
+    label: "Information légale",
+    href: "#",
+  },
+  {
+    label: "Vos choix privées",
+    href: "#",
+  },
+  {
+    label: "Notice privée",
+    href: "#",
+  },
+  {
+    label: "Information DSA",
+    href: "#",
+  },
+  {
+    label: "Close de vulnérabilité",
+    href: "#",
+  },
+];
+const SOCIAL_LINKS = [
+  {
+    icon: SiFacebook,
+    label: "Facebook",
+    href: "#",
+  },
+  {
+    icon: SiWhatsapp,
+    label: "Whatsapp",
+    href: "#",
+  },
+  {
+    icon: SiInstagram,
+    label: "Instagram",
+    href: "#",
+  },
+  {
+    icon: SiYoutube,
+    label: "YouTube",
+    href: "#",
+  },
+];
+
+// Sub-components
+
+const LanguageSelector = () => (
+  <button
+    type="button"
+    className="flex items-center gap-3 px-4 py-2 mt-6 border border-white/20 rounded hover:bg-white/5 transition-colors text-white text-sm"
+  >
+    <div className="flex items-center gap-2">
+      <span role="img" aria-label="USA Flag" className="text-lg leading-none">
+        🇺🇸
+      </span>
+      <span className="font-medium">USA</span>
+    </div>
+    <ChevronDown className="w-4 h-4 text-gray-400" />
+  </button>
+);
+const FooterColumn = ({ title, links }: FooterColumn) => (
+  <div className="flex flex-col gap-4">
+    <h3 className="text-white font-bold text-base">{title}</h3>
+    <ul className="flex flex-col gap-2">
+      {links.map((link) => (
+        <li key={link.label}>
+          <a
+            href={link.href}
+            className="text-black hover:text-white transition-colors text-[15px] leading-relaxed"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+export const Footer: React.FC = () => {
   return (
-    <footer className="backdrop-blur-md w-full bg-[var(--blue)]/20 py-3 px-6 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-4">
-        <div className="flex items-center gap-3">
-          
-          <img
-            src="/hotelhublogo.png"
-            alt="HotelHub Logo"
-            className="w-10 h-10 object-contain rounded-lg"
-          />
-          <div className="flex flex-col">
-            
-            <h1 className="text-[color:var(--blue)] font-black leading-none text-xl tracking-tight">
+    <footer className="w-full backdrop-blur-2xl bg-(--blue)/30  text-[#000000] font-black selection:bg-[#007faf]/30 selection:text-white">
+      {/* Top Section */}
+      <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
+          {/* Column 1: Logo & Language */}
+          <div className="flex items-center gaps-6">
+            <img
+              src="/hotelhublogo.png"
+              alt="HotelHub Logo"
+              className="w-10 h-10 object-contain rounded-lg"
+            />
+            <h1 className="text-(--blue) text-3xl tracking-tighter leading-none">
               HOTELHUB
             </h1>
-            <span className="text-[0.8rem] text-gray-500 font-medium mt-1">
-              Plateforme de réservation temps réel
-            </span>
+            {/*<LanguageSelector />*/}
+          </div>
+
+          {/* Column 2: Company */}
+          <FooterColumn title="Entreprise" links={COMPANY_LINKS} />
+
+          {/* Column 3: Help & Legal */}
+          <FooterColumn title="Aide & Légale" links={HELP_LEGAL_LINKS} />
+        </div>
+      </div>
+
+      {/* Social Media Bar */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-6 md:ml-auto">
+            {SOCIAL_LINKS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-black hover:text-white transition-all transform hover:scale-110"
+                aria-label={item.label}
+              >
+                <item.icon className="w-6 h-6" strokeWidth={1.5} />
+              </a>
+            ))}
           </div>
         </div>
+      </div>
 
-        <nav className="flex items-center text-sm font-medium text-gray-600">
-          <div className="px-8 border-l border-gray-300">
-            <a href="#" className="text-[#000] hover:text-[#26215c] transition-colors">
-              Contact
-            </a>
-          </div>
-          <div className="px-8 border-l border-gray-300">
-            <a href="#" className="text-[#000] hover:text-[#26215c] transition-colors">
-              Aide
-            </a>
-          </div>
-          <div className="px-8 border-l border-gray-300"></div>
-        </nav>
-
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-[0.75rem] font-bold text-gray-800 mr-1">
-            Rejoignez-nous
-          </span>
-          <div className="flex items-center gap-3">
-            {/* Facebook */}
-            <a href="#" className="text-blue-600 hover:opacity-80">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-            {/* WhatsApp */}
-            <a href="#" className="text-emerald-500 hover:opacity-80">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-7.6 8.38 8.38 0 0 1 3.8.9L22 2l-1.5 6.5Z" />
-              </svg>
-            </a>
-            {/* Telegram (Bleu indigo comme sur ton image) */}
-            <a href="#" className="text-[#3C3489] hover:opacity-80">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polyline points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </a>
-            {/* TikTok */}
-            <a href="#" className="text-black hover:opacity-80">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-              </svg>
-            </a>
-          </div>
+      {/* Bottom Copyright Bar */}
+      <div className="py-8 px-6">
+        <div className="max-w-7xl mx-auto text-center md:text-left">
+          <p className="text-[11px] tracking-wide text-black uppercase">
+            hotelhub , Yaoundé, Cameroun — Copyright 2026 hotelhub | All rights
+            reserved.
+          </p>
         </div>
       </div>
     </footer>
   );
-}
+};

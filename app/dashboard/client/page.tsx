@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { mockReservations, mockAvis } from "@/mocks/dashboardMocks";
-import Footer from "@/components/footer";
+import {Footer} from "@/components/footer";
 
 const STATUT_STYLE: Record<string, string> = {
   CONFIRMEE: "bg-green-500/20 text-green-300 border-green-400/30",

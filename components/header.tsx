@@ -4,14 +4,14 @@ import { ChevronDown } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="w-full py-4 px-6 flex items-center justify-between border-b border-gray-200/50 shadow-sm bg-[var(--blue)]/20 backdrop-blur-md">
+    <header className="w-full py-4 px-6 flex items-center justify-between border-b border-gray-200/50 shadow-sm bg-(--blue)/20 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <img
-            src="/hotelhublogo.png"
-            alt="HotelHub Logo"
-            className="w-10 h-10 object-contain rounded-lg"
-          />
-        <h1 className="text-[var(--blue)] font-black text-3xl tracking-tighter leading-none">
+          src="/hotelhublogo.png"
+          alt="HotelHub Logo"
+          className="w-10 h-10 object-contain rounded-lg"
+        />
+        <h1 className="text-(--blue) font-black text-3xl tracking-tighter leading-none">
           HOTELHUB
         </h1>
       </div>
