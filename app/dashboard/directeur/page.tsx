@@ -205,9 +205,9 @@ export default function DashboardDirecteurPage() {
       prev.map((c) =>
         c.id === id
           ? {
-              ...c,
-              statut: c.statut === "DISPONIBLE" ? "INDISPONIBLE" : "DISPONIBLE",
-            }
+            ...c,
+            statut: c.statut === "DISPONIBLE" ? "INDISPONIBLE" : "DISPONIBLE",
+          }
           : c
       )
     );
@@ -217,15 +217,15 @@ export default function DashboardDirecteurPage() {
     bookingFilter === "all"
       ? recentBookings
       : recentBookings.filter(
-          (b) => b.status === bookingFilter.toUpperCase()
-        );
+        (b) => b.status === bookingFilter.toUpperCase()
+      );
 
   const filteredReviews =
     reviewFilter === "all"
       ? latestReviews
       : latestReviews.filter((r) =>
-          reviewFilter === "replied" ? r.reply !== null : r.reply === null
-        );
+        reviewFilter === "replied" ? r.reply !== null : r.reply === null
+      );
 
   const currentDate = new Date().toLocaleDateString("fr-FR", {
     weekday: "long",
@@ -248,9 +248,8 @@ export default function DashboardDirecteurPage() {
       <aside
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
-        className={`fixed left-0 top-0 h-full bg-charcoal z-40 transition-all duration-300 ease-in-out flex flex-col ${
-          sidebarHovered ? "w-[240px]" : "w-[72px]"
-        }`}
+        className={`fixed left-0 top-0 h-full bg-charcoal z-40 transition-all duration-300 ease-in-out flex flex-col ${sidebarHovered ? "w-[240px]" : "w-[72px]"
+          }`}
       >
         {/* Logo */}
         <div className="p-4 border-b border-white/10">
@@ -259,9 +258,8 @@ export default function DashboardDirecteurPage() {
               H
             </div>
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
-              }`}
+              className={`overflow-hidden transition-all duration-300 ${sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                }`}
             >
               <p
                 className="text-white font-black text-lg whitespace-nowrap"
@@ -285,20 +283,18 @@ export default function DashboardDirecteurPage() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as Tab)}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${
-                  isActive
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
                     ? "bg-blue/20 text-white"
                     : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
               >
                 {isActive && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue rounded-r-full" />
                 )}
                 <Icon className="w-5 h-5 shrink-0" />
                 <span
-                  className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                    sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
-                  }`}
+                  className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                    }`}
                 >
                   {item.label}
                 </span>
@@ -314,9 +310,8 @@ export default function DashboardDirecteurPage() {
               {user?.nom?.charAt(0) ?? "D"}
             </div>
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
-              }`}
+              className={`overflow-hidden transition-all duration-300 ${sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                }`}
             >
               <p className="text-white font-semibold text-sm whitespace-nowrap">
                 {user?.nom ?? "Directeur"}
@@ -328,15 +323,13 @@ export default function DashboardDirecteurPage() {
           </div>
           <button
             onClick={logout}
-            className={`mt-3 w-full flex items-center gap-2 px-3 py-2 text-white/60 hover:text-white rounded-lg hover:bg-white/5 transition-all ${
-              sidebarHovered ? "" : "justify-center"
-            }`}
+            className={`mt-3 w-full flex items-center gap-2 px-3 py-2 text-white/60 hover:text-white rounded-lg hover:bg-white/5 transition-all ${sidebarHovered ? "" : "justify-center"
+              }`}
           >
             <LogOut className="w-4 h-4" />
             <span
-              className={`text-xs overflow-hidden transition-all duration-300 ${
-                sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
-              }`}
+              className={`text-xs overflow-hidden transition-all duration-300 ${sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                }`}
             >
               Deconnexion
             </span>
@@ -346,9 +339,8 @@ export default function DashboardDirecteurPage() {
 
       {/* Main Content */}
       <main
-        className={`transition-all duration-300 ${
-          sidebarHovered ? "ml-[240px]" : "ml-[72px]"
-        }`}
+        className={`transition-all duration-300 ${sidebarHovered ? "ml-[240px]" : "ml-[72px]"
+          }`}
       >
         {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-[#FAF9F7]/80 backdrop-blur-md border-b border-gold/10">
@@ -420,9 +412,8 @@ export default function DashboardDirecteurPage() {
                           <Icon className="w-5 h-5 text-gold" />
                         </div>
                         <div
-                          className={`flex items-center gap-1 text-xs font-medium ${
-                            kpi.up ? "text-emerald-400" : "text-red-400"
-                          }`}
+                          className={`flex items-center gap-1 text-xs font-medium ${kpi.up ? "text-emerald-400" : "text-red-400"
+                            }`}
                         >
                           {kpi.up ? (
                             <TrendingUp className="w-3 h-3" />
@@ -509,11 +500,10 @@ export default function DashboardDirecteurPage() {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-3 h-3 ${
-                                  i < review.rating
+                                className={`w-3 h-3 ${i < review.rating
                                     ? "text-gold fill-gold"
                                     : "text-white/20"
-                                }`}
+                                  }`}
                               />
                             ))}
                           </div>
@@ -592,9 +582,8 @@ export default function DashboardDirecteurPage() {
                           </td>
                           <td className="py-4 px-4">
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                STATUT_RES_STYLE[booking.status]
-                              }`}
+                              className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUT_RES_STYLE[booking.status]
+                                }`}
                             >
                               {STATUT_RES_LABEL[booking.status]}
                             </span>
@@ -693,16 +682,14 @@ export default function DashboardDirecteurPage() {
                         </p>
                       </div>
                       <div
-                        className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                          STATUT_CHAMBRE_STYLE[room.statut]
-                        }`}
+                        className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${STATUT_CHAMBRE_STYLE[room.statut]
+                          }`}
                       >
                         <span
-                          className={`w-2 h-2 rounded-full ${
-                            room.statut === "DISPONIBLE"
+                          className={`w-2 h-2 rounded-full ${room.statut === "DISPONIBLE"
                               ? "bg-gold"
                               : "bg-red-400"
-                          }`}
+                            }`}
                         />
                         {room.statut === "DISPONIBLE"
                           ? "Disponible"
@@ -761,11 +748,10 @@ export default function DashboardDirecteurPage() {
                   <button
                     key={filter.id}
                     onClick={() => setBookingFilter(filter.id)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      bookingFilter === filter.id
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${bookingFilter === filter.id
                         ? "bg-blue text-white"
                         : "text-white/60 hover:text-white"
-                    }`}
+                      }`}
                   >
                     {filter.label}
                   </button>
@@ -823,9 +809,8 @@ export default function DashboardDirecteurPage() {
                         </td>
                         <td className="py-4 px-4">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              STATUT_RES_STYLE[booking.status]
-                            }`}
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUT_RES_STYLE[booking.status]
+                              }`}
                           >
                             {STATUT_RES_LABEL[booking.status]}
                           </span>
@@ -923,11 +908,10 @@ export default function DashboardDirecteurPage() {
                     <button
                       key={filter.id}
                       onClick={() => setReviewFilter(filter.id)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        reviewFilter === filter.id
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${reviewFilter === filter.id
                           ? "bg-blue text-white"
                           : "text-white/60 hover:text-white"
-                      }`}
+                        }`}
                     >
                       {filter.label}
                     </button>
@@ -975,11 +959,10 @@ export default function DashboardDirecteurPage() {
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
+                                  className={`w-4 h-4 ${i < review.rating
                                       ? "text-gold fill-gold"
                                       : "text-white/20"
-                                  }`}
+                                    }`}
                                 />
                               ))}
                             </div>
@@ -1155,11 +1138,10 @@ export default function DashboardDirecteurPage() {
                           {staff.contact}
                         </p>
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            staff.status === "Actif"
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${staff.status === "Actif"
                               ? "bg-emerald-500/20 text-emerald-400"
                               : "bg-red-500/20 text-red-400"
-                          }`}
+                            }`}
                         >
                           {staff.status}
                         </span>
