@@ -51,7 +51,7 @@ type Tab =
   | "settings";
 
 const STATUT_CHAMBRE_STYLE: Record<string, string> = {
-  DISPONIBLE: "bg-gold/20 text-gold",
+  DISPONIBLE: "bg-emerald-500/20 text-emerald-400",
   INDISPONIBLE: "bg-red-500/20 text-red-400",
 };
 
@@ -201,6 +201,8 @@ export default function DashboardDirecteurPage() {
   const [reviewPeriod, setReviewPeriod] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [roomImageIndices, setRoomImageIndices] = useState<Record<string, number>>({});
+  const [editingRoom, setEditingRoom] = useState<any>(null);
+  const [editFormData, setEditFormData] = useState<any>(null);
 
   // Helper function to get room images array
   const getRoomImages = (roomNumber: number): string[] => {
@@ -233,6 +235,47 @@ export default function DashboardDirecteurPage() {
           ? 0
           : prev[roomId] + 1,
     }));
+  };
+
+  // Edit room handlers
+  const handleEditRoom = (room: any) => {
+    setEditingRoom(room);
+    setEditFormData({
+      type: room.type,
+      capacite: room.capacite,
+      prixParNuit: room.prixParNuit,
+      description: room.description,
+      statut: room.statut,
+      equipements: room.equipements,
+    });
+  };
+
+  const handleSaveRoom = () => {
+    if (!editingRoom || !editFormData) return;
+    
+    setChambres((prev) =>
+      prev.map((room) =>
+        room.id === editingRoom.id
+          ? {
+              ...room,
+              type: editFormData.type,
+              capacite: editFormData.capacite,
+              prixParNuit: editFormData.prixParNuit,
+              description: editFormData.description,
+              statut: editFormData.statut,
+              equipements: editFormData.equipements,
+            }
+          : room
+      )
+    );
+    
+    setEditingRoom(null);
+    setEditFormData(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingRoom(null);
+    setEditFormData(null);
   };
 
   const toggleStatut = (id: string) => {
@@ -270,7 +313,7 @@ export default function DashboardDirecteurPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7] relative overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 relative overflow-hidden">
       {/* Noise texture overlay */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.03] z-50"
@@ -319,8 +362,8 @@ export default function DashboardDirecteurPage() {
                 key={item.id}
                 onClick={() => setActiveTab(item.id as Tab)}
                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-                    ? "bg-blue/20 text-white"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-blue/20 text-white"
+                  : "text-white/60 hover:text-white hover:bg-white/5"
                   }`}
               >
                 {isActive && (
@@ -536,8 +579,8 @@ export default function DashboardDirecteurPage() {
                               <Star
                                 key={i}
                                 className={`w-3 h-3 ${i < review.rating
-                                    ? "text-gold fill-gold"
-                                    : "text-white/20"
+                                  ? "text-gold fill-gold"
+                                  : "text-white/20"
                                   }`}
                               />
                             ))}
@@ -705,116 +748,119 @@ export default function DashboardDirecteurPage() {
                   const currentImage = roomImages[currentImageIndex];
 
                   return (
-                  <div
-                    key={room.id}
-                    className="bg-charcoal rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 group"
-                  >
-                    {/* Image Carousel */}
-                    <div className="relative w-full h-48 bg-warm-gray group/carousel">
-                      <img
-                        src={currentImage}
-                        alt={`Chambre ${room.numero} - Image ${currentImageIndex + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = "/landscape.jpg";
-                        }}
-                      />
-                      {roomImages.length > 1 && (
-                        <>
-                          <button
-                            onClick={() => handlePrevImage(room.id, roomImages.length)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
-                            aria-label="Image précédente"
-                          >
-                            <ChevronLeft className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleNextImage(room.id, roomImages.length)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
-                            aria-label="Image suivante"
-                          >
-                            <ChevronRight className="w-5 h-5" />
-                          </button>
-                          {/* Image indicators */}
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                            {roomImages.map((_, idx) => (
-                              <div
-                                key={idx}
-                                className={`w-2 h-2 rounded-full transition-all ${
-                                  idx === currentImageIndex
-                                    ? "bg-gold w-6"
-                                    : "bg-white/40"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Room Details */}
-                    <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h4
-                          className="text-xl font-bold text-white"
-                          style={{ fontFamily: "var(--font-playfair)" }}
-                        >
-                          Chambre {room.numero}
-                        </h4>
-                        <p className="text-white/50 text-sm">
-                          {room.type} - Etage {Math.floor(room.numero / 100)}
-                        </p>
-                      </div>
-                      <div
-                        className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${STATUT_CHAMBRE_STYLE[room.statut]
-                          }`}
-                      >
-                        <span
-                          className={`w-2 h-2 rounded-full ${room.statut === "DISPONIBLE"
-                              ? "bg-gold"
-                              : "bg-red-400"
-                            }`}
+                    <div
+                      key={room.id}
+                      className="bg-charcoal rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 group"
+                    >
+                      {/* Image Carousel */}
+                      <div className="relative w-full h-48 bg-warm-gray group/carousel">
+                        <img
+                          src={currentImage}
+                          alt={`Chambre ${room.numero} - Image ${currentImageIndex + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/landscape.jpg";
+                          }}
                         />
-                        {room.statut === "DISPONIBLE"
-                          ? "Disponible"
-                          : "Occupee"}
+                        {roomImages.length > 1 && (
+                          <>
+                            <button
+                              onClick={() => handlePrevImage(room.id, roomImages.length)}
+                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
+                              aria-label="Image précédente"
+                            >
+                              <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleNextImage(room.id, roomImages.length)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all opacity-0 group-hover/carousel:opacity-100"
+                              aria-label="Image suivante"
+                            >
+                              <ChevronRight className="w-5 h-5" />
+                            </button>
+                            {/* Image indicators */}
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                              {roomImages.map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex
+                                      ? "bg-gold w-6"
+                                      : "bg-white/40"
+                                    }`}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Room Details */}
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h4
+                              className="text-xl font-bold text-white"
+                              style={{ fontFamily: "var(--font-playfair)" }}
+                            >
+                              Chambre {room.numero}
+                            </h4>
+                            <p className="text-white/50 text-sm">
+                              {room.type} - Etage {Math.floor(room.numero / 100)}
+                            </p>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${STATUT_CHAMBRE_STYLE[room.statut]
+                              }`}
+                          >
+                            <span
+                              className={`w-2 h-2 rounded-full ${room.statut === "DISPONIBLE"
+                                ? "bg-emerald-400"
+                                : "bg-red-400"
+                                }`}
+                            />
+                            {room.statut === "DISPONIBLE"
+                              ? "Disponible"
+                              : "Occupee"}
+                          </div>
+                        </div>
+                        <p className="text-white/60 text-sm mb-4">
+                          {room.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {room.equipements.map((eq) => (
+                            <span
+                              key={eq}
+                              className="px-2 py-1 bg-white/5 text-white/60 text-xs rounded-lg"
+                            >
+                              {eq}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t border-gold/10">
+                          <p
+                            className="text-gold font-bold text-lg"
+                            style={{ fontFamily: "var(--font-playfair)" }}
+                          >
+                            {room.prixParNuit.toLocaleString("fr-FR")}{" "}
+                            <span className="text-white/40 text-sm font-normal">
+                              FCFA/nuit
+                            </span>
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditRoom(room)}
+                              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                              aria-label="Éditer la chambre"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                            <button className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-white/60 text-sm mb-4">
-                      {room.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {room.equipements.map((eq) => (
-                        <span
-                          key={eq}
-                          className="px-2 py-1 bg-white/5 text-white/60 text-xs rounded-lg"
-                        >
-                          {eq}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between pt-4 border-t border-gold/10">
-                      <p
-                        className="text-gold font-bold text-lg"
-                        style={{ fontFamily: "var(--font-playfair)" }}
-                      >
-                        {room.prixParNuit.toLocaleString("fr-FR")}{" "}
-                        <span className="text-white/40 text-sm font-normal">
-                          FCFA/nuit
-                        </span>
-                      </p>
-                      <div className="flex gap-2">
-                        <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors">
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    </div>
-                  </div>
                   );
                 })}
               </div>
@@ -836,8 +882,8 @@ export default function DashboardDirecteurPage() {
                     key={filter.id}
                     onClick={() => setBookingFilter(filter.id)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${bookingFilter === filter.id
-                        ? "bg-blue text-white"
-                        : "text-white/60 hover:text-white"
+                      ? "bg-blue text-white"
+                      : "text-white/60 hover:text-white"
                       }`}
                   >
                     {filter.label}
@@ -996,8 +1042,8 @@ export default function DashboardDirecteurPage() {
                       key={filter.id}
                       onClick={() => setReviewFilter(filter.id)}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${reviewFilter === filter.id
-                          ? "bg-blue text-white"
-                          : "text-white/60 hover:text-white"
+                        ? "bg-blue text-white"
+                        : "text-white/60 hover:text-white"
                         }`}
                     >
                       {filter.label}
@@ -1047,8 +1093,8 @@ export default function DashboardDirecteurPage() {
                                 <Star
                                   key={i}
                                   className={`w-4 h-4 ${i < review.rating
-                                      ? "text-gold fill-gold"
-                                      : "text-white/20"
+                                    ? "text-gold fill-gold"
+                                    : "text-white/20"
                                     }`}
                                 />
                               ))}
@@ -1226,8 +1272,8 @@ export default function DashboardDirecteurPage() {
                         </p>
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${staff.status === "Actif"
-                              ? "bg-emerald-500/20 text-emerald-400"
-                              : "bg-red-500/20 text-red-400"
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : "bg-red-500/20 text-red-400"
                             }`}
                         >
                           {staff.status}
@@ -1287,6 +1333,146 @@ export default function DashboardDirecteurPage() {
           )}
         </div>
       </main>
+
+      {/* Edit Room Modal */}
+      {editingRoom && editFormData && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-charcoal rounded-2xl p-8 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h2
+              className="text-2xl font-bold text-white mb-6"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              Éditer la Chambre {editingRoom.numero}
+            </h2>
+
+            <div className="space-y-6">
+              {/* Type */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Type de chambre
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.type}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, type: e.target.value })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors"
+                />
+              </div>
+
+              {/* Capacity */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Capacité (nombre de personnes)
+                </label>
+                <input
+                  type="number"
+                  value={editFormData.capacite}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      capacite: parseInt(e.target.value),
+                    })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors"
+                />
+              </div>
+
+              {/* Price */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Prix par nuit (FCFA)
+                </label>
+                <input
+                  type="number"
+                  value={editFormData.prixParNuit}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      prixParNuit: parseInt(e.target.value),
+                    })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors"
+                />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Description
+                </label>
+                <textarea
+                  value={editFormData.description}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      description: e.target.value,
+                    })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors min-h-[100px]"
+                />
+              </div>
+
+              {/* Status */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Statut
+                </label>
+                <select
+                  value={editFormData.statut}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      statut: e.target.value,
+                    })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors"
+                >
+                  <option value="DISPONIBLE">Disponible</option>
+                  <option value="INDISPONIBLE">Indisponible</option>
+                </select>
+              </div>
+
+              {/* Equipements */}
+              <div className="space-y-2">
+                <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                  Équipements (séparés par des virgules)
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.equipements.join(", ")}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      equipements: e.target.value
+                        .split(",")
+                        .map((eq) => eq.trim()),
+                    })
+                  }
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={handleSaveRoom}
+                className="flex-1 bg-gold hover:bg-gold/90 text-charcoal px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Sauvegarder
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="flex-1 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
