@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelHub - Structure complète de la base de données</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9eef3 100%);
+            color: #1e293b;
+            line-height: 1.5;
+            padding: 40px 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6f 50%, #0f2b3d 100%);
+            color: white;
+            padding: 48px 40px;
+            border-radius: 28px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "🏨";
+            position: absolute;
+            right: -30px;
+            bottom: -30px;
+            font-size: 180px;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .stats-badge {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .badge-stat {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Navigation rapide */
+        .nav-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 32px;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .nav-link {
+            background: #f1f5f9;
+            padding: 8px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e3a5f;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #1e3a5f;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f2b3d;
+            padding-left: 20px;
+            border-left: 5px solid #3b82f6;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .icon {
+            font-size: 1.8rem;
+        }
+
+        /* Table cards */
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 30px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            color: white;
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .table-header:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a5f 100%);
+        }
+
+        .table-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .table-title .table-icon {
+            font-size: 1.6rem;
+        }
+
+        .table-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge-pk {
+            background: #f59e0b;
+            color: #1e293b;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .badge-fk {
+            background: #8b5cf6;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .badge-index {
+            background: #10b981;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .table-content {
+            padding: 0;
+            overflow-x: auto;
+            transition: all 0.3s ease;
+        }
+
+        .table-content.hidden {
+            display: none;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a5f;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: top;
+        }
+
+        .data-table tr:hover td {
+            background: #faf5ff;
+        }
+
+        .col-name {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .col-type {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #7c3aed;
+        }
+
+        .constraint {
+            display: inline-block;
+            background: #fef3c7;
+            color: #b45309;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .constraint-pk {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .constraint-fk {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .constraint-check {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .desc-text {
+            color: #475569;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            background: white;
+            border-radius: 20px;
+            margin-top: 40px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* Toggle icon */
+        .toggle-icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Search box */
+        .search-box {
+            margin-bottom: 28px;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .data-table th, .data-table td {
+                padding: 10px 12px;
+            }
+        }
+
+        /* Print */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .nav-cards, .search-box, .table-header {
+                break-inside: avoid;
+            }
+            .table-content.hidden {
+                display: block;
+            }
+            .toggle-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>🏨 HotelHub</h1>
+        <div class="subtitle">Base de données - Structure complète<br>PostgreSQL 18 + PostGIS</div>
+        <div class="stats-badge">
+            <span class="badge-stat">📊 11 tables</span>
+            <span class="badge-stat">🔍 15+ index</span>
+            <span class="badge-stat">🔗 8 relations</span>
+            <span class="badge-stat">📍 PostGIS intégré</span>
+            <span class="badge-stat">⚡ R2DBC ready</span>
+        </div>
+    </div>
+
+    <!-- Navigation rapide -->
+    <div class="nav-cards" id="navLinks">
+        <!-- Generated by JS -->
+    </div>
+
+    <!-- Search box -->
+    <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Rechercher une table, une colonne ou une contrainte...">
+    </div>
+
+    <!-- Tables -->
+    <div id="tablesContainer"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>📌 Base de données PostgreSQL 18 avec extension PostGIS pour la géolocalisation</p>
+        <p>🏗️ Architecture hexagonale - Domain Driven Design - Programmation réactive (WebFlux + R2DBC)</p>
+        <p>📅 Généré le 19 mai 2026 | HotelHub - Sujet 21 | Introduction aux Réseaux - 1GI</p>
+    </div>
+</div>
+
+<script>
+    // Données complètes des tables
+    const tables = [
+        {
+            name: "utilisateur",
+            icon: "👤",
+            description: "Gère tous les utilisateurs de la plateforme (clients, hôteliers, administrateurs)",
+            indexes: ["idx_utilisateur_email", "idx_utilisateur_role"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique de l'utilisateur" },
+                { name: "nom", type: "VARCHAR(100)", constraints: ["NOT NULL"], description: "Nom de famille" },
+                { name: "prenom", type: "VARCHAR(100)", constraints: [], description: "Prénom" },
+                { name: "email", type: "VARCHAR(200)", constraints: ["UNIQUE", "NOT NULL"], description: "Adresse email de connexion" },
+                { name: "telephone", type: "VARCHAR(20)", constraints: [], description: "Numéro de téléphone" },
+                { name: "mot_de_passe", type: "VARCHAR(255)", constraints: ["NOT NULL"], description: "Mot de passe haché (BCrypt)" },
+                { name: "role", type: "VARCHAR(20)", constraints: ["CHECK (role IN ('CLIENT','HOTELIER','ADMIN'))"], description: "Rôle de l'utilisateur" },
+                { name: "double_auth_active", type: "BOOLEAN", constraints: ["DEFAULT FALSE"], description: "Authentification à deux facteurs activée" },
+                { name: "double_auth_secret", type: "VARCHAR(255)", constraints: [], description: "Secret TOTP pour 2FA" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de création du compte" },
+                { name: "derniere_connexion", type: "TIMESTAMP", constraints: [], description: "Dernière connexion" },
+                { name: "actif", type: "BOOLEAN", constraints: ["DEFAULT TRUE"], description: "Compte actif / désactivé" }
+            ]
+        },
+        {
+            name: "hotel",
+            icon: "🏨",
+            description: "Établissements hôteliers avec géolocalisation PostGIS pour recherche de proximité",
+            indexes: ["idx_hotel_localisation (GIST)", "idx_hotel_ville", "idx_hotel_etoiles"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique de l'hôtel" },
+                { name: "hotelier_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id)", "NOT NULL"], description: "Propriétaire / gestionnaire" },
+                { name: "nom", type: "VARCHAR(200)", constraints: ["NOT NULL"], description: "Nom de l'établissement" },
+                { name: "adresse", type: "TEXT", constraints: [], description: "Adresse postale complète" },
+                { name: "ville", type: "VARCHAR(100)", constraints: [], description: "Ville" },
+                { name: "quartier", type: "VARCHAR(100)", constraints: [], description: "Quartier" },
+                { name: "code_postal", type: "VARCHAR(20)", constraints: [], description: "Code postal" },
+                { name: "localisation", type: "GEOGRAPHY(POINT, 4326)", constraints: [], description: "🌍 Coordonnées GPS (longitude/latitude) pour PostGIS" },
+                { name: "nombre_etoiles", type: "SMALLINT", constraints: ["CHECK (nombre_etoiles BETWEEN 1 AND 5)"], description: "Catégorie (1 à 5 étoiles)" },
+                { name: "description", type: "TEXT", constraints: [], description: "Description détaillée" },
+                { name: "telephone", type: "VARCHAR(20)", constraints: [], description: "Téléphone de contact" },
+                { name: "email_contact", type: "VARCHAR(200)", constraints: [], description: "Email de contact" },
+                { name: "horaires_accueil", type: "VARCHAR(255)", constraints: [], description: "Horaires de la réception" },
+                { name: "politique_annulation", type: "TEXT", constraints: [], description: "Conditions d'annulation" },
+                { name: "note_moyenne", type: "DECIMAL(2,1)", constraints: ["DEFAULT 0"], description: "Moyenne des avis clients" },
+                { name: "nombre_avis", type: "INTEGER", constraints: ["DEFAULT 0"], description: "Nombre total d'avis" },
+                { name: "actif", type: "BOOLEAN", constraints: ["DEFAULT TRUE"], description: "Hôtel actif / désactivé" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date d'inscription" },
+                { name: "modifie_le", type: "TIMESTAMP", constraints: [], description: "Dernière modification" }
+            ]
+        },
+        {
+            name: "chambre",
+            icon: "🛏️",
+            description: "Chambres des hôtels avec gestion du statut en temps réel",
+            indexes: ["idx_chambre_hotel", "idx_chambre_statut", "idx_chambre_type", "idx_chambre_prix"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique de la chambre" },
+                { name: "hotel_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES hotel(id)", "NOT NULL"], description: "Hôtel parent" },
+                { name: "numero", type: "VARCHAR(20)", constraints: ["NOT NULL"], description: "Numéro de chambre (ex: '101', 'Suite A')" },
+                { name: "nom", type: "VARCHAR(100)", constraints: [], description: "Nom de la chambre (optionnel)" },
+                { name: "type", type: "VARCHAR(30)", constraints: ["CHECK (type IN ('SIMPLE','DOUBLE','SUITE','FAMILIALE','DORTEUR'))", "NOT NULL"], description: "Type de chambre" },
+                { name: "statut", type: "VARCHAR(20)", constraints: ["CHECK (statut IN ('DISPONIBLE','RESERVEE','OCCUPEE','EN_MAINTENANCE'))", "DEFAULT 'DISPONIBLE'"], description: "Statut actuel de la chambre" },
+                { name: "prix_nuit", type: "DECIMAL(10,2)", constraints: ["NOT NULL", "CHECK (prix_nuit >= 0)"], description: "Prix par nuit en FCFA" },
+                { name: "prix_nuit_saison_basse", type: "DECIMAL(10,2)", constraints: [], description: "Tarif hors saison" },
+                { name: "prix_nuit_saison_haute", type: "DECIMAL(10,2)", constraints: [], description: "Tarif pleine saison" },
+                { name: "superficie", type: "DECIMAL(6,2)", constraints: [], description: "Superficie en m²" },
+                { name: "etage", type: "SMALLINT", constraints: [], description: "Étage" },
+                { name: "capacite_personnes", type: "SMALLINT", constraints: ["DEFAULT 1"], description: "Nombre maximum de personnes" },
+                { name: "lits_simples", type: "SMALLINT", constraints: ["DEFAULT 0"], description: "Nombre de lits simples" },
+                { name: "lits_doubles", type: "SMALLINT", constraints: ["DEFAULT 0"], description: "Nombre de lits doubles" },
+                { name: "description", type: "TEXT", constraints: [], description: "Description spécifique" },
+                { name: "actif", type: "BOOLEAN", constraints: ["DEFAULT TRUE"], description: "Chambre activée / désactivée" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de création" },
+                { name: "modifie_le", type: "TIMESTAMP", constraints: [], description: "Dernière modification" }
+            ]
+        },
+        {
+            name: "equipement",
+            icon: "📦",
+            description: "Catalogue d'équipements disponibles (Wi-Fi, Clim, Piscine, etc.)",
+            indexes: ["idx_equipement_nom"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "nom", type: "VARCHAR(100)", constraints: ["UNIQUE", "NOT NULL"], description: "Nom de l'équipement" },
+                { name: "icone", type: "VARCHAR(50)", constraints: [], description: "Nom de l'icône (FontAwesome/Material)" },
+                { name: "categorie", type: "VARCHAR(50)", constraints: [], description: "Catégorie (confort, loisir, service, etc.)" }
+            ]
+        },
+        {
+            name: "chambre_equipement",
+            icon: "🔗",
+            description: "Table de liaison N:N entre chambres et équipements",
+            indexes: [],
+            columns: [
+                { name: "chambre_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES chambre(id)", "PRIMARY KEY"], description: "Référence à la chambre" },
+                { name: "equipement_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES equipement(id)", "PRIMARY KEY"], description: "Référence à l'équipement" }
+            ]
+        },
+        {
+            name: "reservation",
+            icon: "📅",
+            description: "Réservations effectuées par les clients avec machine d'états",
+            indexes: ["idx_reservation_client", "idx_reservation_chambre", "idx_reservation_dates", "idx_reservation_statut"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "client_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id)", "NOT NULL"], description: "Client ayant réservé" },
+                { name: "chambre_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES chambre(id)", "NOT NULL"], description: "Chambre réservée" },
+                { name: "date_arrivee", type: "DATE", constraints: ["NOT NULL"], description: "Date d'arrivée" },
+                { name: "date_depart", type: "DATE", constraints: ["NOT NULL"], description: "Date de départ" },
+                { name: "nb_personnes", type: "SMALLINT", constraints: ["DEFAULT 1"], description: "Nombre de personnes" },
+                { name: "montant_total", type: "DECIMAL(12,2)", constraints: [], description: "Montant total calculé" },
+                { name: "montant_caution", type: "DECIMAL(10,2)", constraints: ["DEFAULT 0"], description: "Montant de la caution" },
+                { name: "statut", type: "VARCHAR(20)", constraints: ["CHECK (statut IN ('EN_ATTENTE','CONFIRMEE','ANNULEE','TERMINEE','NO_SHOW'))", "DEFAULT 'EN_ATTENTE'"], description: "Statut de la réservation" },
+                { name: "message_client", type: "TEXT", constraints: [], description: "Message optionnel du client" },
+                { name: "reponse_hotel", type: "TEXT", constraints: [], description: "Réponse de l'hôtelier" },
+                { name: "confirmee_le", type: "TIMESTAMP", constraints: [], description: "Date de confirmation" },
+                { name: "annulee_le", type: "TIMESTAMP", constraints: [], description: "Date d'annulation" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de création" },
+                { name: "modifie_le", type: "TIMESTAMP", constraints: [], description: "Dernière modification" }
+            ]
+        },
+        {
+            name: "facture",
+            icon: "🧾",
+            description: "Factures générées à partir des réservations confirmées",
+            indexes: ["idx_facture_reservation", "idx_facture_numero", "idx_facture_statut"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "reservation_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES reservation(id)", "NOT NULL"], description: "Réservation associée" },
+                { name: "numero_facture", type: "VARCHAR(50)", constraints: ["UNIQUE", "NOT NULL"], description: "Numéro de facture unique" },
+                { name: "montant_ht", type: "DECIMAL(12,2)", constraints: ["NOT NULL"], description: "Montant hors taxe" },
+                { name: "montant_tva", type: "DECIMAL(10,2)", constraints: ["DEFAULT 0"], description: "Montant de TVA" },
+                { name: "montant_ttc", type: "DECIMAL(12,2)", constraints: ["NOT NULL"], description: "Montant total TTC" },
+                { name: "devise", type: "VARCHAR(3)", constraints: ["DEFAULT 'XAF'"], description: "Devise (XAF, EUR, USD)" },
+                { name: "statut_paiement", type: "VARCHAR(20)", constraints: ["CHECK (statut_paiement IN ('EN_ATTENTE','PAYE','REMBOURSE','ECHOUE'))", "DEFAULT 'EN_ATTENTE'"], description: "Statut du paiement" },
+                { name: "mode_paiement", type: "VARCHAR(30)", constraints: [], description: "Mode de paiement" },
+                { name: "reference_paiement", type: "VARCHAR(100)", constraints: [], description: "Référence transaction" },
+                { name: "date_echeance", type: "DATE", constraints: [], description: "Date d'échéance" },
+                { name: "date_paiement", type: "TIMESTAMP", constraints: [], description: "Date du paiement" },
+                { name: "pdf_url", type: "TEXT", constraints: [], description: "URL du PDF généré" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de création" }
+            ]
+        },
+        {
+            name: "avis",
+            icon: "⭐",
+            description: "Avis et évaluations laissés par les clients après leur séjour",
+            indexes: ["idx_avis_hotel", "idx_avis_note"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "reservation_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES reservation(id)", "UNIQUE", "NOT NULL"], description: "Réservation associée (1 réservation = 1 avis)" },
+                { name: "client_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id)", "NOT NULL"], description: "Client ayant laissé l'avis" },
+                { name: "hotel_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES hotel(id)", "NOT NULL"], description: "Hôtel concerné" },
+                { name: "note", type: "SMALLINT", constraints: ["NOT NULL", "CHECK (note BETWEEN 1 AND 5)"], description: "Note de 1 à 5" },
+                { name: "commentaire", type: "TEXT", constraints: [], description: "Commentaire" },
+                { name: "reponse_hotel", type: "TEXT", constraints: [], description: "Réponse de l'hôtelier" },
+                { name: "date_publication", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de publication" },
+                { name: "date_reponse", type: "TIMESTAMP", constraints: [], description: "Date de réponse" },
+                { name: "signale", type: "BOOLEAN", constraints: ["DEFAULT FALSE"], description: "Avis signalé" },
+                { name: "valide", type: "BOOLEAN", constraints: ["DEFAULT TRUE"], description: "Avis validé par modération" }
+            ]
+        },
+        {
+            name: "notification",
+            icon: "🔔",
+            description: "Notifications push envoyées aux utilisateurs en temps réel",
+            indexes: ["idx_notification_utilisateur", "idx_notification_cree_le"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "utilisateur_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id)", "NOT NULL"], description: "Destinataire" },
+                { name: "type", type: "VARCHAR(30)", constraints: ["NOT NULL"], description: "Type de notification" },
+                { name: "titre", type: "VARCHAR(255)", constraints: ["NOT NULL"], description: "Titre" },
+                { name: "message", type: "TEXT", constraints: ["NOT NULL"], description: "Contenu" },
+                { name: "donnees", type: "JSONB", constraints: [], description: "Données supplémentaires (JSON)" },
+                { name: "lue", type: "BOOLEAN", constraints: ["DEFAULT FALSE"], description: "Notification lue" },
+                { name: "lue_le", type: "TIMESTAMP", constraints: [], description: "Date de lecture" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date d'envoi" }
+            ]
+        },
+        {
+            name: "token",
+            icon: "🔐",
+            description: "Gestion des tokens JWT, refresh tokens et codes 2FA",
+            indexes: ["idx_token_utilisateur", "idx_token_expiration"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "utilisateur_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id)", "NOT NULL"], description: "Utilisateur associé" },
+                { name: "token", type: "VARCHAR(500)", constraints: ["UNIQUE", "NOT NULL"], description: "Token" },
+                { name: "type", type: "VARCHAR(30)", constraints: ["CHECK (type IN ('JWT_ACCESS','JWT_REFRESH','2FA','RESET_PASSWORD'))", "NOT NULL"], description: "Type de token" },
+                { name: "expire_le", type: "TIMESTAMP", constraints: ["NOT NULL"], description: "Date d'expiration" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de création" },
+                { name: "revoque", type: "BOOLEAN", constraints: ["DEFAULT FALSE"], description: "Token révoqué" }
+            ]
+        },
+        {
+            name: "logs_systeme",
+            icon: "📝",
+            description: "Audit et traçabilité des actions utilisateurs pour la sécurité",
+            indexes: ["idx_logs_utilisateur", "idx_logs_action", "idx_logs_cree_le"],
+            columns: [
+                { name: "id", type: "UUID", constraints: ["PRIMARY KEY", "DEFAULT gen_random_uuid()"], description: "Identifiant unique" },
+                { name: "utilisateur_id", type: "UUID", constraints: ["FOREIGN KEY REFERENCES utilisateur(id) ON DELETE SET NULL"], description: "Utilisateur (peut être NULL si supprimé)" },
+                { name: "action", type: "VARCHAR(100)", constraints: ["NOT NULL"], description: "Action effectuée" },
+                { name: "entite_type", type: "VARCHAR(50)", constraints: [], description: "Type d'entité concernée" },
+                { name: "entite_id", type: "UUID", constraints: [], description: "Identifiant de l'entité" },
+                { name: "details", type: "JSONB", constraints: [], description: "Détails de l'action (JSON)" },
+                { name: "ip_address", type: "INET", constraints: [], description: "Adresse IP" },
+                { name: "user_agent", type: "TEXT", constraints: [], description: "User Agent du navigateur" },
+                { name: "cree_le", type: "TIMESTAMP", constraints: ["DEFAULT NOW()"], description: "Date de l'action" }
+            ]
+        }
+    ];
+
+    // Rendu des tables
+    function renderTables(filter = '') {
+        const container = document.getElementById('tablesContainer');
+        const searchTerm = filter.toLowerCase();
+        
+        const filteredTables = tables.filter(table => 
+            table.name.toLowerCase().includes(searchTerm) ||
+            table.description.toLowerCase().includes(searchTerm) ||
+            table.columns.some(col => col.name.toLowerCase().includes(searchTerm) || col.description.toLowerCase().includes(searchTerm))
+        );
+        
+        container.innerHTML = '';
+        
+        filteredTables.forEach((table, index) => {
+            const tableCard = document.createElement('div');
+            tableCard.className = 'table-card';
+            tableCard.setAttribute('data-table-name', table.name);
+            
+            // Header
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.onclick = () => toggleContent(tableContent, toggleIcon);
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'table-title';
+            titleDiv.innerHTML = `<span class="table-icon">${table.icon}</span><span>${table.name}</span><span style="font-size:0.8rem; font-weight:normal; opacity:0.8;"> - ${table.description}</span>`;
+            
+            const badgesDiv = document.createElement('div');
+            badgesDiv.className = 'table-badges';
+            if (table.indexes.length > 0) {
+                table.indexes.forEach(idx => {
+                    const idxBadge = document.createElement('span');
+                    idxBadge.className = 'badge-index';
+                    idxBadge.textContent = `🔍 ${idx}`;
+                    badgesDiv.appendChild(idxBadge);
+                });
+            }
+            
+            const toggleIcon = document.createElement('span');
+            toggleIcon.className = 'toggle-icon';
+            toggleIcon.textContent = '▼';
+            
+            header.appendChild(titleDiv);
+            header.appendChild(badgesDiv);
+            header.appendChild(toggleIcon);
+            
+            // Content
+            const tableContent = document.createElement('div');
+            tableContent.className = 'table-content';
+            
+            const dataTable = document.createElement('table');
+            dataTable.className = 'data-table';
+            
+            // Header row
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            ['Colonne', 'Type', 'Contraintes', 'Description'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            dataTable.appendChild(thead);
+            
+            // Body
+            const tbody = document.createElement('tbody');
+            table.columns.forEach(col => {
+                const row = document.createElement('tr');
+                
+                // Nom colonne
+                const tdName = document.createElement('td');
+                tdName.className = 'col-name';
+                tdName.textContent = col.name;
+                row.appendChild(tdName);
+                
+                // Type
+                const tdType = document.createElement('td');
+                tdType.className = 'col-type';
+                tdType.textContent = col.type;
+                row.appendChild(tdType);
+                
+                // Contraintes
+                const tdConstraints = document.createElement('td');
+                if (col.constraints.length > 0) {
+                    col.constraints.forEach(c => {
+                        const span = document.createElement('span');
+                        span.className = 'constraint';
+                        if (c.includes('PRIMARY KEY')) span.classList.add('constraint-pk');
+                        if (c.includes('FOREIGN KEY')) span.classList.add('constraint-fk');
+                        if (c.includes('CHECK')) span.classList.add('constraint-check');
+                        span.textContent = c;
+                        tdConstraints.appendChild(span);
+                    });
+                } else {
+                    tdConstraints.textContent = '-';
+                }
+                row.appendChild(tdConstraints);
+                
+                // Description
+                const tdDesc = document.createElement('td');
+                tdDesc.className = 'desc-text';
+                tdDesc.textContent = col.description;
+                row.appendChild(tdDesc);
+                
+                tbody.appendChild(row);
+            });
+            dataTable.appendChild(tbody);
+            tableContent.appendChild(dataTable);
+            
+            tableCard.appendChild(header);
+            tableCard.appendChild(tableContent);
+            container.appendChild(tableCard);
+        });
+        
+        // Si aucun résultat
+        if (filteredTables.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 60px; background: white; border-radius: 20px;"><p>🔍 Aucune table ne correspond à votre recherche.</p></div>';
+        }
+    }
+    
+    function toggleContent(contentEl, iconEl) {
+        contentEl.classList.toggle('hidden');
+        iconEl.classList.toggle('rotated');
+    }
+    
+    // Navigation rapide
+    function renderNav() {
+        const navContainer = document.getElementById('navLinks');
+        navContainer.innerHTML = '';
+        
+        tables.forEach(table => {
+            const link = document.createElement('a');
+            link.href = '#';
+            link.className = 'nav-link';
+            link.textContent = `${table.icon} ${table.name}`;
+            link.onclick = (e) => {
+                e.preventDefault();
+                const targetCard = document.querySelector(`.table-card[data-table-name="${table.name}"]`);
+                if (targetCard) {
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    targetCard.style.boxShadow = '0 0 0 3px #3b82f6';
+                    setTimeout(() => {
+                        targetCard.style.boxShadow = '';
+                    }, 1500);
+                }
+            };
+            navContainer.appendChild(link);
+        });
+    }
+    
+    // Initialisation
+    renderNav();
+    renderTables('');
+    
+    // Search
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => {
+        renderTables(e.target.value);
+    });
+    
+    // Ouvrir toutes les tables par défaut
+    setTimeout(() => {
+        document.querySelectorAll('.table-content').forEach(el => {
+            el.classList.remove('hidden');
+        });
+        document.querySelectorAll('.toggle-icon').forEach(el => {
+            el.classList.remove('rotated');
+        });
+    }, 100);
+</script>
+</body>
+</html>

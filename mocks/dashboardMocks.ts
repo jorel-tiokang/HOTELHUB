@@ -1,4 +1,3 @@
-
 export const mockReservations = [
   {
     id: "R001",
@@ -31,6 +30,8 @@ export const mockReservations = [
     statut: "ANNULEE",
   },
 ];
+
+import type { Chambre } from "@/types/chambre";
 
 export const mockAvis = [
   {
@@ -91,7 +92,7 @@ export const mockHotels = [
   },
 ];
 
-export const mockChambres = [
+export const mockChambres: Chambre[] = [
   {
     id: "C001",
     numero: 101,
@@ -101,6 +102,7 @@ export const mockChambres = [
     description: "Chambre standard avec vue sur jardin",
     equipements: ["Wifi", "Clim", "TV"],
     statut: "DISPONIBLE",
+    images: [],
   },
   {
     id: "C002",
@@ -111,6 +113,7 @@ export const mockChambres = [
     description: "Suite présidentielle avec terrasse panoramique",
     equipements: ["Piscine", "Spa", "Bar", "Wifi"],
     statut: "INDISPONIBLE",
+    images: [],
   },
   {
     id: "C003",
@@ -121,6 +124,7 @@ export const mockChambres = [
     description: "Chambre supérieure avec vue sur mer",
     equipements: ["Wifi", "Clim", "TV", "Gym"],
     statut: "DISPONIBLE",
+    images: [],
   },
 ];
 

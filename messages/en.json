@@ -1,0 +1,237 @@
+{
+  "nav": {
+    "home": "Home",
+    "hotels": "Hotels",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log in",
+    "signup": "Sign up",
+    "bookNow": "Book Now"
+  },
+
+  "hero": {
+    "badge": "100+ Hotels Across Africa",
+    "titleLine1": "Find Your Perfect",
+    "titleLine2": "Hotel Stay",
+    "titleAccent": "Wherever You Are",
+    "subtitle": "Exclusive services, guaranteed escapes, real-time availability. Hundreds of hotels in Cameroon and across Africa, right at your fingertips.",
+    "search": {
+      "locationPlaceholder": "Where are you going?",
+      "locationLabel": "Destination",
+      "checkInLabel": "Check-in",
+      "checkOutLabel": "Check-out",
+      "checkInPlaceholder": "Add date",
+      "checkOutPlaceholder": "Add date",
+      "guestsLabel": "Guests",
+      "guestsPlaceholder": "Add guests",
+      "button": "Search Hotels"
+    }
+  },
+
+  "stats": {
+    "hotels": "Hotels",
+    "regions": "Regions in Africa",
+    "rating": "Average Rating",
+    "available": "Available"
+  },
+
+  "trust": {
+    "badge": "Trusted Platform",
+    "title": "Trusted Stays,",
+    "titleAccent": "Seamless Booking",
+    "subtitle": "Discover top hotels near you with just a tap — effortless booking, ultimate comfort. Book your stay for personalized experiences and unforgettable memories.",
+    "cta": "Get Started",
+    "note": "Focus on exceptional stays",
+    "items": [
+      { "label": "Instant confirmation" },
+      { "label": "Free cancellation on most bookings" },
+      { "label": "Secure payments" },
+      { "label": "24/7 customer support" }
+    ],
+    "rating": "Average Rating"
+  },
+
+  "features": {
+    "badge": "Why Choose Us",
+    "title": "Everything You Need for",
+    "titleAccent": "the Perfect Stay",
+    "subtitle": "HotelHub brings together the best hotels, seamless booking technology, and dedicated support — all in one place.",
+    "items": [
+      {
+        "title": "Geolocation Search",
+        "desc": "Find hotels near you instantly with our smart location-based search engine."
+      },
+      {
+        "title": "Real-Time Availability",
+        "desc": "See live room availability and book instantly without waiting for confirmation."
+      },
+      {
+        "title": "Curated Selection",
+        "desc": "Every hotel on our platform is verified and reviewed for quality and comfort."
+      },
+      {
+        "title": "Best Price Guarantee",
+        "desc": "We match the best rates so you never overpay for your perfect stay."
+      }
+    ]
+  },
+
+  "hotels": {
+    "badge": "Explore Hotels",
+    "title": "Explore the Best",
+    "titleAccent": "Hotels Near You",
+    "viewAll": "View All",
+    "perNight": "/ night",
+    "bookNow": "Book Now",
+    "reviews": "reviews"
+  },
+
+  "testimonials": {
+    "badge": "Testimonials",
+    "title": "What Our Guests",
+    "titleAccent": "Are Saying",
+    "items": [
+      {
+        "quote": "HotelHub made finding a great hotel in Douala incredibly easy. I booked in minutes and the room was exactly as described. Absolutely fantastic service!",
+        "name": "Amara Nkosi",
+        "role": "Business Traveller",
+        "location": "Douala, Cameroon"
+      },
+      {
+        "quote": "I was amazed by the variety of hotels available. The geolocation feature helped me find something perfect close to my conference venue. Will use again!",
+        "name": "Jean-Paul Mbarga",
+        "role": "Conference Attendee",
+        "location": "Yaoundé, Cameroon"
+      },
+      {
+        "quote": "Seamless booking experience from start to finish. The real-time availability feature saved me so much time. Highly recommend HotelHub to all travellers.",
+        "name": "Sophie Etienne",
+        "role": "Leisure Traveller",
+        "location": "Kribi, Cameroon"
+      }
+    ]
+  },
+
+  "cta": {
+    "badge": "Start Your Journey",
+    "title": "Book Your Next Stay",
+    "titleAccent": "Today",
+    "subtitle": "Join thousands of happy travellers who discover and book exceptional hotels across Africa through HotelHub.",
+    "button": "Browse Hotels",
+    "secondaryButton": "Learn More"
+  },
+
+  "footer": {
+    "tagline": "Your gateway to exceptional hotel stays across Africa.",
+    "company": "Company",
+    "links": "Quick Links",
+    "support": "Support",
+    "aboutUs": "About Us",
+    "careers": "Careers",
+    "press": "Press",
+    "hotels": "Hotels",
+    "services": "Services",
+    "pricing": "Pricing",
+    "helpCenter": "Help Center",
+    "contact": "Contact Us",
+    "privacy": "Privacy Policy",
+    "rights": "All rights reserved.",
+    "terms": "Terms of Service",
+    "copyright": "hotelhub , Yaounde, Cameroon — Copyright 2026 hotelhub | All rights reserved."
+  },
+
+  "text": {
+    "1": "Stays for everyone",
+    "2": "Register now for real-times rates, availability, and bookings."
+  },
+
+  "about": {
+    "hero": {
+      "badge": "Our Story",
+      "title": "Redefining Hotel Discovery",
+      "titleAccent": "Across Africa",
+      "subtitle": "HotelHub was born from a simple belief: finding and booking the perfect hotel should be effortless, beautiful, and accessible to everyone."
+    },
+    "mission": {
+      "badge": "Our Mission",
+      "title": "Built for the",
+      "titleAccent": "Modern Traveller",
+      "body1": "We set out to solve a problem every traveller in Africa knows too well — the gap between the quality of hotels that exist and how hard they are to discover, compare, and book. HotelHub bridges that gap.",
+      "body2": "Our platform connects travellers to verified, high-quality hotels across Cameroon and beyond, with real-time availability, transparent pricing, and a seamless booking experience.",
+      "stat1Value": "100+",
+      "stat1Label": "Hotels listed",
+      "stat2Value": "4.8★",
+      "stat2Label": "Average rating",
+      "stat3Value": "36",
+      "stat3Label": "Cities covered"
+    },
+    "story": {
+      "sectionLabel": "Studio Highlights",
+      "block1Badge": "How It Started",
+      "block1Title": "A Problem Every",
+      "block1Accent": "Traveller Knows",
+      "block1Body": "The idea for HotelHub came from a frustrating travel experience in Douala — hours spent searching for a decent hotel, with no reliable information, no clear pricing, and no easy way to book. We knew there had to be a better way.",
+      "block2Badge": "Where We Are Now",
+      "block2Title": "Growing With",
+      "block2Accent": "Every Stay",
+      "block2Body": "Today, HotelHub hosts over 100 curated hotels across 36 cities. Every listing is verified, every review is real, and every booking is backed by our guarantee. We're just getting started."
+    },
+    "values": {
+      "badge": "What We Stand For",
+      "title": "Our Core",
+      "titleAccent": "Philosophy",
+      "subtitle": "Four principles that guide everything we build and every partnership we make.",
+      "items": [
+        {
+          "title": "Trust First",
+          "desc": "Every hotel on our platform is manually verified. We never compromise on the accuracy of listings, pricing, or guest reviews."
+        },
+        {
+          "title": "Seamless Access",
+          "desc": "From search to booking in minutes. Our platform is designed so anyone, anywhere, can find and book a great hotel without friction."
+        },
+        {
+          "title": "Curated Quality",
+          "desc": "We don't list every hotel — we list the right ones. Quality over quantity, always. Our team reviews every property personally."
+        },
+        {
+          "title": "Local at Heart",
+          "desc": "We are African, built for Africa. We celebrate local hospitality while holding it to a world-class standard."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Experience",
+      "titleAccent": "the Difference?",
+      "subtitle": "Join thousands of travellers who have already discovered exceptional hotel stays across Africa through HotelHub.",
+      "button": "Browse Hotels",
+      "secondaryButton": "Contact Us"
+    }
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Reach out for inquiries regarding property management, reservations, or general assistance. Our team is here to help.",
+    "inquiries": {
+      "label": "GENERAL INQUIRIES",
+      "email": "hello@hotelhub.com",
+      "phone": "+237 699 123 456"
+    },
+    "careers": {
+      "label": "CAREERS",
+      "email": "careers@hotelhub.com"
+    },
+    "partnerships": {
+      "label": "PARTNERSHIPS",
+      "email": "partners@hotelhub.com",
+      "phone": "+237 677 890 123"
+    },
+    "address": {
+      "label": "HEADQUARTERS",
+      "line1": "Avenue Kennedy",
+      "line2": "Yaoundé, Centre Region, CM"
+    }
+  }
+
+}

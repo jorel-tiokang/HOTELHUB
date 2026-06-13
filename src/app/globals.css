@@ -1,0 +1,238 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@custom-variant dark (&:is(.dark *));
+@source "../app";
+
+/* ========================================================= */
+/* LIGHT MODE DESIGN TOKENS (Default Root)                  */
+/* ========================================================= */
+:root {
+  /* Core Brand Elements (Light mode versions) */
+  --purple: rgb(83, 31, 143); /* Clean corporate indigo purple */
+  --gold: rgb(197, 160, 49); /* Subdued luxury gold */
+  --charcoal: #f9f8f6; /* Soft off-white surface for light background cards */
+  --warm-gray: #f2ece4;  /* warmer, more beige-leaning than before */
+  --cyan: rgb(7, 160, 180);
+  --dark-white: black;
+  --blue: rgb(37, 99, 235);
+
+  --beige: #eed7a8;
+  --beige-muted: #f5f0ea;
+  /* Layout Variables - Light Mode */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: #f9f8f6;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: var(--purple); /* Primary actions emphasize purple in light mode */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+}
+
+/* ========================================================= */
+/* DARK MODE DESIGN TOKENS (.dark class applied)           */
+/* ========================================================= */
+.dark {
+  /* Core Brand Elements (Your specific layout colors preserved) */
+  --purple: rgb(83, 31, 143); /* Vibrant legible indigo for dark backdrops */
+  --gold: rgb(212, 175, 55); /* Your glowing premium dashboard gold */
+  --charcoal: #1c1714; /* Your signature deep charcoal canvas base */
+  --warm-gray: #2a2522;
+  --cyan: rgb(7, 186, 202);
+  --dark-white: white;
+
+  --blue: rgb(96, 165, 250);
+  --beige: #1c1714;
+  --beige-muted: #2a2522;
+  /* Layout Variables - Dark Mode (Your design matches) */
+  --background: #0c0a09; /* Sleek dark obsidian backdrop canvas */
+  --foreground: oklch(0.985 0 0);
+  --card: #1c1714; /* Cards cleanly merge into your brand charcoal */
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: var(--gold); /* Primary elements highlight premium gold */
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgba(212, 175, 55, 0.15); /* Borders adapt to a gold sheen tint */
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  /* Consolidated Sidebar & Chart Defaults */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: #1c1714;
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--purple);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: rgba(212, 175, 55, 0.15);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ========================================================= */
+/* TAILWIND V4 INTEGRATED CONFIGURATION                     */
+/* ========================================================= */
+@theme inline {
+--color-blue: var(--blue);
+  --color-beige: var(--beige);
+  --color-beige-muted: var(--beige-muted);
+
+  --color-purple: var(--purple);
+  --color-gold: var(--gold);
+  --color-charcoal: var(--charcoal);
+  --color-warm-gray: var(--warm-gray);
+  --color-cyan: var(--cyan);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --font-sans: var(--font-dm-sans), var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-playfair);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+
+
+/* Global Base Layer Configurations */
+@layer base {
+  body {
+    @apply bg-background text-foreground transition-colors duration-300 antialiased;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Animation pour le défilement horizontal */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  display: flex;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+.mask-gradient {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Utilities Layer */
+@layer utilities {
+  .animateCardBoxHover {
+    @apply transform 
+           transition-all 
+           duration-300 
+           ease-out 
+           hover:-translate-y-1.5
+           hover:scale-[1.03] 
+           hover:shadow-2xl 
+           hover:shadow-gold/20 dark:hover:shadow-gold/30;
+  }
+}
+
+/* Scroll Revelations */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.glass-blur-card {
+    /* Background: Combining your custom Taupe color with 90% opacity */
+    background-color: rgba(150,130,120,.3);
+    
+    /* The Blur Effect */
+    backdrop-filter: blur(12px); /* Equivalent to backdrop-blur-md */
+    -webkit-backdrop-filter: blur(12px); /* Safari support */
+    
+    /* Border & Corners */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* border-white/10 */
+    border-radius: 1.5rem; /* rounded-3xl */
+    
+    /* Layout & Spacing (Adaptive) */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem; /* p-8 */
+    gap: 2rem 1rem; /* gap-y-8 gap-x-4 */
+    
+    /* Shadow */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */ 
+  } 
+
+  .hero-line-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px; /* Controls the space between the text and the lines */
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.hero-line-wrapper::before,
+.hero-line-wrapper::after {
+  content: "";
+  width: 40px;
+  height: 3px;
+  background-color: var(--purple);
+  display: inline-block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --black: #0a0a0a;
+  }
+  .hero-line-wrapper::before,
+  .hero-line-wrapper::after {
+    background-color: var(--gold);
+  }
+}

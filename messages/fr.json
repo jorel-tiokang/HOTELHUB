@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "hotels": "Hôtels",
+    "services": "Services",
+    "about": "À propos",
+    "contact": "Contact",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "bookNow": "Réserver"
+  },
+
+  "hero": {
+    "badge": "100+ Hôtels à travers l'Afrique",
+    "titleLine1": "Trouvez l'Hôtel",
+    "titleLine2": "Parfait",
+    "titleAccent": "Où Que Vous Soyez",
+    "subtitle": "Services exclusifs, évasion garantie, disponibilité en temps réel. Des centaines d'hôtels au Cameroun et en Afrique, à portée de main.",
+    "search": {
+      "locationPlaceholder": "Où allez-vous ?",
+      "locationLabel": "Destination",
+      "checkInLabel": "Arrivée",
+      "checkOutLabel": "Départ",
+      "checkInPlaceholder": "Ajouter une date",
+      "checkOutPlaceholder": "Ajouter une date",
+      "guestsLabel": "Voyageurs",
+      "guestsPlaceholder": "Ajouter des voyageurs",
+      "button": "Rechercher"
+    }
+  },
+
+  "stats": {
+    "hotels": "Hôtels",
+    "regions": "Régions en Afrique",
+    "rating": "Note Moyenne",
+    "available": "Disponible"
+  },
+
+  "trust": {
+    "badge": "Plateforme de Confiance",
+    "title": "Séjours de Confiance,",
+    "titleAccent": "Réservation Simplifiée",
+    "subtitle": "Découvrez les meilleurs hôtels près de vous en un clic — réservation facile, confort absolu. Réservez pour des expériences personnalisées et des souvenirs inoubliables.",
+    "cta": "Commencer",
+    "note": "Focus sur des séjours exceptionnels",
+    "items": [
+      { "label": "Confirmation instantanée" },
+      { "label": "Annulation gratuite sur la plupart des réservations" },
+      { "label": "Paiements sécurisés" },
+      { "label": "Assistance client 24h/24, 7j/7" }
+    ],
+    "rating": "Note Moyenne"
+  },
+
+  "features": {
+    "badge": "Pourquoi Nous Choisir",
+    "title": "Tout ce Dont Vous Avez Besoin pour",
+    "titleAccent": "un Séjour Parfait",
+    "subtitle": "HotelHub réunit les meilleurs hôtels, une technologie de réservation fluide et une assistance dédiée — tout en un seul endroit.",
+    "items": [
+      {
+        "title": "Recherche par Géolocalisation",
+        "desc": "Trouvez instantanément les hôtels proches de vous grâce à notre moteur de recherche intelligent."
+      },
+      {
+        "title": "Disponibilité en Temps Réel",
+        "desc": "Consultez les disponibilités en direct et réservez immédiatement sans attendre de confirmation."
+      },
+      {
+        "title": "Sélection Vérifiée",
+        "desc": "Chaque hôtel de notre plateforme est vérifié et évalué pour sa qualité et son confort."
+      },
+      {
+        "title": "Garantie Meilleur Prix",
+        "desc": "Nous alignons les meilleurs tarifs pour que vous ne payiez jamais trop cher votre séjour."
+      }
+    ]
+  },
+
+  "hotels": {
+    "badge": "Explorer les Hôtels",
+    "title": "Explorez les Meilleurs",
+    "titleAccent": "Hôtels Près de Vous",
+    "viewAll": "Voir tout",
+    "perNight": "/ nuit",
+    "bookNow": "Réserver",
+    "reviews": "avis"
+  },
+
+  "testimonials": {
+    "badge": "Témoignages",
+    "title": "Ce que Disent",
+    "titleAccent": "Nos Clients",
+    "items": [
+      {
+        "quote": "HotelHub m'a permis de trouver un excellent hôtel à Douala en un rien de temps. J'ai réservé en quelques minutes et la chambre était exactement comme décrite. Un service fantastique !",
+        "name": "Amara Nkosi",
+        "role": "Voyageur d'Affaires",
+        "location": "Douala, Cameroun"
+      },
+      {
+        "quote": "J'ai été impressionné par la variété des hôtels disponibles. La géolocalisation m'a aidé à trouver quelque chose de parfait proche de mon lieu de conférence. Je reviendrai !",
+        "name": "Jean-Paul Mbarga",
+        "role": "Participant à une Conférence",
+        "location": "Yaoundé, Cameroun"
+      },
+      {
+        "quote": "Une expérience de réservation fluide du début à la fin. La disponibilité en temps réel m'a fait gagner beaucoup de temps. Je recommande vivement HotelHub à tous les voyageurs.",
+        "name": "Sophie Etienne",
+        "role": "Voyageuse de Loisirs",
+        "location": "Kribi, Cameroun"
+      }
+    ]
+  },
+
+  "cta": {
+    "badge": "Commencez Votre Voyage",
+    "title": "Réservez Votre Prochain",
+    "titleAccent": "Séjour Dès Aujourd'hui",
+    "subtitle": "Rejoignez des milliers de voyageurs satisfaits qui découvrent et réservent des hôtels exceptionnels en Afrique via HotelHub.",
+    "button": "Parcourir les Hôtels",
+    "secondaryButton": "En Savoir Plus"
+  },
+
+  "footer": {
+    "tagline": "Votre passerelle vers des séjours hôteliers exceptionnels en Afrique.",
+    "company": "Société",
+    "links": "Liens Rapides",
+    "support": "Assistance",
+    "aboutUs": "À Propos",
+    "careers": "Carrières",
+    "press": "Presse",
+    "hotels": "Hôtels",
+    "services": "Services",
+    "pricing": "Tarifs",
+    "helpCenter": "Centre d'Aide",
+    "contact": "Nous Contacter",
+    "privacy": "Politique de Confidentialité",
+    "rights": "Tous droits réservés.",
+    "terms": "Conditions d'Utilisation",
+    "copyright": "hotelhub , Yaoundé, Cameroun —  2026 hotelhub | Tous droits réservés."
+  },
+  "text": {
+    "1": "Des séjours pour tous les goûts",
+    "2": "Inscrivez-vous pour accéder aux tarifs, disponibilités et réservations en direct."
+  },
+
+  "about": {
+    "hero": {
+      "badge": "Notre Histoire",
+      "title": "Réinventer la Découverte",
+      "titleAccent": "Hôtelière en Afrique",
+      "subtitle": "HotelHub est né d'une conviction simple : trouver et réserver l'hôtel parfait doit être simple, beau et accessible à tous."
+    },
+    "mission": {
+      "badge": "Notre Mission",
+      "title": "Conçu pour le",
+      "titleAccent": "Voyageur Moderne",
+      "body1": "Nous avons voulu résoudre un problème que tout voyageur en Afrique connaît bien — l'écart entre la qualité des hôtels qui existent et la difficulté à les découvrir, les comparer et les réserver. HotelHub comble cet écart.",
+      "body2": "Notre plateforme connecte les voyageurs à des hôtels vérifiés et de qualité au Cameroun et au-delà, avec une disponibilité en temps réel, des prix transparents et une expérience de réservation fluide.",
+      "stat1Value": "100+",
+      "stat1Label": "Hôtels référencés",
+      "stat2Value": "4.8★",
+      "stat2Label": "Note moyenne",
+      "stat3Value": "36",
+      "stat3Label": "Villes couvertes"
+    },
+    "story": {
+      "sectionLabel": "Points Forts",
+      "block1Badge": "Les Débuts",
+      "block1Title": "Un Problème Que Tout",
+      "block1Accent": "Voyageur Connaît",
+      "block1Body": "L'idée de HotelHub est née d'une expérience de voyage frustrante à Douala — des heures passées à chercher un bon hôtel, sans informations fiables, sans prix clairs et sans moyen simple de réserver. Nous savions qu'il devait exister une meilleure solution.",
+      "block2Badge": "Où Nous En Sommes",
+      "block2Title": "Grandir avec",
+      "block2Accent": "Chaque Séjour",
+      "block2Body": "Aujourd'hui, HotelHub référence plus de 100 hôtels soigneusement sélectionnés dans 36 villes. Chaque annonce est vérifiée, chaque avis est authentique, et chaque réservation est couverte par notre garantie. Nous ne faisons que commencer."
+    },
+    "values": {
+      "badge": "Nos Engagements",
+      "title": "Notre",
+      "titleAccent": "Philosophie",
+      "subtitle": "Quatre principes qui guident tout ce que nous construisons et chaque partenariat que nous établissons.",
+      "items": [
+        {
+          "title": "La Confiance d'Abord",
+          "desc": "Chaque hôtel sur notre plateforme est vérifié manuellement. Nous ne compromettrons jamais l'exactitude des annonces, des prix ou des avis clients."
+        },
+        {
+          "title": "Accès Simplifié",
+          "desc": "De la recherche à la réservation en quelques minutes. Notre plateforme est conçue pour que chacun puisse trouver et réserver un excellent hôtel sans effort."
+        },
+        {
+          "title": "Qualité Sélective",
+          "desc": "Nous ne référençons pas tous les hôtels — nous référençons les bons. Qualité plutôt que quantité, toujours. Notre équipe visite chaque établissement."
+        },
+        {
+          "title": "Ancré Localement",
+          "desc": "Nous sommes africains, construits pour l'Afrique. Nous célébrons l'hospitalité locale tout en la maintenant à un standard mondial."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Prêt à Vivre",
+      "titleAccent": "la Différence ?",
+      "subtitle": "Rejoignez des milliers de voyageurs qui ont déjà découvert des séjours hôteliers exceptionnels en Afrique grâce à HotelHub.",
+      "button": "Parcourir les Hôtels",
+      "secondaryButton": "Nous Contacter"
+    }
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Contactez-nous pour toute question concernant la gestion de propriété, les réservations ou l'assistance générale. Notre équipe est à votre disposition.",
+    "inquiries": {
+      "label": "QUESTIONS GÉNÉRALES",
+      "email": "bonjour@hotelhub.com",
+      "phone": "+237 699 123 456"
+    },
+    "careers": {
+      "label": "CARRIÈRES",
+      "email": "carrieres@hotelhub.com"
+    },
+    "partnerships": {
+      "label": "PARTENARIATS",
+      "email": "partenaires@hotelhub.com",
+      "phone": "+237 677 890 123"
+    },
+    "address": {
+      "label": "SIÈGE SOCIAL",
+      "line1": "Avenue Kennedy",
+      "line2": "Yaoundé, Région du Centre, CM"
+    }
+  }
+}
