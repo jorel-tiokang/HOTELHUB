@@ -35,7 +35,7 @@ export default function HotelsSidebar() {
       <div className="flex items-center gap-2">
         <SlidersHorizontal className="w-4 h-4 text-purple dark:text-gold" />
         <h3 className="font-bold text-foreground text-sm">
-          {t("filters.title")}
+          {t("filters.title", { default: "Map View" })}
         </h3>
       </div>
 
@@ -153,7 +153,7 @@ export default function HotelsSidebar() {
       </button>
       <div className="flex flex-col gap-2 mt-4">
         <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
-          {t("filters.mapView")}
+          {t("filters.mapView", { default: "Map View" })}
         </label>
         {/* Le conteneur cliquable pour ouvrir la modal */}
         <div

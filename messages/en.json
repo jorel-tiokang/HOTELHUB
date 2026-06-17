@@ -9,7 +9,6 @@
     "signup": "Sign up",
     "bookNow": "Book Now"
   },
-
   "hero": {
     "badge": "100+ Hotels Across Africa",
     "titleLine1": "Find Your Perfect",
@@ -28,14 +27,12 @@
       "button": "Search Hotels"
     }
   },
-
   "stats": {
     "hotels": "Hotels",
     "regions": "Regions in Africa",
     "rating": "Average Rating",
     "available": "Available"
   },
-
   "trust": {
     "badge": "Trusted Platform",
     "title": "Trusted Stays,",
@@ -44,14 +41,21 @@
     "cta": "Get Started",
     "note": "Focus on exceptional stays",
     "items": [
-      { "label": "Instant confirmation" },
-      { "label": "Free cancellation on most bookings" },
-      { "label": "Secure payments" },
-      { "label": "24/7 customer support" }
+      {
+        "label": "Instant confirmation"
+      },
+      {
+        "label": "Free cancellation on most bookings"
+      },
+      {
+        "label": "Secure payments"
+      },
+      {
+        "label": "24/7 customer support"
+      }
     ],
     "rating": "Average Rating"
   },
-
   "features": {
     "badge": "Why Choose Us",
     "title": "Everything You Need for",
@@ -76,7 +80,6 @@
       }
     ]
   },
-
   "hotels": {
     "badge": "Explore Hotels",
     "title": "Explore the Best",
@@ -86,7 +89,6 @@
     "bookNow": "Book Now",
     "reviews": "reviews"
   },
-
   "testimonials": {
     "badge": "Testimonials",
     "title": "What Our Guests",
@@ -112,7 +114,6 @@
       }
     ]
   },
-
   "cta": {
     "badge": "Start Your Journey",
     "title": "Book Your Next Stay",
@@ -121,7 +122,6 @@
     "button": "Browse Hotels",
     "secondaryButton": "Learn More"
   },
-
   "footer": {
     "tagline": "Your gateway to exceptional hotel stays across Africa.",
     "company": "Company",
@@ -140,12 +140,10 @@
     "terms": "Terms of Service",
     "copyright": "hotelhub , Yaounde, Cameroon — Copyright 2026 hotelhub | All rights reserved."
   },
-
   "text": {
     "1": "Stays for everyone",
     "2": "Register now for real-times rates, availability, and bookings."
   },
-
   "about": {
     "hero": {
       "badge": "Our Story",
@@ -209,7 +207,6 @@
       "secondaryButton": "Contact Us"
     }
   },
-
   "contact": {
     "title": "Contact",
     "subtitle": "Reach out for inquiries regarding property management, reservations, or general assistance. Our team is here to help.",
@@ -321,6 +318,7 @@
       "useLocation": "Use my location",
       "amenities": "Amenities",
       "city": "City",
+      "mapView": "Map View",
       "allCities": "All Cities",
       "amenitiesList": {
         "Wifi": "Wifi",
@@ -368,5 +366,4 @@
       "otherRooms": "Other Rooms in This Hotel"
     }
   }
-
 }

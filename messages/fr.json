@@ -9,7 +9,6 @@
     "signup": "S'inscrire",
     "bookNow": "Réserver"
   },
-
   "hero": {
     "badge": "100+ Hôtels à travers l'Afrique",
     "titleLine1": "Trouvez l'Hôtel",
@@ -28,14 +27,12 @@
       "button": "Rechercher"
     }
   },
-
   "stats": {
     "hotels": "Hôtels",
     "regions": "Régions en Afrique",
     "rating": "Note Moyenne",
     "available": "Disponible"
   },
-
   "trust": {
     "badge": "Plateforme de Confiance",
     "title": "Séjours de Confiance,",
@@ -44,14 +41,21 @@
     "cta": "Commencer",
     "note": "Focus sur des séjours exceptionnels",
     "items": [
-      { "label": "Confirmation instantanée" },
-      { "label": "Annulation gratuite sur la plupart des réservations" },
-      { "label": "Paiements sécurisés" },
-      { "label": "Assistance client 24h/24, 7j/7" }
+      {
+        "label": "Confirmation instantanée"
+      },
+      {
+        "label": "Annulation gratuite sur la plupart des réservations"
+      },
+      {
+        "label": "Paiements sécurisés"
+      },
+      {
+        "label": "Assistance client 24h/24, 7j/7"
+      }
     ],
     "rating": "Note Moyenne"
   },
-
   "features": {
     "badge": "Pourquoi Nous Choisir",
     "title": "Tout ce Dont Vous Avez Besoin pour",
@@ -76,7 +80,6 @@
       }
     ]
   },
-
   "hotels": {
     "badge": "Explorer les Hôtels",
     "title": "Explorez les Meilleurs",
@@ -86,7 +89,6 @@
     "bookNow": "Réserver",
     "reviews": "avis"
   },
-
   "testimonials": {
     "badge": "Témoignages",
     "title": "Ce que Disent",
@@ -112,7 +114,6 @@
       }
     ]
   },
-
   "cta": {
     "badge": "Commencez Votre Voyage",
     "title": "Réservez Votre Prochain",
@@ -121,7 +122,6 @@
     "button": "Parcourir les Hôtels",
     "secondaryButton": "En Savoir Plus"
   },
-
   "footer": {
     "tagline": "Votre passerelle vers des séjours hôteliers exceptionnels en Afrique.",
     "company": "Société",
@@ -144,7 +144,6 @@
     "1": "Des séjours pour tous les goûts",
     "2": "Inscrivez-vous pour accéder aux tarifs, disponibilités et réservations en direct."
   },
-
   "about": {
     "hero": {
       "badge": "Notre Histoire",
@@ -208,7 +207,6 @@
       "secondaryButton": "Nous Contacter"
     }
   },
-
   "contact": {
     "title": "Contact",
     "subtitle": "Contactez-nous pour toute question concernant la gestion de propriété, les réservations ou l'assistance générale. Notre équipe est à votre disposition.",
@@ -321,6 +319,7 @@
       "amenities": "Équipements",
       "city": "Ville",
       "allCities": "Toutes les villes",
+      "mapView": "Voir la Carte",
       "amenitiesList": {
         "Wifi": "Wifi",
         "Piscine": "Piscine",
