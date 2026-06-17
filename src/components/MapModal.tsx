@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X, MapPin, Map } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Hotel } from "@/services/hotel";
@@ -43,9 +44,9 @@ export default function MapModal({
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     /* ── Backdrop ─────────────────────────────────────────────────────────── */
     <div
       ref={backdropRef}
@@ -187,6 +188,7 @@ export default function MapModal({
           to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }

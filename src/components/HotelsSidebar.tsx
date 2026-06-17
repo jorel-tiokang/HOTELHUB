@@ -5,6 +5,7 @@ import { SlidersHorizontal, MapPin, Check } from "lucide-react";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 import { hotelsData } from "@/mocks/hotelsData";
 import MapWrapper from "./MapWrapper";
+import MapModal from "./MapModal";
 import { useState } from "react";
 
 const AMENITIES = ["Wifi", "Piscine", "Parking", "Gym", "Climatisation"];
@@ -22,6 +23,7 @@ export default function HotelsSidebar() {
     toggleAmenity,
     selectedCity,
     setSelectedCity,
+    userLocation,
   } = useHotelsFilterStore();
 
   // Extract unique cities from mock data
@@ -155,15 +157,31 @@ export default function HotelsSidebar() {
         <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
           {t("filters.mapView", { default: "Map View" })}
         </label>
-        {/* Le conteneur cliquable pour ouvrir la modal */}
+        {/* Clickable thumbnail — opens the full modal */}
         <div
           onClick={() => setIsModalOpen(true)}
-          className="h-40 w-full rounded-xl overflow-hidden border border-border cursor-pointer hover:border-purple dark:hover:border-gold transition-colors"
+          className="h-40 w-full rounded-xl overflow-hidden border border-border cursor-pointer
+            hover:border-purple dark:hover:border-gold transition-colors relative group"
         >
-          <MapWrapper hotels={hotelsData} />
+          <MapWrapper hotels={hotelsData} userLocation={userLocation} />
+          {/* Overlay hint */}
+          <div className="absolute inset-0 flex items-center justify-center
+            bg-black/0 group-hover:bg-black/30 transition-colors duration-200 pointer-events-none">
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              text-white text-xs font-semibold bg-black/60 px-3 py-1.5 rounded-full">
+              {t("filters.mapView")}
+            </span>
+          </div>
         </div>
       </div>
-    </aside>
 
+      {/* Full-screen map modal */}
+      <MapModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        hotels={hotelsData}
+        userLocation={userLocation}
+      />
+    </aside>
   );
 }
