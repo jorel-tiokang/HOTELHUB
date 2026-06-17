@@ -365,5 +365,95 @@
       "totalPrice": "Total Price",
       "otherRooms": "Other Rooms in This Hotel"
     }
-  }
+  },
+    "directeurDashboard": {
+      "role": "Director",
+      "logout": "Log out",
+      "espace": "Space Director",
+      "nav": {
+        "overview": "Overview",
+        "rooms": "Rooms",
+        "bookings": "Bookings",
+        "statistics": "Statistics",
+        "reviews": "Reviews",
+        "staff": "Staff",
+        "settings": "Settings"
+      },
+      "kpi": {
+        "totalRooms": "Total Rooms",
+        "activeBookings": "Active Bookings",
+        "occupancyRate": "Occupancy Rate",
+        "averageRating": "Average Rating"
+      },
+      "overview": {
+        "weeklyOccupancy": "Weekly Occupancy Rate",
+        "latestReviews": "Latest Reviews",
+        "recentBookings": "Recent Bookings",
+        "unanswered": "Unanswered",
+        "seeMore": "See more"
+      },
+      "rooms": {
+        "addRoom": "Add a Room"
+      },
+      "bookings": {
+        "table": {
+          "id": "ID",
+          "guest": "Guest",
+          "roomType": "Room Type",
+          "room": "Room",
+          "arrival": "Arrival",
+          "departure": "Departure",
+          "dates": "Dates",
+          "price": "Price",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "modal": {
+          "title": "Booking Details",
+          "guest": "Guest",
+          "email": "Email",
+          "phone": "Phone",
+          "transaction": "Transaction",
+          "paid": "Paid",
+          "close": "Close"
+        }
+      },
+      "reviews": {
+        "filters": {
+          "all": "All",
+          "pending": "Pending",
+          "replied": "Replied"
+        },
+        "periods": {
+          "all": "All time",
+          "week": "This week",
+          "month": "This month"
+        },
+        "rooms": {
+          "all": "All rooms",
+          "roomNumber": "Room"
+        },
+        "yourReply": "Your reply",
+        "replyPlaceholder": "Reply to this review...",
+        "sendReply": "Send reply"
+      },
+      "statistics": {
+        "bookingsThisMonth": "Bookings this month",
+        "revenueThisMonth": "Revenue this month",
+        "occupancyRate": "Occupancy rate",
+        "roomAvailability": "Room Availability",
+        "available": "Available",
+        "occupied": "Occupied"
+      },
+      "staff": {
+        "title": "Hotel Staff"
+      },
+      "settings": {
+        "title": "Hotel Settings",
+        "hotelName": "Hotel Name",
+        "contactEmail": "Contact Email",
+        "phone": "Phone",
+        "save": "Save changes"
+      }
+    }
 }

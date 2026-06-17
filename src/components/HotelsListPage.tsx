@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Search, MapPin, Map } from "lucide-react";
-import { hotelsData, getAvailableRooms } from "@/mocks/hotelsData";
+import { getAvailableRooms } from "@/mocks/hotelsData";
+import { useHotelsStore } from "@/store/hotelsStore";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 import HotelsSidebar from "./HotelsSidebar";
 import HotelCard from "./Hotelcard";
@@ -23,8 +24,10 @@ export default function HotelsPage() {
     selectedCity,
   } = useHotelsFilterStore();
 
+  const { hotels } = useHotelsStore();
+
   const filteredHotels = useMemo(() => {
-    return hotelsData.filter((hotel) => {
+    return hotels.filter((hotel) => {
       // 1. Search Query
       const matchesQuery =
         hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,7 +42,6 @@ export default function HotelsPage() {
       const matchesPrice = rooms.some((r) => r.prixParNuit <= priceMax) || rooms.length === 0;
 
       // 4. Amenities
-      // Hotel matches if its amenities or its rooms' amenities contain ALL selected amenities
       const hotelAmenities = new Set([
         ...hotel.amenities,
         ...hotel.rooms.flatMap((r) => r.equipements)
@@ -50,7 +52,7 @@ export default function HotelsPage() {
 
       return matchesQuery && matchesCity && matchesAvailability && matchesPrice && matchesAmenities;
     });
-  }, [searchQuery, showAvailableOnly, priceMax, selectedCity, selectedAmenities]);
+  }, [hotels, searchQuery, showAvailableOnly, priceMax, selectedCity, selectedAmenities]);
 
   return (
     <>
@@ -154,6 +156,7 @@ export default function HotelsPage() {
         onClose={() => setIsMapOpen(false)}
         hotels={filteredHotels}
         userLocation={userLocation}
+        showAvailableOnly={showAvailableOnly}
       />
 
       {/* ── Mobile floating map button ─────────────────────────── */}

@@ -365,5 +365,95 @@
       "totalPrice": "Prix Total",
       "otherRooms": "Autres Chambres de cet Hôtel"
     }
-  }
+  },
+    "directeurDashboard": {
+      "role": "Directeur",
+      "logout": "Deconnexion",
+      "espace": "Espace Directeur",
+      "nav": {
+        "overview": "Vue d'ensemble",
+        "rooms": "Chambres",
+        "bookings": "Reservations",
+        "statistics": "Statistiques",
+        "reviews": "Avis",
+        "staff": "Personnel",
+        "settings": "Parametres"
+      },
+      "kpi": {
+        "totalRooms": "Total Chambres",
+        "activeBookings": "Reservations Actives",
+        "occupancyRate": "Taux d'Occupation",
+        "averageRating": "Note Moyenne"
+      },
+      "overview": {
+        "weeklyOccupancy": "Taux d'Occupation Hebdomadaire",
+        "latestReviews": "Derniers Avis",
+        "recentBookings": "Reservations Recentes",
+        "unanswered": "Non répondu",
+        "seeMore": "Voir plus"
+      },
+      "rooms": {
+        "addRoom": "Ajouter une Chambre"
+      },
+      "bookings": {
+        "table": {
+          "id": "ID",
+          "guest": "Client",
+          "roomType": "Type de Chambre",
+          "room": "Chambre",
+          "arrival": "Arrivee",
+          "departure": "Depart",
+          "dates": "Dates",
+          "price": "Prix",
+          "status": "Statut",
+          "actions": "Actions"
+        },
+        "modal": {
+          "title": "Details de la Reservation",
+          "guest": "Client",
+          "email": "Email",
+          "phone": "Telephone",
+          "transaction": "Transaction",
+          "paid": "Payee",
+          "close": "Fermer"
+        }
+      },
+      "reviews": {
+        "filters": {
+          "all": "Tous",
+          "pending": "Sans reponse",
+          "replied": "Avec reponse"
+        },
+        "periods": {
+          "all": "Toutes les periodes",
+          "week": "Cette semaine",
+          "month": "Ce mois"
+        },
+        "rooms": {
+          "all": "Toutes les chambres",
+          "roomNumber": "Chambre"
+        },
+        "yourReply": "Votre reponse",
+        "replyPlaceholder": "Repondre a cet avis...",
+        "sendReply": "Envoyer la reponse"
+      },
+      "statistics": {
+        "bookingsThisMonth": "Reservations ce mois",
+        "revenueThisMonth": "Recettes ce mois",
+        "occupancyRate": "Taux d'occupation",
+        "roomAvailability": "Disponibilite des Chambres",
+        "available": "Disponibles",
+        "occupied": "Occupees"
+      },
+      "staff": {
+        "title": "Personnel de l'Hotel"
+      },
+      "settings": {
+        "title": "Parametres de l'Hotel",
+        "hotelName": "Nom de l'hotel",
+        "contactEmail": "Email de contact",
+        "phone": "Telephone",
+        "save": "Sauvegarder les modifications"
+      }
+    }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
@@ -9,6 +9,8 @@ import { Star, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import type { Hotel } from "@/services/hotel";
+import HotelCard from "./Hotelcard";
+import { X } from "lucide-react";
 
 // ── Custom Hotel Marker Icon ──────────────────────────────────────────────────
 function createHotelIcon(price: number) {
@@ -94,15 +96,18 @@ function FitBounds({
 interface InteractiveMapProps {
   hotels: Hotel[];
   userLocation?: { lat: number; lng: number } | null;
+  showAvailableOnly?: boolean;
   className?: string;
 }
 
 export default function InteractiveMap({
   hotels,
   userLocation = null,
+  showAvailableOnly = false,
   className = "h-full w-full",
 }: InteractiveMapProps) {
   const locale = useLocale();
+  const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
 
   const defaultCenter: [number, number] =
     hotels[0]
@@ -110,13 +115,14 @@ export default function InteractiveMap({
       : [3.8667, 11.5167];
 
   return (
-    <MapContainer
-      center={defaultCenter}
-      zoom={11}
-      scrollWheelZoom
-      className={className}
-      style={{ background: "#1a1a2e" }}
-    >
+    <div className={className} style={{ position: "relative" }}>
+      <MapContainer
+        center={defaultCenter}
+        zoom={11}
+        scrollWheelZoom
+        className="h-full w-full"
+        style={{ background: "#1a1a2e" }}
+      >
       {/* Dark-themed OpenStreetMap tiles */}
       <TileLayer
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -153,146 +159,38 @@ export default function InteractiveMap({
               key={hotel.id}
               position={[hotel.location.lat, hotel.location.lng]}
               icon={createHotelIcon(lowestPrice)}
+              eventHandlers={{
+                click: () => setSelectedHotel(hotel),
+              }}
             >
-              <Popup
-                minWidth={220}
-                maxWidth={260}
-                className="hotel-popup"
-              >
-                <div
-                  style={{
-                    background: "#1c1714",
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                    width: "220px",
-                    border: "1px solid rgba(212,175,55,0.2)",
-                  }}
-                >
-                  {/* Hotel image */}
-                  <img
-                    src={hotel.image}
-                    alt={hotel.name}
-                    style={{
-                      width: "100%",
-                      height: "110px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div style={{ padding: "10px 12px" }}>
-                    <p
-                      style={{
-                        color: "white",
-                        fontWeight: 700,
-                        fontSize: "14px",
-                        marginBottom: "2px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {hotel.name}
-                    </p>
-                    <p
-                      style={{
-                        color: "rgba(255,255,255,0.5)",
-                        fontSize: "11px",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      {hotel.city} · {hotel.address}
-                    </p>
-
-                    {/* Rating + price row */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <Star
-                          style={{
-                            width: "12px",
-                            height: "12px",
-                            color: "#d4af37",
-                            fill: "#d4af37",
-                          }}
-                        />
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {hotel.rating}
-                        </span>
-                        <span
-                          style={{
-                            color: "rgba(255,255,255,0.4)",
-                            fontSize: "11px",
-                          }}
-                        >
-                          ({hotel.reviewCount})
-                        </span>
-                      </div>
-                      <span
-                        style={{
-                          color: "#d4af37",
-                          fontWeight: 700,
-                          fontSize: "13px",
-                        }}
-                      >
-                        {lowestPrice.toLocaleString("fr-FR")}
-                        <span
-                          style={{
-                            color: "rgba(255,255,255,0.4)",
-                            fontWeight: 400,
-                            fontSize: "10px",
-                          }}
-                        >
-                          {" "}
-                          FCFA/nuit
-                        </span>
-                      </span>
-                    </div>
-
-                    {/* CTA link */}
-                    <Link
-                      href={`/${locale}/hotels/${hotel.id}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        background: "#d4af37",
-                        color: "#1c1714",
-                        fontWeight: 700,
-                        fontSize: "12px",
-                        padding: "7px 0",
-                        borderRadius: "8px",
-                        textDecoration: "none",
-                        transition: "opacity 0.15s",
-                      }}
-                    >
-                      Voir l&apos;hôtel
-                      <ExternalLink style={{ width: "11px", height: "11px" }} />
-                    </Link>
-                  </div>
-                </div>
-              </Popup>
             </Marker>
           );
         })}
       </MarkerClusterGroup>
     </MapContainer>
+
+    {/* Custom Overlay for Selected Hotel */}
+    {selectedHotel && (
+      <div 
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[92%] sm:w-[380px]"
+        style={{ animation: "slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)" }}
+      >
+        <div className="relative">
+          <button
+            onClick={() => setSelectedHotel(null)}
+            className="absolute -top-3 -right-3 z-10 bg-white dark:bg-[#1c1714] text-black dark:text-white rounded-full p-1.5 shadow-lg border border-border hover:scale-110 transition-transform"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <HotelCard
+            hotel={selectedHotel}
+            showAvailableOnly={showAvailableOnly}
+            userLocation={userLocation}
+            showDescription={true}
+          />
+        </div>
+      </div>
+    )}
+    </div>
   );
 }

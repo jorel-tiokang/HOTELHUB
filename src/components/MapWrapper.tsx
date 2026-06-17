@@ -24,18 +24,21 @@ const InteractiveMap = dynamic(() => import("./InteractiveMap"), {
 interface MapWrapperProps {
   hotels: Hotel[];
   userLocation?: { lat: number; lng: number } | null;
+  showAvailableOnly?: boolean;
   className?: string;
 }
 
 export default function MapWrapper({
   hotels,
   userLocation,
+  showAvailableOnly = false,
   className = "h-full w-full",
 }: MapWrapperProps) {
   return (
     <InteractiveMap
       hotels={hotels}
       userLocation={userLocation}
+      showAvailableOnly={showAvailableOnly}
       className={className}
     />
   );

@@ -129,3 +129,120 @@ export const mockChambres: Chambre[] = [
 ];
 
 export const mockDirecteurHotel = mockHotels[0];
+
+export const weeklyOccupancyData = [
+  { day: "Lun", occupancy: 65 },
+  { day: "Mar", occupancy: 78 },
+  { day: "Mer", occupancy: 82 },
+  { day: "Jeu", occupancy: 74 },
+  { day: "Ven", occupancy: 91 },
+  { day: "Sam", occupancy: 95 },
+  { day: "Dim", occupancy: 88 },
+];
+
+export const recentBookings = [
+  {
+    id: "B001",
+    guest: "Jean-Pierre Mbeki",
+    roomType: "Suite Presidentielle",
+    checkIn: "15 Mai 2026",
+    checkOut: "18 Mai 2026",
+    status: "CONFIRMEE",
+    price: 185000,
+  },
+  {
+    id: "B002",
+    guest: "Marie Nguesso",
+    roomType: "Chambre Double",
+    checkIn: "16 Mai 2026",
+    checkOut: "19 Mai 2026",
+    status: "EN_ATTENTE",
+    price: 85000,
+  },
+  {
+    id: "B003",
+    guest: "Paul Biya Jr.",
+    roomType: "Junior Suite",
+    checkIn: "17 Mai 2026",
+    checkOut: "20 Mai 2026",
+    status: "CONFIRMEE",
+    price: 120000,
+  },
+  {
+    id: "B004",
+    guest: "Aminata Diallo",
+    roomType: "Chambre Simple",
+    checkIn: "18 Mai 2026",
+    checkOut: "21 Mai 2026",
+    status: "EN_ATTENTE",
+    price: 55000,
+  },
+  {
+    id: "B005",
+    guest: "Kofi Mensah",
+    roomType: "Suite Executive",
+    checkIn: "19 Mai 2026",
+    checkOut: "22 Mai 2026",
+    status: "CONFIRMEE",
+    price: 150000,
+  },
+];
+
+export const latestReviews = [
+  {
+    id: "R001",
+    guest: "Sophie Etienne",
+    rating: 5,
+    text: "Sejour exceptionnel ! Le personnel est aux petits soins et la chambre etait impeccable.",
+    date: "12 Mai 2026",
+    reply: null,
+  },
+  {
+    id: "R002",
+    guest: "Marc Ondoa",
+    rating: 4,
+    text: "Tres bon hotel, juste la climatisation un peu bruyante la nuit.",
+    date: "10 Mai 2026",
+    reply:
+      "Merci pour votre retour. Nous avons pris note et ferons le necessaire.",
+  },
+  {
+    id: "R003",
+    guest: "Fatou Ndiaye",
+    rating: 5,
+    text: "Le petit-dejeuner est delicieux et la vue depuis ma chambre etait magnifique !",
+    date: "8 Mai 2026",
+    reply: null,
+  },
+];
+
+export const staffMembers = [
+  {
+    id: "S001",
+    name: "Alain Kamga",
+    role: "Receptionniste",
+    contact: "+237 699 123 456",
+    status: "Actif",
+  },
+  {
+    id: "S002",
+    name: "Celine Fouda",
+    role: "Gouvernante",
+    contact: "+237 677 234 567",
+    status: "Actif",
+  },
+  {
+    id: "S003",
+    name: "Bruno Essomba",
+    role: "Concierge",
+    contact: "+237 655 345 678",
+    status: "Actif",
+  },
+  {
+    id: "S004",
+    name: "Diane Mbarga",
+    role: "Chef Cuisinier",
+    contact: "+237 699 456 789",
+    status: "Inactif",
+  },
+];

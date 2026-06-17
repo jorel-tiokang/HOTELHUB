@@ -11,12 +11,14 @@ interface HotelCardProps {
   hotel: Hotel;
   showAvailableOnly: boolean;
   userLocation: { lat: number; lng: number } | null;
+  showDescription?: boolean;
 }
 
 export default function HotelCard({
   hotel,
   showAvailableOnly,
   userLocation,
+  showDescription = false,
 }: HotelCardProps) {
   const t = useTranslations("hotelsPage.card");
   const locale = useLocale();
@@ -72,6 +74,11 @@ export default function HotelCard({
             {hotel.name}
           </h3>
           <p className="text-foreground/50 text-sm">{hotel.city}</p>
+          {showDescription && hotel.description && (
+            <p className="text-foreground/70 text-sm line-clamp-2 mt-2">
+              {hotel.description}
+            </p>
+          )}
         </div>
 
         {/* Amenities chips */}
@@ -104,6 +111,13 @@ export default function HotelCard({
             <p className="text-foreground/40 text-xs italic">{t("noRooms")}</p>
           )}
         </div>
+
+        {/* Extended CTA for Map Modal Overlay */}
+        {showDescription && (
+          <div className="mt-1 flex items-center justify-center w-full py-2.5 rounded-xl bg-purple dark:bg-gold text-white dark:text-[#1c1714] font-bold text-sm transition-colors hover:opacity-90">
+            {t("viewHotel")}
+          </div>
+        )}
       </div>
     </Link>
   );

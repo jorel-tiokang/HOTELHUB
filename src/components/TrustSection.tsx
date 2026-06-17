@@ -66,12 +66,11 @@ export default function TrustSection() {
                         : "from-purple/10 to-warm-gray dark:from-gold/5 dark:to-white/5"
                   }`}
                 />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                import Image from "next/image";
                 <Image
                   src={img.src}
                   alt={img.alt}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                   onError={() => {
                     /* fallback */

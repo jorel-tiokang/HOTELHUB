@@ -12,6 +12,7 @@ interface MapModalProps {
   onClose: () => void;
   hotels: Hotel[];
   userLocation?: { lat: number; lng: number } | null;
+  showAvailableOnly?: boolean;
 }
 
 export default function MapModal({
@@ -19,6 +20,7 @@ export default function MapModal({
   onClose,
   hotels,
   userLocation,
+  showAvailableOnly = false,
 }: MapModalProps) {
   const t = useTranslations("hotelsPage");
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -148,6 +150,7 @@ export default function MapModal({
             <MapWrapper
               hotels={hotels}
               userLocation={userLocation}
+              showAvailableOnly={showAvailableOnly}
               className="h-full w-full"
             />
           )}
