@@ -1,9 +1,5 @@
-import React from 'react'
+import HotelsPage from "@/src/components/HotelsListPage";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+export default function Hotels() {
+  return <HotelsPage />;
 }
-
-export default page

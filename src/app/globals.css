@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
@@ -236,3 +234,18 @@
     background-color: var(--gold);
   }
 }
+.text-underline {
+    @apply relative 
+           after:absolute 
+           after:bottom-0 
+           after:left-0 
+           after:h-[2px] 
+           after:w-0 
+           after:bg-purple
+           after:transition-all 
+           after:duration-300 
+           after:ease-out 
+           hover:after:w-full;
+  }
+
+  

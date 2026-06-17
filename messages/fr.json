@@ -231,5 +231,121 @@
       "line1": "Avenue Kennedy",
       "line2": "Yaoundé, Région du Centre, CM"
     }
+  },
+  "services": {
+    "hero": {
+      "badge": "Ce Que Nous Offrons",
+      "title": "Des Services Faits",
+      "titleAccent": "pour les Voyageurs",
+      "subtitle": "Tout ce dont vous avez besoin pour trouver, comparer et réserver l'hôtel parfait — sans complications."
+    },
+    "list": {
+      "sectionLabel": "Nos Services",
+      "s1": {
+        "badge": "Service 01",
+        "title": "Découverte d'Hôtels",
+        "accent": "Intelligente",
+        "body": "Notre moteur de recherche combine géolocalisation, filtres et sélection curatée pour trouver les meilleurs hôtels où que vous soyez. Plus de défilement sans fin — trouvez exactement ce qu'il vous faut en quelques secondes.",
+        "p1": "Recherche géolocalisée par GPS",
+        "p2": "Filtres par type, prix et équipements",
+        "p3": "Annonces vérifiées avec vraies photos"
+      },
+      "s2": {
+        "badge": "Service 02",
+        "title": "Réservation",
+        "accent": "Instantanée",
+        "body": "Réservez votre chambre en quelques minutes grâce à la disponibilité en temps réel. Pas d'attente — choisissez vos dates, sélectionnez votre chambre et recevez une confirmation immédiate.",
+        "p1": "Disponibilité des chambres en temps réel",
+        "p2": "Confirmation de réservation immédiate",
+        "p3": "Annulation gratuite sur les réservations éligibles"
+      },
+      "s3": {
+        "badge": "Service 03",
+        "title": "Avis Clients",
+        "accent": "Vérifiés",
+        "body": "Chaque avis sur HotelHub provient d'un client vérifié. Consultez des notes honnêtes, des retours détaillés et des photos de vrais voyageurs ayant séjourné dans l'hôtel.",
+        "p1": "Avis de clients vérifiés uniquement",
+        "p2": "Notes détaillées selon plusieurs critères",
+        "p3": "Réponses des hôtels aux avis clients"
+      },
+      "s4": {
+        "badge": "Service 04",
+        "title": "Assistance Client",
+        "accent": "24h/24",
+        "body": "Notre équipe d'assistance est disponible à toute heure pour répondre à vos questions, résoudre les problèmes de réservation ou traiter vos demandes spéciales.",
+        "p1": "Disponible 24h/24, 7j/7",
+        "p2": "Assistance par chat, email et téléphone",
+        "p3": "Résolution dédiée des problèmes de réservation"
+      }
+    },
+    "how": {
+      "badge": "Le Processus",
+      "title": "Comment Ça",
+      "titleAccent": "Fonctionne",
+      "step1": {
+        "title": "Rechercher",
+        "desc": "Entrez votre destination, vos dates de voyage et le nombre de voyageurs."
+      },
+      "step2": {
+        "title": "Comparer",
+        "desc": "Parcourez les annonces vérifiées, lisez les avis et comparez les prix."
+      },
+      "step3": {
+        "title": "Réserver",
+        "desc": "Sélectionnez votre chambre et confirmez votre réservation instantanément."
+      },
+      "step4": {
+        "title": "Profiter",
+        "desc": "Enregistrez-vous et vivez le séjour que vous avez réservé — exactement comme décrit."
+      }
+    },
+    "cta": {
+      "badge": "Commencer",
+      "title": "Votre Prochain Séjour",
+      "titleAccent": "Vous Attend",
+      "subtitle": "Découvrez des hôtels qui correspondent à vos attentes — vérifiés, disponibles et prêts à être réservés.",
+      "button": "Parcourir les Hôtels",
+      "secondaryButton": "En Savoir Plus"
+    }
+  },
+  "hotelsPage": {
+    "title": "Trouvez Votre Séjour Idéal",
+    "subtitle": "Explorez des hôtels bien notés et réservez votre évasion de rêve",
+    "searchPlaceholder": "Rechercher une ville ou un hôtel",
+    "filters": {
+      "title": "Filtres",
+      "priceLabel": "Prix max par nuit",
+      "availableOnly": "Chambres disponibles uniquement",
+      "allRooms": "Toutes les chambres",
+      "useLocation": "Utiliser ma position",
+      "amenities": "Équipements"
+    },
+    "card": {
+      "from": "à partir de",
+      "perNight": "/ nuit",
+      "viewHotel": "Voir l'hôtel",
+      "kmAway": "km",
+      "noRooms": "Aucune chambre ne correspond à ce filtre"
+    },
+    "detail": {
+      "rooms": "Chambres",
+      "about": "À propos de cet hôtel",
+      "amenities": "Équipements",
+      "viewDetails": "Voir les détails",
+      "bookNow": "Réserver",
+      "reviews": "avis",
+      "perNight": "/ nuit",
+      "capacity": "personnes"
+    },
+    "room": {
+      "description": "Description",
+      "amenities": "Équipements",
+      "checkIn": "Arrivée",
+      "checkOut": "Départ",
+      "guests": "Voyageurs",
+      "bookButton": "Réserver Cette Chambre",
+      "totalPrice": "Prix Total",
+      "otherRooms": "Autres Chambres de cet Hôtel"
+    }
   }
 }

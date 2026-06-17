@@ -135,15 +135,14 @@ dark:group-hover:text-gold transition-colors"
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 ">
             {navLinks.map(({ key, href }) => (
               <Link
                 key={key}
                 href={href}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium
                   text-foreground/70 hover:text-foreground
-                  hover:bg-black/5 dark:hover:bg-white/10
-                  transition-colors duration-150"
+                  transition-colors duration-150 text-underline"
               >
                 {t(key)}
               </Link>

@@ -232,6 +232,122 @@
       "line1": "Avenue Kennedy",
       "line2": "Yaoundé, Centre Region, CM"
     }
+  },
+  "services": {
+    "hero": {
+      "badge": "What We Offer",
+      "title": "Services Built",
+      "titleAccent": "for Travellers",
+      "subtitle": "Everything you need to find, compare, and book the perfect hotel — without the hassle."
+    },
+    "list": {
+      "sectionLabel": "Our Services",
+      "s1": {
+        "badge": "Service 01",
+        "title": "Smart Hotel",
+        "accent": "Discovery",
+        "body": "Our intelligent search engine combines geolocation, filters, and curated listings to surface the best hotels wherever you are. No more endless scrolling — find exactly what you need in seconds.",
+        "p1": "Location-based search with GPS precision",
+        "p2": "Filter by type, price range, and amenities",
+        "p3": "Verified listings with real photos"
+      },
+      "s2": {
+        "badge": "Service 02",
+        "title": "Instant",
+        "accent": "Reservation",
+        "body": "Book your room in minutes with real-time availability. No waiting, no back-and-forth — select your dates, choose your room, and receive an immediate confirmation.",
+        "p1": "Real-time room availability",
+        "p2": "Instant booking confirmation",
+        "p3": "Free cancellation on eligible bookings"
+      },
+      "s3": {
+        "badge": "Service 03",
+        "title": "Verified Guest",
+        "accent": "Reviews",
+        "body": "Every review on HotelHub comes from a verified guest. Browse honest ratings, detailed feedback, and photos from real travellers who have stayed at the hotel — so you always know what to expect.",
+        "p1": "Reviews from verified guests only",
+        "p2": "Detailed ratings across multiple criteria",
+        "p3": "Hotel responses to guest feedback"
+      },
+      "s4": {
+        "badge": "Service 04",
+        "title": "24/7 Customer",
+        "accent": "Support",
+        "body": "Our support team is available around the clock to assist with any questions, booking issues, or special requests. We're here whenever you need us — before, during, and after your stay.",
+        "p1": "Available 24 hours, 7 days a week",
+        "p2": "Support via chat, email and phone",
+        "p3": "Dedicated resolution for booking issues"
+      }
+    },
+    "how": {
+      "badge": "The Process",
+      "title": "How It",
+      "titleAccent": "Works",
+      "step1": {
+        "title": "Search",
+        "desc": "Enter your destination, travel dates, and number of guests to begin."
+      },
+      "step2": {
+        "title": "Compare",
+        "desc": "Browse verified listings, read real reviews, and compare prices."
+      },
+      "step3": {
+        "title": "Book",
+        "desc": "Select your room and confirm your reservation instantly."
+      },
+      "step4": {
+        "title": "Enjoy",
+        "desc": "Check in and experience the stay you booked — exactly as described."
+      }
+    },
+    "cta": {
+      "badge": "Get Started",
+      "title": "Your Next Stay",
+      "titleAccent": "Awaits",
+      "subtitle": "Discover hotels that match your expectations — verified, available, and ready to book right now.",
+      "button": "Browse Hotels",
+      "secondaryButton": "Learn About Us"
+    }
+  },
+  "hotelsPage": {
+    "title": "Find Your Perfect Stay",
+    "subtitle": "Explore top-rated hotels and book your dream getaway today",
+    "searchPlaceholder": "Search by city or hotel name",
+    "filters": {
+      "title": "Filters",
+      "priceLabel": "Max price per night",
+      "availableOnly": "Available rooms only",
+      "allRooms": "All rooms",
+      "useLocation": "Use my location",
+      "amenities": "Amenities"
+    },
+    "card": {
+      "from": "from",
+      "perNight": "/ night",
+      "viewHotel": "View Hotel",
+      "kmAway": "km away",
+      "noRooms": "No rooms match this filter"
+    },
+    "detail": {
+      "rooms": "Rooms",
+      "about": "About this hotel",
+      "amenities": "Amenities",
+      "viewDetails": "View Details",
+      "bookNow": "Book Now",
+      "reviews": "reviews",
+      "perNight": "/ night",
+      "capacity": "guests"
+    },
+    "room": {
+      "description": "Description",
+      "amenities": "Amenities",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "guests": "Guests",
+      "bookButton": "Reserve This Room",
+      "totalPrice": "Total Price",
+      "otherRooms": "Other Rooms in This Hotel"
+    }
   }
 
 }
