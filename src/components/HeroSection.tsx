@@ -10,8 +10,8 @@ export default function HeroSection() {
   const ts = useTranslations("stats");
 
   const [location, setLocation] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [checkIn, setCheckIn] = useState<Date | undefined>(undefined);
+  const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guests, setGuests] = useState("");
 
   return (
@@ -69,7 +69,7 @@ export default function HeroSection() {
         </p>
 
         {/* ── Search Form ── */}
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-5xl relative z-20">
           <div className="bg-white/10 dark:bg-[#1c1714]/60 backdrop-blur-xl
             border border-white/20 dark:border-gold/10
             rounded-2xl p-2 shadow-2xl shadow-black/30">

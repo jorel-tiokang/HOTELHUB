@@ -127,7 +127,7 @@ export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
         {availableOnly ? tf("availableOnly") : tf("allRooms")}
       </span>
 
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {rooms.map((room) => (
           <BookableRoomCard key={room.id} room={room} hotelId={hotel.id} />
         ))}

@@ -100,6 +100,121 @@ export const hotelsData: Hotel[] = [
       },
     ],
   },
+  {
+    id: "h4",
+    name: "Royal Palace",
+    city: "Douala",
+    address: "Douala Centre",
+    location: { lat: 4.0511, lng: 9.7679 },
+    description: "Hôtel de luxe au cœur de Douala.",
+    image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500&auto=format&fit=crop&q=60",
+    images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500&auto=format&fit=crop&q=60"],
+    amenities: ["Wifi", "Clim", "TV"],
+    rating: 4.8,
+    reviewCount: 120,
+    rooms: [
+      {
+        id: "r6", hotelId: "h4", numero: 401, type: "Chambre Supérieure",
+        capacite: 2, prixParNuit: 85000,
+        description: "Chambre supérieure double.",
+        equipements: ["Wifi", "Clim", "TV"],
+        statut: "DISPONIBLE",
+        images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500&auto=format&fit=crop&q=60"],
+      }
+    ]
+  },
+  {
+    id: "h5",
+    name: "Hilton Hotel",
+    city: "Yaoundé",
+    address: "Centre Ville, Yaoundé",
+    location: { lat: 3.8667, lng: 11.5167 },
+    description: "Hôtel 5 étoiles avec services premium.",
+    image: "https://plus.unsplash.com/premium_photo-1661879252375-7c1db1932572?w=500&auto=format&fit=crop&q=60",
+    images: ["https://plus.unsplash.com/premium_photo-1661879252375-7c1db1932572?w=500&auto=format&fit=crop&q=60"],
+    amenities: ["Piscine", "Spa", "Bar"],
+    rating: 4.9,
+    reviewCount: 450,
+    rooms: [
+      {
+        id: "r7", hotelId: "h5", numero: 501, type: "Suite Présidentielle",
+        capacite: 4, prixParNuit: 185000,
+        description: "Suite très spacieuse avec vue.",
+        equipements: ["Piscine", "Spa", "Bar"],
+        statut: "DISPONIBLE",
+        images: ["https://plus.unsplash.com/premium_photo-1661879252375-7c1db1932572?w=500&auto=format&fit=crop&q=60"],
+      }
+    ]
+  },
+  {
+    id: "h6",
+    name: "Akwa Palace",
+    city: "Douala",
+    address: "Boulevard de la Liberté, Douala",
+    location: { lat: 4.0511, lng: 9.7679 },
+    description: "Un classique au centre de Douala.",
+    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&auto=format&fit=crop&q=60",
+    images: ["https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&auto=format&fit=crop&q=60"],
+    amenities: ["Wifi", "Parking"],
+    rating: 4.5,
+    reviewCount: 300,
+    rooms: [
+      {
+        id: "r8", hotelId: "h6", numero: 601, type: "Chambre Standard",
+        capacite: 1, prixParNuit: 55000,
+        description: "Chambre standard pour voyageurs.",
+        equipements: ["Wifi", "Parking"],
+        statut: "INDISPONIBLE",
+        images: ["https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&auto=format&fit=crop&q=60"],
+      }
+    ]
+  },
+  {
+    id: "h7",
+    name: "Mont Fébé",
+    city: "Yaoundé",
+    address: "Colline du Mont Fébé, Yaoundé",
+    location: { lat: 3.8667, lng: 11.5167 },
+    description: "Hôtel surplombant la ville aux sept collines.",
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&auto=format&fit=crop&q=60",
+    images: ["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&auto=format&fit=crop&q=60"],
+    amenities: ["Vue", "Clim"],
+    rating: 4.7,
+    reviewCount: 210,
+    rooms: [
+      {
+        id: "r9", hotelId: "h7", numero: 701, type: "Junior Suite",
+        capacite: 2, prixParNuit: 120000,
+        description: "Suite junior élégante avec vue panoramique.",
+        equipements: ["Vue", "Clim"],
+        statut: "DISPONIBLE",
+        images: ["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&auto=format&fit=crop&q=60"],
+      }
+    ]
+  },
+  {
+    id: "h8",
+    name: "Sawa Hotel",
+    city: "Douala",
+    address: "Bonanjo, Douala",
+    location: { lat: 4.0511, lng: 9.7679 },
+    description: "L'expérience tropicale au centre des affaires.",
+    image: "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=500&auto=format&fit=crop&q=60",
+    images: ["https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=500&auto=format&fit=crop&q=60"],
+    amenities: ["Gym", "Resto", "Cave"],
+    rating: 4.6,
+    reviewCount: 185,
+    rooms: [
+      {
+        id: "r10", hotelId: "h8", numero: 801, type: "Chambre Deluxe",
+        capacite: 3, prixParNuit: 95000,
+        description: "Chambre deluxe avec tout le confort moderne.",
+        equipements: ["Gym", "Resto", "Cave"],
+        statut: "DISPONIBLE",
+        images: ["https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=500&auto=format&fit=crop&q=60"],
+      }
+    ]
+  }
 ];
 
 /* ── Helper functions: hotel/room correspondence ─────────────────────── */
@@ -113,7 +228,7 @@ export function getRoomById(hotelId: string, roomId: string) {
 }
 
 export function getAllRooms() {
-  return hotelsData.flatMap((h) => h.rooms.map((r) => ({ ...r, hotelName: h.name })));
+  return hotelsData.flatMap((h) => h.rooms.map((r) => ({ ...r, hotelName: h.name, city: h.city, rating: h.rating })));
 }
 
 export function getAvailableRooms(hotel: Hotel) {

@@ -6,11 +6,16 @@ interface HotelsFilterState {
   showAvailableOnly: boolean;
   userLocation: { lat: number; lng: number } | null;
 
+  selectedAmenities: string[];
+  selectedCity: string | null;
+
   setSearchQuery: (q: string) => void;
   setPriceMax: (p: number) => void;
   toggleAvailableOnly: () => void;
   setUserLocation: (loc: { lat: number; lng: number } | null) => void;
   requestGeolocation: () => void;
+  toggleAmenity: (amenity: string) => void;
+  setSelectedCity: (city: string | null) => void;
 }
 
 export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
@@ -18,12 +23,21 @@ export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
   priceMax: 200000,
   showAvailableOnly: false,
   userLocation: null,
+  selectedAmenities: [],
+  selectedCity: null,
 
   setSearchQuery: (q) => set({ searchQuery: q }),
   setPriceMax: (p) => set({ priceMax: p }),
   toggleAvailableOnly: () =>
     set((state) => ({ showAvailableOnly: !state.showAvailableOnly })),
   setUserLocation: (loc) => set({ userLocation: loc }),
+  toggleAmenity: (amenity) =>
+    set((state) => ({
+      selectedAmenities: state.selectedAmenities.includes(amenity)
+        ? state.selectedAmenities.filter((a) => a !== amenity)
+        : [...state.selectedAmenities, amenity],
+    })),
+  setSelectedCity: (city) => set({ selectedCity: city }),
 
   requestGeolocation: () => {
     if (!navigator.geolocation) return;

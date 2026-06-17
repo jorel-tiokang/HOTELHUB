@@ -1,36 +1,56 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
-import { Search, MapPin, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search, MapPin, Map } from "lucide-react";
 import { hotelsData, getAvailableRooms } from "@/mocks/hotelsData";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
+import HotelsSidebar from "./HotelsSidebar";
 import HotelCard from "./Hotelcard";
+import MapModal from "./MapModal";
 import Header from "./Header";
 import { Footer } from "./footer";
 
 export default function HotelsPage() {
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const t = useTranslations("hotelsPage");
   const {
     searchQuery, setSearchQuery,
-    priceMax, setPriceMax,
-    showAvailableOnly, toggleAvailableOnly,
-    userLocation, requestGeolocation,
+    priceMax,
+    showAvailableOnly,
+    userLocation,
+    selectedAmenities,
+    selectedCity,
   } = useHotelsFilterStore();
 
   const filteredHotels = useMemo(() => {
     return hotelsData.filter((hotel) => {
+      // 1. Search Query
       const matchesQuery =
         hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         hotel.city.toLowerCase().includes(searchQuery.toLowerCase());
 
+      // 2. City
+      const matchesCity = !selectedCity || hotel.city === selectedCity;
+
+      // 3. Availability and Price
       const rooms = showAvailableOnly ? getAvailableRooms(hotel) : hotel.rooms;
       const matchesAvailability = !showAvailableOnly || rooms.length > 0;
       const matchesPrice = rooms.some((r) => r.prixParNuit <= priceMax) || rooms.length === 0;
 
-      return matchesQuery && matchesAvailability && matchesPrice;
+      // 4. Amenities
+      // Hotel matches if its amenities or its rooms' amenities contain ALL selected amenities
+      const hotelAmenities = new Set([
+        ...hotel.amenities,
+        ...hotel.rooms.flatMap((r) => r.equipements)
+      ]);
+      const matchesAmenities = selectedAmenities.every((amenity) =>
+        hotelAmenities.has(amenity)
+      );
+
+      return matchesQuery && matchesCity && matchesAvailability && matchesPrice && matchesAmenities;
     });
-  }, [searchQuery, showAvailableOnly, priceMax]);
+  }, [searchQuery, showAvailableOnly, priceMax, selectedCity, selectedAmenities]);
 
   return (
     <>
@@ -75,84 +95,83 @@ export default function HotelsPage() {
         <section className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
 
-            {/* Filters sidebar */}
-            <aside className="flex flex-col gap-6 lg:sticky lg:top-32 self-start
-              bg-card rounded-2xl border border-border p-6 h-fit">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-purple dark:text-gold" />
-                <h3 className="font-bold text-foreground text-sm">
-                  {t("filters.title")}
-                </h3>
-              </div>
+            <HotelsSidebar />
 
-              {/* Available toggle */}
-              <div className="flex flex-col gap-2">
-                <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
-                  {t("filters.availableOnly")}
-                </label>
+            {/* Right column: count bar + hotel grid */}
+            <div className="flex flex-col gap-6">
+
+              {/* Count + Map button row */}
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-foreground/50">
+                  <span className="font-bold text-foreground">{filteredHotels.length}</span>{" "}
+                  {t("map.hotelsFound")}
+                </p>
                 <button
-                  onClick={toggleAvailableOnly}
-                  className={`relative w-12 h-6 rounded-full transition-colors duration-200
-                    ${showAvailableOnly ? "bg-purple dark:bg-gold" : "bg-foreground/15"}`}
+                  id="open-map-button"
+                  onClick={() => setIsMapOpen(true)}
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl
+                    text-sm font-semibold border transition-all duration-200
+                    hover:-translate-y-0.5 hover:shadow-lg"
+                  style={{
+                    background: "rgba(212,175,55,0.08)",
+                    border: "1px solid rgba(212,175,55,0.25)",
+                    color: "#d4af37",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.15)";
+                    (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(212,175,55,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.08)";
+                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                  }}
                 >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white
-                      transition-transform duration-200
-                      ${showAvailableOnly ? "translate-x-6" : "translate-x-0"}`}
-                  />
+                  <Map className="w-4 h-4" />
+                  {t("map.openButton")}
                 </button>
-                <span className="text-foreground/40 text-xs">
-                  {showAvailableOnly ? t("filters.availableOnly") : t("filters.allRooms")}
-                </span>
               </div>
 
-              {/* Price slider */}
-              <div className="flex flex-col gap-2">
-                <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
-                  {t("filters.priceLabel")}
-                </label>
-                <input
-                  type="range"
-                  min={20000}
-                  max={200000}
-                  step={5000}
-                  value={priceMax}
-                  onChange={(e) => setPriceMax(Number(e.target.value))}
-                  className="w-full accent-purple dark:accent-gold"
-                />
-                <span className="text-foreground/60 text-sm font-semibold">
-                  {priceMax.toLocaleString("fr-FR")} FCFA
-                </span>
+              {/* Hotel grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {filteredHotels.map((hotel) => (
+                  <HotelCard
+                    key={hotel.id}
+                    hotel={hotel}
+                    showAvailableOnly={showAvailableOnly}
+                    userLocation={userLocation}
+                  />
+                ))}
               </div>
-
-              {/* Geolocation */}
-              <button
-                onClick={requestGeolocation}
-                className="flex items-center justify-center gap-2 px-4 py-2.5
-                  rounded-xl border border-purple/20 dark:border-gold/20
-                  text-purple dark:text-gold text-sm font-semibold
-                  hover:bg-purple/5 dark:hover:bg-gold/5 transition-colors"
-              >
-                <MapPin className="w-4 h-4" />
-                {t("filters.useLocation")}
-              </button>
-            </aside>
-
-            {/* Hotel grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {filteredHotels.map((hotel) => (
-                <HotelCard
-                  key={hotel.id}
-                  hotel={hotel}
-                  showAvailableOnly={showAvailableOnly}
-                  userLocation={userLocation}
-                />
-              ))}
             </div>
           </div>
         </section>
       </main>
       <Footer />
+
+      {/* ── Map Modal ─────────────────────────────────────────── */}
+      <MapModal
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        hotels={filteredHotels}
+        userLocation={userLocation}
+      />
+
+      {/* ── Mobile floating map button ─────────────────────────── */}
+      <button
+        id="open-map-fab"
+        onClick={() => setIsMapOpen(true)}
+        className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2
+          px-5 py-3 rounded-2xl shadow-2xl font-bold text-sm
+          transition-all duration-200 active:scale-95"
+        style={{
+          background: "#d4af37",
+          color: "#1c1714",
+          boxShadow: "0 8px 32px rgba(212,175,55,0.4), 0 2px 8px rgba(0,0,0,0.3)",
+        }}
+      >
+        <Map className="w-4 h-4" />
+        {t("map.openButton")}
+      </button>
     </>
   );
 }

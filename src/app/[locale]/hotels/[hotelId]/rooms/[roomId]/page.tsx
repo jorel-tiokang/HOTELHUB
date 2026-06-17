@@ -1,9 +1,14 @@
 import RoomDetailPage from "@/src/components/RoomDetailPage";
 
-export default function RoomDetail({
-  params,
-}: {
-  params: { hotelId: string; roomId: string };
-}) {
-  return <RoomDetailPage hotelId={params.hotelId} roomId={params.roomId} />;
+interface PageProps {
+  params: Promise<{
+    locale: string;
+    hotelId: string;
+    roomId: string;
+  }>;
+}
+
+export default async function RoomDetail({ params }: PageProps) {
+  const resolvedParams = await params;
+  return <RoomDetailPage hotelId={resolvedParams.hotelId} roomId={resolvedParams.roomId} />;
 }

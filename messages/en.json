@@ -319,7 +319,25 @@
       "availableOnly": "Available rooms only",
       "allRooms": "All rooms",
       "useLocation": "Use my location",
-      "amenities": "Amenities"
+      "amenities": "Amenities",
+      "city": "City",
+      "allCities": "All Cities",
+      "amenitiesList": {
+        "Wifi": "Wifi",
+        "Piscine": "Pool",
+        "Parking": "Parking",
+        "Gym": "Gym",
+        "Climatisation": "Air Conditioning"
+      }
+    },
+    "map": {
+      "title": "Explore Hotels on Map",
+      "hotelsFound": "hotels shown",
+      "locationActive": "Your location active",
+      "hint": "Click a marker to see hotel details · Scroll to zoom · Drag to pan",
+      "close": "Close map",
+      "openButton": "View on Map",
+      "noHotels": "No hotels match the current filters"
     },
     "card": {
       "from": "from",

@@ -318,7 +318,25 @@
       "availableOnly": "Chambres disponibles uniquement",
       "allRooms": "Toutes les chambres",
       "useLocation": "Utiliser ma position",
-      "amenities": "Équipements"
+      "amenities": "Équipements",
+      "city": "Ville",
+      "allCities": "Toutes les villes",
+      "amenitiesList": {
+        "Wifi": "Wifi",
+        "Piscine": "Piscine",
+        "Parking": "Parking",
+        "Gym": "Salle de sport",
+        "Climatisation": "Climatisation"
+      }
+    },
+    "map": {
+      "title": "Explorer les hôtels sur la carte",
+      "hotelsFound": "hôtels affichés",
+      "locationActive": "Votre position active",
+      "hint": "Cliquez sur un marqueur pour les détails · Défilez pour zoomer · Glissez pour déplacer",
+      "close": "Fermer la carte",
+      "openButton": "Voir sur la carte",
+      "noHotels": "Aucun hôtel ne correspond aux filtres actuels"
     },
     "card": {
       "from": "à partir de",

@@ -54,91 +54,14 @@ function getEquipementIcon(eq: string): React.ElementType | null {
   return null;
 }
 
-// ─── Types & Data ─────────────────────────────────────────────────────────────
-
-interface Room {
-  name: string;
-  hotel: string;
-  city: string;
-  type: string;
-  capacity: number;
-  price: string;
-  rating: number;
-  tags: string[];
-  image: string;
-  avail: boolean;
-}
-
-const ROOMS: Room[] = [
-  {
-    name: "Chambre Supérieure",
-    hotel: "Royal Palace",
-    city: "Douala",
-    type: "Double",
-    capacity: 2,
-    price: "85 000",
-    rating: 4.8,
-    tags: ["Wifi", "Clim", "TV"],
-    image:
-      "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG90ZWwlMjByb29tc3xlbnwwfHwwfHx8MA%3D%3D",
-    avail: true,
-  },
-  {
-    name: "Suite Présidentielle",
-    hotel: "Hilton Hotel",
-    city: "Yaoundé",
-    type: "Suite",
-    capacity: 4,
-    price: "185 000",
-    rating: 4.9,
-    tags: ["Piscine", "Spa", "Bar"],
-    image: "https://plus.unsplash.com/premium_photo-1661879252375-7c1db1932572?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aG90ZWwlMjByb29tc3xlbnwwfHwwfHx8MA%3D%3D",
-    avail: true,
-  },
-  {
-    name: "Chambre Standard",
-    hotel: "Akwa Palace",
-    city: "Douala",
-    type: "Simple",
-    capacity: 1,
-    price: "55 000",
-    rating: 4.5,
-    tags: ["Wifi", "Parking"],
-    image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aG90ZWwlMjByb29tc3xlbnwwfHwwfHx8MA%3D%3D",
-    avail: false,
-  },
-  {
-    name: "Junior Suite",
-    hotel: "Mont Fébé",
-    city: "Yaoundé",
-    type: "Suite",
-    capacity: 2,
-    price: "120 000",
-    rating: 4.7,
-    tags: ["Vue", "Clim"],
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhvdGVsJTIwcm9vbXN8ZW58MHx8MHx8fDA%3D",
-    avail: true,
-  },
-  {
-    name: "Chambre Deluxe",
-    hotel: "Sawa Hotel",
-    city: "Douala",
-    type: "Double",
-    capacity: 3,
-    price: "95 000",
-    rating: 4.6,
-    tags: ["Gym", "Resto", "Cave"],
-    image: "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGhvdGVsJTIwcm9vbXN8ZW58MHx8MHx8fDA%3D",
-    avail: true,
-  },
-];
-
-const ALL_ROOMS = [...ROOMS, ...ROOMS];
+import { getAllRooms } from "@/mocks/hotelsData";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HotelScroll() {
     const t = useTranslations("text");
+    const roomsData = getAllRooms();
+    const ALL_ROOMS = [...roomsData, ...roomsData];
 
   return (
     <section className="py-12 overflow-hidden">
@@ -154,7 +77,7 @@ export default function HotelScroll() {
       <div className="relative w-full mask-gradient overflow-hidden pb-8">
         <div className="animate-scroll flex gap-6 px-6">
           {ALL_ROOMS.map((room, index) => {
-            const statutKey = room.avail ? "DISPONIBLE" : "INDISPONIBLE";
+            const statutKey = room.statut;
 
             return (
               <article
@@ -165,8 +88,8 @@ export default function HotelScroll() {
                 <div className="p-3 pb-0">
                   <div className="relative w-full h-44 rounded-xl overflow-hidden">
                     <img
-                      src={room.image}
-                      alt={room.name}
+                      src={room.images[0]}
+                      alt={room.type}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
@@ -182,13 +105,13 @@ export default function HotelScroll() {
                         className="text-xl font-bold text-dark-white leading-tight truncate"
                         style={{ fontFamily: "var(--font-playfair)" }}
                       >
-                        {room.name}
+                        {room.type}
                       </h4>
                       <p className="text-dark-white/50 text-sm truncate">
-                        {room.hotel} · {room.city}
+                        {room.hotelName} · {room.city}
                       </p>
                       <p className="text-dark-white/40 text-xs mt-0.5">
-                        {room.type} · {room.capacity} pers.
+                        N°{room.numero} · {room.capacite} pers.
                       </p>
                     </div>
 
@@ -204,9 +127,9 @@ export default function HotelScroll() {
                   </div>
 
                   {/* Equipements (Tags) */}
-                  {room.tags.length > 0 && (
+                  {room.equipements.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-2">
-                      {room.tags.map((eq) => {
+                      {room.equipements.map((eq) => {
                         const Icon = getEquipementIcon(eq);
                         return (
                           <span
@@ -228,7 +151,7 @@ export default function HotelScroll() {
                       className="text-gold font-bold text-lg leading-none"
                       style={{ fontFamily: "var(--font-playfair)" }}
                     >
-                      {room.price}
+                      {room.prixParNuit.toLocaleString("fr-FR")}
                       <span className="text-white/40 text-sm font-normal ml-1">
                         FCFA/nuit
                       </span>
