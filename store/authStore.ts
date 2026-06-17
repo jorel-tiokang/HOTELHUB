@@ -122,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
         const role = get().user?.role;
         switch (role) {
           case "CLIENT":
-            return "/dashboard";
+            return "/dashboard/client";
           case "PDG":
             return "/dashboard/pdg";
           case "DIRECTEUR":

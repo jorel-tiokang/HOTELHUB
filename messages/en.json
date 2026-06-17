@@ -455,5 +455,73 @@
         "phone": "Phone",
         "save": "Save changes"
       }
+    },
+  "clientDashboard": {
+    "greeting": "Welcome back,",
+    "role": "Guest",
+    "logout": "Log out",
+    "hero": {
+      "nextBooking": "Next booking in",
+      "nextBookingDays": "days",
+      "noUpcoming": "No upcoming stays",
+      "totalNights": "Total nights booked",
+      "memberSince": "Member since"
+    },
+    "upcoming": {
+      "title": "Upcoming Stays",
+      "empty": "You have no upcoming bookings.",
+      "emptyAction": "Browse Hotels",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "guests": "guests",
+      "nights": "nights",
+      "viewDetails": "View Details",
+      "cancelBooking": "Cancel"
+    },
+    "past": {
+      "title": "Past Stays",
+      "toggle": "Show past stays",
+      "hide": "Hide past stays",
+      "empty": "No past bookings yet.",
+      "leaveReview": "Leave a Review"
+    },
+    "actions": {
+      "title": "Quick Actions",
+      "browseHotels": "Browse Hotels",
+      "downloadReceipt": "Download Receipt",
+      "contactSupport": "Contact Support"
+    },
+    "status": {
+      "CONFIRMEE": "Confirmed",
+      "EN_ATTENTE": "Pending",
+      "ANNULEE": "Cancelled",
+      "TERMINEE": "Completed"
+    },
+    "account": {
+      "title": "My Account",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "editProfile": "Edit Profile",
+      "notifications": "Notifications",
+      "save": "Save Changes",
+      "newPassword": "New Password"
+    },
+    "detail": {
+      "title": "Booking Details",
+      "hotel": "Hotel",
+      "room": "Room",
+      "dates": "Dates",
+      "guests": "Guests",
+      "total": "Total",
+      "status": "Status",
+      "close": "Close"
+    },
+    "tabs": {
+      "bookings": "Bookings",
+      "reviews": "My Reviews",
+      "profile": "Profile"
     }
+  }
 }

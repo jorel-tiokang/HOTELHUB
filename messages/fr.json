@@ -455,5 +455,73 @@
         "phone": "Telephone",
         "save": "Sauvegarder les modifications"
       }
+    },
+  "clientDashboard": {
+    "greeting": "Bienvenue,",
+    "role": "Client",
+    "logout": "Déconnexion",
+    "hero": {
+      "nextBooking": "Prochain séjour dans",
+      "nextBookingDays": "jours",
+      "noUpcoming": "Aucun séjour à venir",
+      "totalNights": "Total de nuits réservées",
+      "memberSince": "Membre depuis"
+    },
+    "upcoming": {
+      "title": "Séjours à venir",
+      "empty": "Vous n'avez aucune réservation à venir.",
+      "emptyAction": "Parcourir les hôtels",
+      "checkIn": "Arrivée",
+      "checkOut": "Départ",
+      "guests": "voyageurs",
+      "nights": "nuits",
+      "viewDetails": "Voir les détails",
+      "cancelBooking": "Annuler"
+    },
+    "past": {
+      "title": "Séjours passés",
+      "toggle": "Afficher les séjours passés",
+      "hide": "Masquer les séjours passés",
+      "empty": "Aucun séjour passé pour le moment.",
+      "leaveReview": "Laisser un avis"
+    },
+    "actions": {
+      "title": "Actions rapides",
+      "browseHotels": "Parcourir les hôtels",
+      "downloadReceipt": "Télécharger le reçu",
+      "contactSupport": "Contacter le support"
+    },
+    "status": {
+      "CONFIRMEE": "Confirmée",
+      "EN_ATTENTE": "En attente",
+      "ANNULEE": "Annulée",
+      "TERMINEE": "Terminée"
+    },
+    "account": {
+      "title": "Mon Compte",
+      "name": "Nom complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "editProfile": "Modifier le profil",
+      "notifications": "Notifications",
+      "save": "Enregistrer les modifications",
+      "newPassword": "Nouveau mot de passe"
+    },
+    "detail": {
+      "title": "Détails de la réservation",
+      "hotel": "Hôtel",
+      "room": "Chambre",
+      "dates": "Dates",
+      "guests": "Voyageurs",
+      "total": "Total",
+      "status": "Statut",
+      "close": "Fermer"
+    },
+    "tabs": {
+      "bookings": "Réservations",
+      "reviews": "Mes avis",
+      "profile": "Profil"
     }
+  }
 }
