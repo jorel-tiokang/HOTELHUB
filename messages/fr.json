@@ -335,7 +335,8 @@
       "bookNow": "Réserver",
       "reviews": "avis",
       "perNight": "/ nuit",
-      "capacity": "personnes"
+      "capacity": "personnes",
+      "localisation": "Yaoundé, CE Cameroun"
     },
     "room": {
       "description": "Description",

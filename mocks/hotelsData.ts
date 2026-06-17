@@ -49,7 +49,7 @@ export const hotelsData: Hotel[] = [
     address: "Quartier Bastos, Yaoundé",
     location: { lat: 3.8667, lng: 11.5167 },
     description: "Hôtel moderne au cœur de la capitale, idéal pour les voyages d'affaires.",
-    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=900&auto=format&fit=crop&q=80",
+    image: "https://plus.unsplash.com/premium_photo-1675745329954-9639d3b74bbf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aG90ZWx8ZW58MHx8MHx8fDA%3D",
     images: [
       "https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=900&auto=format&fit=crop&q=80",
     ],
@@ -74,7 +74,7 @@ export const hotelsData: Hotel[] = [
     address: "Plage de Kribi",
     location: { lat: 2.9333, lng: 9.9167 },
     description: "Un lodge paisible près de la plage, parfait pour se détendre.",
-    image: "https://images.unsplash.com/photo-1455587734955-081b22074882?w=900&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1535827841776-24afc1e255ac?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGhvdGVsfGVufDB8fDB8fHww",
     images: [
       "https://images.unsplash.com/photo-1455587734955-081b22074882?w=900&auto=format&fit=crop&q=80",
     ],

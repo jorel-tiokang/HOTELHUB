@@ -336,7 +336,8 @@
       "bookNow": "Book Now",
       "reviews": "reviews",
       "perNight": "/ night",
-      "capacity": "guests"
+      "capacity": "guests",
+      "localisation": "Yaounde, CE Cameroon"
     },
     "room": {
       "description": "Description",
