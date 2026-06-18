@@ -58,13 +58,10 @@ export default function DatePicker({ label, selectedDate, onDateChange }: DatePi
                 selected: "bg-gold text-black font-bold rounded-lg hover:bg-gold/90",
                 today: "text-gold font-bold",
               }}
-              className="text-white text-sm"
-              styles={{
-                caption: { color: "var(--gold)", fontWeight: "bold" },
-                head_cell: { color: "rgba(255,255,255,0.5)", fontWeight: "normal", paddingBottom: "10px" },
-                cell: { padding: "4px" },
-                nav_button: { color: "var(--gold)" },
-              }}
+              className="text-white text-sm
+                [&_.rdp-month_caption]:text-gold [&_.rdp-month_caption]:font-bold
+                [&_.rdp-head_cell]:text-white/50 [&_.rdp-head_cell]:font-normal [&_.rdp-head_cell]:pb-2.5
+                [&_.rdp-button_next]:text-gold [&_.rdp-button_previous]:text-gold"
             />
           </div>
         </>
