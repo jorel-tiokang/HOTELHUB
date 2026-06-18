@@ -11,10 +11,12 @@ import { useLocale } from "next-intl";
 import type { Hotel } from "@/services/hotel";
 import HotelCard from "./Hotelcard";
 import { X } from "lucide-react";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 // ── Custom Hotel Marker Icon ──────────────────────────────────────────────────
-function createHotelIcon(price: number) {
-  const formatted = (price / 1000).toFixed(0) + "k";
+// Accepts a pre-formatted price string (built at call-site where hooks are available)
+function createHotelIcon(formattedPrice: string) {
   return L.divIcon({
     className: "",
     html: `
@@ -30,7 +32,7 @@ function createHotelIcon(price: number) {
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         cursor: pointer;
         transition: transform 0.15s ease;
-      ">${formatted} FCFA</div>
+      ">${formattedPrice}</div>
     `,
     iconAnchor: [30, 16],
     iconSize: [65, 32],
@@ -107,6 +109,7 @@ export default function InteractiveMap({
   className = "h-full w-full",
 }: InteractiveMapProps) {
   const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
 
   const defaultCenter: [number, number] =
@@ -154,11 +157,12 @@ export default function InteractiveMap({
       >
         {hotels.map((hotel) => {
           const lowestPrice = Math.min(...hotel.rooms.map((r) => r.prixParNuit));
+          const formattedMarkerPrice = formatPrice(lowestPrice, currency, locale);
           return (
             <Marker
               key={hotel.id}
               position={[hotel.location.lat, hotel.location.lng]}
-              icon={createHotelIcon(lowestPrice)}
+              icon={createHotelIcon(formattedMarkerPrice)}
               eventHandlers={{
                 click: () => setSelectedHotel(hotel),
               }}

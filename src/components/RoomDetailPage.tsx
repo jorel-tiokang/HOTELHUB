@@ -1,12 +1,14 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import { getHotelById, getRoomById } from "@/mocks/hotelsData";
 import BookableRoomCard from "./BookableRoomCard";
 import Header from "./Header";
 import { Footer } from "./footer";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 export default function RoomDetailPage({
   hotelId,
@@ -16,6 +18,8 @@ export default function RoomDetailPage({
   roomId: string;
 }) {
   const t = useTranslations("hotelsPage.room");
+  const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const hotel = getHotelById(hotelId);
   const room = getRoomById(hotelId, roomId);
 
@@ -119,9 +123,9 @@ export default function RoomDetailPage({
                   className="text-2xl font-black text-purple dark:text-gold"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  {room.prixParNuit.toLocaleString("fr-FR")}
+                  {formatPrice(room.prixParNuit, currency, locale)}
                   <span className="text-foreground/40 text-sm font-normal">
-                    {" "}FCFA{t("checkIn") === "Arrivée" ? "/nuit" : "/night"}
+                    {" "}{t("checkIn") === "Arrivée" ? "/nuit" : "/night"}
                   </span>
                 </p>
 
@@ -172,7 +176,7 @@ export default function RoomDetailPage({
                     className="text-foreground font-bold text-lg"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
-                    {total.toLocaleString("fr-FR")} FCFA
+                    {formatPrice(total, currency, locale)}
                   </span>
                 </div>
 

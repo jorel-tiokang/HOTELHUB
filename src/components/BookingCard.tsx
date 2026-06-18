@@ -1,8 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Calendar, Users, ChevronRight } from "lucide-react";
 import type { ClientReservation, StatutReservationClient } from "@/mocks/clientBookings";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 // ── Status colour mapping ────────────────────────────────────────────────────
 const STATUT_STYLES: Record<StatutReservationClient, string> = {
@@ -35,6 +37,8 @@ function fmtDate(iso: string): string {
 
 export default function BookingCard({ booking, onClick }: BookingCardProps) {
   const t = useTranslations("clientDashboard");
+  const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const nights = computeNights(booking.jourDebut, booking.jourFin);
 
   return (
@@ -104,9 +108,8 @@ export default function BookingCard({ booking, onClick }: BookingCardProps) {
           <p className="text-white/50 text-xs">
             {t("detail.total")}{" "}
             <span className="text-gold font-bold text-base ml-1">
-              {booking.montantTotal.toLocaleString("fr-FR")}
-            </span>{" "}
-            <span className="text-white/40 text-xs font-normal">FCFA</span>
+              {formatPrice(booking.montantTotal, currency, locale)}
+            </span>
           </p>
           {onClick && (
             <span className="flex items-center gap-1 text-xs text-white/40 group-hover:text-gold transition-colors duration-200">

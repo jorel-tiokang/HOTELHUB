@@ -5,10 +5,13 @@ import RoomCard from "@/src/components/RoomCard";
 import AddRoomModal from "@/src/components/AddRoomModal";
 import type { Chambre } from "@/types/chambre";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/store/authStore";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice, formatCompactPrice } from "@/utils/currency";
 import ModeToggle from "@/src/components/ModeTogge";
 import LanguageToggle from "@/src/components/LanguageToggle";
+import CurrencyToggle from "@/src/components/CurrencyToggle";
 import {
   mockReservations,
   mockAvis,
@@ -94,6 +97,8 @@ export default function DirectorDashboard() {
   ];
   const [editingRoom, setEditingRoom] = useState<Chambre | null>(null);
   const { user, logout } = useAuthStore();
+  const { currency } = useCurrencyStore();
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
@@ -268,6 +273,7 @@ export default function DirectorDashboard() {
             <div className="flex items-center gap-4">
               <ModeToggle />
               <LanguageToggle />
+              <CurrencyToggle />
               <button className="relative p-3 rounded-xl bg-purple/30 hover:bg-purple/50 transition-colors">
                 <Bell className="w-5 h-5 text-white" />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-purple rounded-full" />
@@ -633,7 +639,7 @@ export default function DirectorDashboard() {
                           {booking.checkIn} - {booking.checkOut}
                         </td>
                         <td className="py-4 px-4 text-gold font-semibold">
-                          {booking.price?.toLocaleString("fr-FR")} FCFA
+                          {booking.price != null ? formatPrice(booking.price, currency, locale) : "—"}
                         </td>
                         <td className="py-4 px-4">
                           <span
@@ -707,7 +713,8 @@ export default function DirectorDashboard() {
                           {t("transactions")}
                         </p>
                         <p className="text-gold font-semibold">
-                          {selectedBookingData?.price?.toLocaleString("fr-FR")} FCFA - {STATUT_RES_LABEL[selectedBookingData?.status ?? "CONFIRMEE"]}
+                          {selectedBookingData?.price != null ? formatPrice(selectedBookingData.price, currency, locale) : "—"}{" "}
+                          — {STATUT_RES_LABEL[selectedBookingData?.status ?? "CONFIRMEE"]}
                         </p>
                       </div>
                     </div>
@@ -868,10 +875,7 @@ export default function DirectorDashboard() {
                     className="text-4xl font-black text-gold"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
-                    {mockDirecteurHotel.statRecettes.toLocaleString("fr-FR")}{" "}
-                    <span className="text-white/40 text-lg font-normal">
-                      FCFA
-                    </span>
+                    {formatCompactPrice(mockDirecteurHotel.statRecettes, currency, locale)}
                   </p>
                 </div>
               </div>

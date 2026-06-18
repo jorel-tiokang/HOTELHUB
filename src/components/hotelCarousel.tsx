@@ -1,5 +1,5 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import React from "react";
 import {
   Wifi,
@@ -55,11 +55,15 @@ function getEquipementIcon(eq: string): React.ElementType | null {
 }
 
 import { getAllRooms } from "@/mocks/hotelsData";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function HotelScroll() {
     const t = useTranslations("text");
+    const locale = useLocale();
+    const { currency } = useCurrencyStore();
     const roomsData = getAllRooms();
     const ALL_ROOMS = [...roomsData, ...roomsData];
 
@@ -151,9 +155,9 @@ export default function HotelScroll() {
                       className="text-gold font-bold text-lg leading-none"
                       style={{ fontFamily: "var(--font-playfair)" }}
                     >
-                      {room.prixParNuit.toLocaleString("fr-FR")}
+                      {formatPrice(room.prixParNuit, currency, locale)}
                       <span className="text-white/40 text-sm font-normal ml-1">
-                        FCFA/nuit
+                        /nuit
                       </span>
                     </p>
 

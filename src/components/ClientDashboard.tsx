@@ -37,6 +37,8 @@ import Header from "@/src/components/Header";
 import { Footer } from "@/src/components/footer";
 import BookingCard from "@/src/components/BookingCard";
 import StatCard from "@/src/components/StatCard";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 // ── Status colour map ────────────────────────────────────────────────────────
 const STATUT_STYLES: Record<StatutReservationClient, string> = {
@@ -72,6 +74,8 @@ function BookingDetailModal({
   onClose: () => void;
 }) {
   const t = useTranslations("clientDashboard");
+  const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const nights = nightsBetween(booking.jourDebut, booking.jourFin);
 
   return (
@@ -174,8 +178,7 @@ function BookingDetailModal({
               className="text-gold font-black text-2xl"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              {booking.montantTotal.toLocaleString("fr-FR")}{" "}
-              <span className="text-white/40 text-sm font-normal">FCFA</span>
+              {formatPrice(booking.montantTotal, currency, locale)}
             </span>
           </div>
 
@@ -612,8 +615,14 @@ export default function ClientDashboard() {
         <BookingDetailModal booking={selectedBooking} onClose={closeDetail} />
       )}
 
-      <main className="min-h-screen bg-[#0c0a09] pt-28 pb-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-10">
+      <main 
+        className="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat relative pt-28 pb-16"
+        style={{ backgroundImage: "url('https://images.pexels.com/photos/7820321/pexels-photo-7820321.jpeg')" }}
+      >
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/75 z-0" />
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-10 relative z-10">
 
           {/* ── Page heading ───────────────────────────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">

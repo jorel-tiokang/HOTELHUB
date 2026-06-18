@@ -1,18 +1,22 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { SlidersHorizontal, MapPin, Check } from "lucide-react";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 import { hotelsData } from "@/mocks/hotelsData";
 import MapWrapper from "./MapWrapper";
 import MapModal from "./MapModal";
 import { useState } from "react";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 const AMENITIES = ["Wifi", "Piscine", "Parking", "Gym", "Climatisation"];
 
 export default function HotelsSidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const t = useTranslations("hotelsPage");
+  const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const {
     priceMax,
     setPriceMax,
@@ -98,7 +102,7 @@ export default function HotelsSidebar() {
           className="w-full accent-purple dark:accent-gold"
         />
         <span className="text-foreground/60 text-sm font-semibold">
-          {priceMax.toLocaleString("fr-FR")} FCFA
+          {formatPrice(priceMax, currency, locale)}
         </span>
       </div>
 

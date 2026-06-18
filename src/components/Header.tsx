@@ -8,6 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTransition } from "react";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import Link from "next/link";
+import CurrencyToggle from "@/src/components/CurrencyToggle";
 
 /* ── Theme Toggle ─────────────────────────────────────────── */
 function ThemeToggle() {
@@ -101,7 +102,7 @@ export default function Header() {
       {/* ── Floating pill header ── */}
       <header
         className={`fixed top-4 left-1/2 -translate-x-1/2 z-50
-          w-[calc(100%-2rem)] max-w-5xl
+          w-[calc(100%-2rem)] max-w-6xl
           transition-all duration-500 ease-out
           ${
             scrolled
@@ -153,6 +154,7 @@ dark:group-hover:text-gold transition-colors"
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             <LanguageToggle />
+            <CurrencyToggle />
             <div className="w-px h-5 bg-foreground/10 mx-1" />
             <Link
               href={`/login`}
@@ -247,6 +249,7 @@ dark:group-hover:text-gold transition-colors"
               <ThemeToggle />
               <LanguageToggle />
             </div>
+            <CurrencyToggle />
             <Link
               href={`/login`}
               onClick={() => setMenuOpen(false)}

@@ -71,7 +71,7 @@ export default function RegisterPage() {
 
       {/* Added 'flex flex-col items-center' here so logo stacks perfectly above card */}
       <div className="relative z-10 w-full max-w-xl mx-4 flex flex-col items-center">
-        
+
         {/* Logo is now inside the center wrapper right above the card */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <img
@@ -79,7 +79,7 @@ export default function RegisterPage() {
             alt="HotelHub Logo"
             className="w-10 h-10 object-contain rounded-lg"
           />
-          <span className="text-blue font-bold text-2xl tracking-wide">HOTELHUB</span>
+          <span className="text-purple font-bold text-2xl tracking-wide">HOTELHUB</span>
         </div>
 
         {/* Register Card Box */}
@@ -172,7 +172,7 @@ export default function RegisterPage() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="mt-6 w-full bg-[var(--blue)] hover:bg-(--blue)/90 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg"
+            className="mt-6 w-full bg-[var(--purple)] hover:bg-(--purple)/90 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg"
           >
             {isLoading ? "Création du compte..." : "S'inscrire"}
           </button>

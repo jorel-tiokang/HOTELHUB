@@ -4,6 +4,8 @@ import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import type { Room } from "@/services/hotel";
 import React from "react";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 import {
   Wifi,
   Tv,
@@ -58,6 +60,7 @@ export default function BookableRoomCard({
 }) {
   const t = useTranslations("hotelsPage.detail");
   const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const available = room.statut === "DISPONIBLE";
   const statutKey = available ? "DISPONIBLE" : "INDISPONIBLE";
 
@@ -137,9 +140,9 @@ export default function BookableRoomCard({
             className="text-gold font-bold text-lg leading-none"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            {room.prixParNuit.toLocaleString("fr-FR")}
+            {formatPrice(room.prixParNuit, currency, locale)}
             <span className="text-white/40 text-xs font-normal ml-1">
-              FCFA{t("perNight")}
+              {t("perNight")}
             </span>
           </p>
 

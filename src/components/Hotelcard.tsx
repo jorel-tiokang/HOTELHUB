@@ -6,6 +6,8 @@ import { Star, MapPin } from "lucide-react";
 import type { Hotel } from "@/services/hotel";
 import { getLowestPrice } from "@/mocks/hotelsData";
 import { distanceKm } from "@/store/hotelsfilterstore";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -22,6 +24,7 @@ export default function HotelCard({
 }: HotelCardProps) {
   const t = useTranslations("hotelsPage.card");
   const locale = useLocale();
+  const { currency } = useCurrencyStore();
 
   const price = getLowestPrice(hotel, showAvailableOnly);
   const dist = userLocation ? distanceKm(userLocation, hotel.location) : null;
@@ -103,9 +106,9 @@ export default function HotelCard({
                 className="text-purple dark:text-gold font-black text-base"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                {price.toLocaleString("fr-FR")}
+                {formatPrice(price, currency, locale)}
               </span>{" "}
-              FCFA{t("perNight")}
+              {t("perNight")}
             </p>
           ) : (
             <p className="text-foreground/40 text-xs italic">{t("noRooms")}</p>

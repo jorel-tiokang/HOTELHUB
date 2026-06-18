@@ -10,6 +10,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { Chambre, NewChambreFormData } from "../../types/chambre";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { convertToXAF, getCurrencySymbol } from "@/utils/currency";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -171,7 +173,7 @@ function ImageUploadZone({
             onClick={() => inputRef.current?.click()}
             className={`w-full h-full flex flex-col items-center justify-center gap-3
               cursor-pointer transition-colors
-              ${dragging ? "bg-blue/10 border-blue" : "hover:bg-white/10"}`}
+              ${dragging ? "bg-purple/10 border-purple" : "hover:bg-white/10"}`}
           >
             <div className="p-3 rounded-full bg-white/10">
               <ImagePlus className="w-6 h-6 text-white/40" />
@@ -231,7 +233,7 @@ function Field({ label, children }: FieldProps) {
 
 const inputClass =
   "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white " +
-  "placeholder-white/30 text-sm focus:outline-none focus:border-blue transition-colors";
+  "placeholder-white/30 text-sm focus:outline-none focus:border-purple transition-colors";
 
 // ─── AddRoomModal ─────────────────────────────────────────────────────────────
 
@@ -240,6 +242,10 @@ export default function AddRoomModal({
   onClose,
   initialData,
 }: AddRoomModalProps) {
+  const { currency } = useCurrencyStore();
+  const currencySymbol = getCurrencySymbol(currency, "fr");
+  const isXAF = currency === "XAF";
+
   const [form, setForm] = useState<NewChambreFormData>({
     numero: initialData ? String(initialData.numero) : "",
     type: initialData?.type ?? "",
@@ -318,7 +324,10 @@ export default function AddRoomModal({
       numero: Number(form.numero),
       type: form.type.trim(),
       capacite: Number(form.capacite) || 0,
-      prixParNuit: Number(form.prixParNuit),
+      // If the director is viewing in EUR or USD, convert back to XAF before saving
+      prixParNuit: isXAF
+        ? Number(form.prixParNuit)
+        : Math.round(convertToXAF(Number(form.prixParNuit), currency)),
       description: form.description.trim(),
       equipements: form.equipements
         .split(",")
@@ -403,7 +412,7 @@ export default function AddRoomModal({
               />
             </Field>
 
-            <Field label="Prix / nuit (FCFA)">
+            <Field label={`Prix / nuit (${currencySymbol})`}>
               <input
                 value={form.prixParNuit}
                 onChange={(e) =>
@@ -450,8 +459,8 @@ export default function AddRoomModal({
         <div className="sticky bottom-0 bg-charcoal px-8 py-5 border-t border-white/10 flex gap-3">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-blue hover:bg-blue/90 text-white py-3 rounded-xl
-              font-semibold transition-colors shadow-lg shadow-blue/20"
+            className="flex-1 bg-purple hover:bg-purple/90 text-white py-3 rounded-xl
+              font-semibold transition-colors shadow-lg shadow-purple/20"
           >
             {initialData
               ? "Sauvegarder les modifications"

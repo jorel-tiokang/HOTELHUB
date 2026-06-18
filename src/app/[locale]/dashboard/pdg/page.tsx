@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { useAuthStore } from "@/store/authStore";
 import { mockHotels, mockReservations, mockAvis } from "@/mocks/dashboardMocks";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice, formatCompactPrice } from "@/utils/currency";
 
 type Tab = "hotels" | "reservations" | "avis" | "stats";
 
@@ -19,6 +22,8 @@ const STATUT_LABEL: Record<string, string> = {
 
 export default function DashboardPDGPage() {
   const { user, logout } = useAuthStore();
+  const { currency } = useCurrencyStore();
+  const locale = useLocale();
   const [tab, setTab] = useState<Tab>("hotels");
   const [showAddHotel, setShowAddHotel] = useState(false);
 
@@ -59,7 +64,7 @@ export default function DashboardPDGPage() {
             { label: "Hôtels", value: mockHotels.length, suffix: "" },
             { label: "Réservations totales", value: totalReservations, suffix: "" },
             { label: "Taux d'occupation moy.", value: tauxMoyen, suffix: "%" },
-            { label: "Recettes totales", value: (totalRecettes / 1000000).toFixed(1), suffix: "M FCFA" },
+            { label: "Recettes totales", value: formatCompactPrice(totalRecettes, currency, locale), suffix: "" },
           ].map((k) => (
             <div key={k.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 shadow-lg text-left">
               <p className="text-white text-2xl font-bold">{k.value}<span className="text-white/60 text-sm font-normal ml-1">{k.suffix}</span></p>
@@ -172,7 +177,7 @@ export default function DashboardPDGPage() {
                   <p className="text-white/60 text-sm">📍 {r.hotel} — {r.localisation}</p>
                   <p className="text-white/50 text-xs mt-1">Du {r.jourDebut} au {r.jourFin}</p>
                 </div>
-                <span className="text-white font-bold text-lg">{r.montantTotal.toLocaleString("fr-FR")} <span className="text-white/50 text-sm font-normal">FCFA</span></span>
+                <span className="text-white font-bold text-lg">{formatPrice(r.montantTotal, currency, locale)}</span>
               </div>
             ))}
           </div>
@@ -207,7 +212,7 @@ export default function DashboardPDGPage() {
                   </div>
                   <div>
                     <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Recettes</p>
-                    <p className="text-white text-xl font-bold">{(h.statRecettes / 1000000).toFixed(1)}<span className="text-white/50 text-sm font-normal ml-1">M FCFA</span></p>
+                    <p className="text-white text-xl font-bold">{formatCompactPrice(h.statRecettes, currency, locale)}</p>
                   </div>
                   <div>
                     <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Taux d'occupation</p>

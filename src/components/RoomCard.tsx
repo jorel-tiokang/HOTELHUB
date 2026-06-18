@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import React from "react";
+import { useLocale } from "next-intl";
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,6 +20,8 @@ import {
   Dumbbell,
 } from "lucide-react";
 import type { Chambre } from "../../types/chambre";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { formatPrice } from "@/utils/currency";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -176,6 +180,8 @@ export default function RoomCard({
   onDelete,
   onToggleStatut,
 }: RoomCardProps) {
+  const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const floorNumber = Math.floor(room.numero / 100);
 
   return (
@@ -256,10 +262,8 @@ export default function RoomCard({
             className="text-gold font-bold text-lg leading-none"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            {room.prixParNuit.toLocaleString("fr-FR")}
-            <span className="text-white/40 text-sm font-normal ml-1">
-              FCFA/nuit
-            </span>
+            {formatPrice(room.prixParNuit, currency, locale)}
+            <span className="text-white/40 text-sm font-normal ml-1">/nuit</span>
           </p>
 
           <div className="flex gap-2">
