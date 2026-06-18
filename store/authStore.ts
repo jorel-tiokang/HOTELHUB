@@ -1,5 +1,16 @@
+/**
+ * authStore.ts
+ *
+ * Global authentication state managed by Zustand with localStorage persistence.
+ * All data operations go through authService → authAdapter.
+ * This store contains ZERO knowledge of how the data is fetched or structured
+ * on the server side — it only holds clean frontend state.
+ */
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import * as authService from "@/src/services/authService";
+import { mapBackendUserToClient } from "@/src/adapters/authAdapter";
 
 export type Role = "CLIENT" | "PDG" | "DIRECTEUR";
 
@@ -9,34 +20,11 @@ export interface AuthUser {
   email: string;
   telephone: string;
   role: Role;
-  // Client uniquement
   localisation?: string;
   sexe?: string;
   dateNaissance?: string;
   adresse?: string;
-  // Directeur uniquement
   hotelId?: string;
-}
-
-interface AuthState {
-  user: AuthUser | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  login: (email: string, motDePasse: string) => Promise<void>;
-  register: (data: RegisterClientData) => Promise<void>;
-  logout: () => void;
-  updateProfile: (data: Partial<AuthUser>) => void;
-  clearError: () => void;
-
-  // Guards
-  isClient: () => boolean;
-  isPDG: () => boolean;
-  isDirecteur: () => boolean;
-  getRedirectPath: () => string;
 }
 
 export interface RegisterClientData {
@@ -50,6 +38,26 @@ export interface RegisterClientData {
   adresse: string;
 }
 
+interface AuthState {
+  user: AuthUser | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+
+  login: (email: string, motDePasse: string) => Promise<void>;
+  register: (data: RegisterClientData) => Promise<void>;
+  logout: () => void;
+  updateProfile: (data: Partial<AuthUser>) => void;
+  clearError: () => void;
+
+  // Role guards
+  isClient: () => boolean;
+  isPDG: () => boolean;
+  isDirecteur: () => boolean;
+  getRedirectPath: (locale?: string) => string;
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -59,52 +67,43 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
 
+      // ── Login ──────────────────────────────────────────────────────────────
       login: async (email, motDePasse) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, motDePasse }),
+          // 1. Call the Service Layer (mock or real — doesn't matter)
+          const { user: dto, token } = await authService.login({
+            email,
+            motDePasse,
           });
 
-          if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.message || "Identifiants incorrects");
-          }
+          // 2. Run through the Adapter to get a clean frontend AuthUser
+          const user = mapBackendUserToClient(dto);
 
-          const { user, token } = await response.json();
+          // 3. Update state
           set({ user, token, isAuthenticated: true, isLoading: false });
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (err: any) {
+          set({ error: err.message ?? "Erreur de connexion.", isLoading: false });
         }
       },
 
+      // ── Register ───────────────────────────────────────────────────────────
       register: async (data) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch("/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...data, role: "CLIENT" }),
-          });
-
-          if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.message || "Erreur lors de l'inscription");
-          }
-
-          const { user, token } = await response.json();
+          const { user: dto, token } = await authService.register(data);
+          const user = mapBackendUserToClient(dto);
           set({ user, token, isAuthenticated: true, isLoading: false });
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (err: any) {
+          set({ error: err.message ?? "Erreur lors de l'inscription.", isLoading: false });
         }
       },
 
-      logout: () => {
-        set({ user: null, token: null, isAuthenticated: false, error: null });
-      },
+      // ── Logout ─────────────────────────────────────────────────────────────
+      logout: () =>
+        set({ user: null, token: null, isAuthenticated: false, error: null }),
 
+      // ── Profile update (client-side only — no service call needed) ─────────
       updateProfile: (data) => {
         const current = get().user;
         if (!current) return;
@@ -113,33 +112,32 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
 
-      // Guards
+      // ── Role guards ────────────────────────────────────────────────────────
       isClient: () => get().user?.role === "CLIENT",
       isPDG: () => get().user?.role === "PDG",
       isDirecteur: () => get().user?.role === "DIRECTEUR",
 
-      getRedirectPath: () => {
+      getRedirectPath: (locale = "fr") => {
         const role = get().user?.role;
         switch (role) {
           case "CLIENT":
-            return "/dashboard/client";
+            return `/${locale}/dashboard/client`;
           case "PDG":
-            return "/dashboard/pdg";
+            return `/${locale}/dashboard/pdg`;
           case "DIRECTEUR":
-            return "/dashboard/directeur";
+            return `/${locale}/dashboard/directeur`;
           default:
-            return "/";
+            return `/${locale}`;
         }
       },
     }),
     {
       name: "hotelhub-auth",
-      // Ne persister que le strict nécessaire
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    },
-  ),
+    }
+  )
 );

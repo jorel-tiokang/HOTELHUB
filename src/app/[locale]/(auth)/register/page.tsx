@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { Loader2 } from "lucide-react";
 
 const SEXES = ["Homme", "Femme", "Autre"];
 
@@ -39,6 +41,7 @@ const Field = ({
 
 export default function RegisterPage() {
   const router = useRouter();
+  const locale = useLocale();
   const { register, isLoading, error, clearError } = useAuthStore();
 
   const [form, setForm] = useState({
@@ -61,7 +64,10 @@ export default function RegisterPage() {
 
   const handleSubmit = async () => {
     await register(form);
-    router.push("app/landingpage/client/page.tsx");
+    const state = useAuthStore.getState();
+    if (!state.error && state.isAuthenticated) {
+      router.push(state.getRedirectPath(locale));
+    }
   };
 
   return (
@@ -172,9 +178,16 @@ export default function RegisterPage() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="mt-6 w-full bg-[var(--purple)] hover:bg-(--purple)/90 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg"
+            className="mt-6 w-full bg-purple hover:bg-purple/90 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all text-sm tracking-wide shadow-lg flex items-center justify-center gap-2"
           >
-            {isLoading ? "Création du compte..." : "S'inscrire"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Création du compte…
+              </>
+            ) : (
+              "S'inscrire"
+            )}
           </button>
 
           <p className="text-white/50 text-sm mt-6 text-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -24,15 +24,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useClientDashboardStore } from "@/store/clientDashboardStore";
-import {
-  clientBookings,
-  getUpcomingBookings,
-  getPastBookings,
-  daysUntilNextBooking,
-  totalNightsBooked,
-  type ClientReservation,
-  type StatutReservationClient,
-} from "@/mocks/clientBookings";
+import { useReservationStore } from "@/store/reservationStore";
+import type { ClientReservation, StatutReservationClient } from "@/mocks/clientBookings";
 import Header from "@/src/components/Header";
 import { Footer } from "@/src/components/footer";
 import BookingCard from "@/src/components/BookingCard";
@@ -63,6 +56,39 @@ function nightsBetween(debut: string, fin: string): number {
   );
 }
 
+// ── Dynamic Helpers ──────────────────────────────────────────────────────────
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+function getUpcomingBookings(bookings: ClientReservation[]) {
+  return bookings.filter((b) => {
+    if (b.statut === "ANNULEE" || b.statut === "TERMINEE") return false;
+    return new Date(b.jourFin) >= today;
+  });
+}
+
+function getPastBookings(bookings: ClientReservation[]) {
+  return bookings.filter((b) => {
+    if (b.statut === "TERMINEE" || b.statut === "ANNULEE") return true;
+    return new Date(b.jourFin) < today;
+  });
+}
+
+function daysUntilNextBooking(bookings: ClientReservation[]): number | null {
+  const upcoming = getUpcomingBookings(bookings).sort(
+    (a, b) => new Date(a.jourDebut).getTime() - new Date(b.jourDebut).getTime()
+  );
+  if (upcoming.length === 0) return null;
+  const diff = new Date(upcoming[0].jourDebut).getTime() - today.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function totalNightsBooked(bookings: ClientReservation[]): number {
+  return bookings
+    .filter((b) => b.statut !== "ANNULEE")
+    .reduce((acc, b) => acc + nightsBetween(b.jourDebut, b.jourFin), 0);
+}
+
 // ============================================================================
 // SECTION: Booking Detail Modal
 // ============================================================================
@@ -76,7 +102,15 @@ function BookingDetailModal({
   const t = useTranslations("clientDashboard");
   const locale = useLocale();
   const { currency } = useCurrencyStore();
+  const { cancelBooking, isLoading } = useReservationStore();
   const nights = nightsBetween(booking.jourDebut, booking.jourFin);
+  const isCancellable = booking.statut === "EN_ATTENTE" || booking.statut === "CONFIRMEE";
+
+  const handleCancel = async () => {
+    if (!confirm("Voulez-vous vraiment annuler cette réservation ?")) return;
+    await cancelBooking(booking.id);
+    onClose();
+  };
 
   return (
     <div
@@ -183,21 +217,33 @@ function BookingDetailModal({
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              id="booking-detail-download"
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 text-sm font-semibold transition-all"
-            >
-              <Download className="w-4 h-4" />
-              {t("actions.downloadReceipt")}
-            </button>
-            <button
-              id="booking-detail-dismiss"
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl bg-purple text-white font-bold text-sm hover:opacity-90 dark:bg-gold dark:text-[#1c1714] transition-all"
-            >
-              {t("detail.close")}
-            </button>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-3">
+              <button
+                id="booking-detail-download"
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 text-sm font-semibold transition-all"
+              >
+                <Download className="w-4 h-4" />
+                {t("actions.downloadReceipt")}
+              </button>
+              <button
+                id="booking-detail-dismiss"
+                onClick={onClose}
+                className="flex-1 py-3 rounded-xl bg-purple text-white font-bold text-sm hover:opacity-90 dark:bg-gold dark:text-[#1c1714] transition-all"
+              >
+                {t("detail.close")}
+              </button>
+            </div>
+            
+            {isCancellable && (
+              <button
+                onClick={handleCancel}
+                disabled={isLoading}
+                className="w-full py-3 rounded-xl border border-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/10 transition-colors disabled:opacity-50"
+              >
+                {isLoading ? "Annulation..." : "Annuler la réservation"}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -211,9 +257,10 @@ function BookingDetailModal({
 function HeroStats() {
   const t = useTranslations("clientDashboard");
   const { user } = useAuthStore();
+  const { bookings } = useReservationStore();
 
-  const daysUntil = daysUntilNextBooking();
-  const totalNights = totalNightsBooked();
+  const daysUntil = daysUntilNextBooking(bookings);
+  const totalNights = totalNightsBooked(bookings);
   const memberSince = (user as any)?.createdAt
     ? new Date((user as any).createdAt).getFullYear()
     : new Date().getFullYear();
@@ -264,7 +311,8 @@ function UpcomingBookings() {
   const t = useTranslations("clientDashboard");
   const locale = useLocale();
   const { openDetail } = useClientDashboardStore();
-  const upcoming = getUpcomingBookings();
+  const { bookings } = useReservationStore();
+  const upcoming = getUpcomingBookings(bookings);
 
   return (
     <section className="flex flex-col gap-4">
@@ -385,7 +433,8 @@ function QuickActions() {
 function PastBookings() {
   const t = useTranslations("clientDashboard");
   const { showPastBookings, togglePastBookings } = useClientDashboardStore();
-  const past = getPastBookings();
+  const { bookings } = useReservationStore();
+  const past = getPastBookings(bookings);
 
   return (
     <section className="flex flex-col gap-4">
@@ -595,8 +644,15 @@ function AccountCard() {
 export default function ClientDashboard() {
   const t = useTranslations("clientDashboard");
   const { user } = useAuthStore();
+  const { bookings, fetchBookings, isLoading } = useReservationStore();
   const { activeTab, setActiveTab, selectedBooking, isDetailOpen, closeDetail } =
     useClientDashboardStore();
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchBookings(user.id);
+    }
+  }, [user?.id, fetchBookings]);
 
   type Tab = "reservations" | "avis" | "profil";
 
@@ -678,7 +734,7 @@ export default function ClientDashboard() {
           {/* ── Tab: Reviews ───────────────────────────────────────────────── */}
           {activeTab === "avis" && (
             <div className="flex flex-col gap-4">
-              {clientBookings
+              {bookings
                 .filter((b) => b.statut === "TERMINEE")
                 .map((b) => (
                   <div
@@ -706,7 +762,7 @@ export default function ClientDashboard() {
                   </div>
                 ))}
 
-              {clientBookings.filter((b) => b.statut === "TERMINEE").length === 0 && (
+              {bookings.filter((b) => b.statut === "TERMINEE").length === 0 && (
                 <p className="text-white/30 text-sm text-center py-12">{t("past.empty")}</p>
               )}
             </div>

@@ -366,7 +366,7 @@ export default function DirectorDashboard() {
                     {t("overview.weeklyOccupancy")}
                   </h3>
                   <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={weeklyOccupancyData}>
                         <CartesianGrid
                           strokeDasharray="3 3"

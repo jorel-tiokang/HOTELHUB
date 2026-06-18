@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { getHotelById, getRoomById } from "@/mocks/hotelsData";
 import BookableRoomCard from "./BookableRoomCard";
@@ -9,6 +10,10 @@ import Header from "./Header";
 import { Footer } from "./footer";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { formatPrice } from "@/utils/currency";
+import { useAuthStore } from "@/store/authStore";
+import { useReservationStore } from "@/store/reservationStore";
+import { useHotelsStore } from "@/store/hotelsStore";
+import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function RoomDetailPage({
   hotelId,
@@ -19,13 +24,20 @@ export default function RoomDetailPage({
 }) {
   const t = useTranslations("hotelsPage.room");
   const locale = useLocale();
+  const router = useRouter();
   const { currency } = useCurrencyStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { createBooking, isLoading: isBooking, error: bookingError } = useReservationStore();
+  const { toggleRoomStatus } = useHotelsStore();
+
   const hotel = getHotelById(hotelId);
   const room = getRoomById(hotelId, roomId);
 
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   if (!hotel || !room) return notFound();
 
@@ -39,9 +51,106 @@ export default function RoomDetailPage({
           )
         )
       : 1;
-  const total = nights * room.prixParNuit;
 
+  const total = nights * room.prixParNuit;
   const otherRooms = hotel.rooms.filter((r) => r.id !== room.id);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isRoomAvailable = room.statut === "DISPONIBLE";
+
+  const handleBook = async () => {
+    setLocalError(null);
+
+    // Guard: must be logged in
+    if (!isAuthenticated || !user) {
+      router.push(`/${locale}/login`);
+      return;
+    }
+
+    // Guard: dates required
+    if (!checkIn || !checkOut) {
+      setLocalError(t("checkIn") === "Arrivée"
+        ? "Veuillez sélectionner vos dates d'arrivée et de départ."
+        : "Please select your check-in and check-out dates.");
+      return;
+    }
+
+    // Guard: checkout must be after checkin
+    if (checkOut <= checkIn) {
+      setLocalError(t("checkIn") === "Arrivée"
+        ? "La date de départ doit être après la date d'arrivée."
+        : "Check-out must be after check-in.");
+      return;
+    }
+
+    try {
+      await createBooking({
+        hotelId: hotel.id,
+        hotelName: hotel.name,
+        hotelCity: hotel.city,
+        hotelCoverUrl: hotel.images?.[0] ?? "",
+        roomId: room.id,
+        roomCategory: room.type,
+        roomNumber: room.numero,
+        startDate: checkIn,
+        endDate: checkOut,
+        guestCount: guests,
+        totalCostXaf: total,
+        clientUserId: user.id,
+      });
+
+      // Mark room as unavailable in hotelsStore (real-time UI update)
+      toggleRoomStatus(hotelId, roomId);
+
+      setBookingSuccess(true);
+    } catch {
+      // error is already set in the store, localError shown via bookingError
+    }
+  };
+
+  // ── Success state ────────────────────────────────────────────────────────────
+  if (bookingSuccess) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-background pt-28 pb-16 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto px-6 flex flex-col items-center gap-6">
+            <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <CheckCircle className="w-10 h-10 text-emerald-400" />
+            </div>
+            <div>
+              <h1
+                className="text-3xl font-black text-foreground mb-2"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                {t("checkIn") === "Arrivée" ? "Réservation confirmée !" : "Booking confirmed!"}
+              </h1>
+              <p className="text-foreground/60 text-sm">
+                {t("checkIn") === "Arrivée"
+                  ? `${room.type} au ${hotel.name} — ${checkIn} → ${checkOut}`
+                  : `${room.type} at ${hotel.name} — ${checkIn} → ${checkOut}`}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => router.push(`/${locale}/dashboard/client`)}
+                className="px-6 py-3 rounded-xl bg-purple dark:bg-gold text-white dark:text-[#1c1714] font-bold text-sm hover:opacity-90 transition-opacity"
+              >
+                {t("checkIn") === "Arrivée" ? "Voir mes réservations" : "View my bookings"}
+              </button>
+              <button
+                onClick={() => router.push(`/${locale}/hotels`)}
+                className="px-6 py-3 rounded-xl border border-border text-foreground/70 hover:text-foreground font-semibold text-sm transition-colors"
+              >
+                {t("checkIn") === "Arrivée" ? "Explorer d'autres hôtels" : "Explore more hotels"}
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -119,6 +228,8 @@ export default function RoomDetailPage({
             {/* Right: booking form */}
             <aside className="lg:sticky lg:top-32 self-start">
               <div className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-5">
+
+                {/* Price */}
                 <p
                   className="text-2xl font-black text-purple dark:text-gold"
                   style={{ fontFamily: "var(--font-playfair)" }}
@@ -129,6 +240,20 @@ export default function RoomDetailPage({
                   </span>
                 </p>
 
+                {/* Availability badge */}
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold w-fit
+                  ${isRoomAvailable
+                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
+                    : "bg-red-500/15 text-red-400 border border-red-500/25"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isRoomAvailable ? "bg-emerald-400" : "bg-red-400"}`} />
+                  {isRoomAvailable
+                    ? (t("checkIn") === "Arrivée" ? "Disponible" : "Available")
+                    : (t("checkIn") === "Arrivée" ? "Indisponible" : "Unavailable")}
+                </div>
+
+                {/* Date / guest inputs */}
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
@@ -136,8 +261,9 @@ export default function RoomDetailPage({
                     </label>
                     <input
                       type="date"
+                      min={today}
                       value={checkIn}
-                      onChange={(e) => setCheckIn(e.target.value)}
+                      onChange={(e) => { setCheckIn(e.target.value); setLocalError(null); }}
                       className="bg-white/5 border border-border rounded-xl px-3 py-2.5
                         text-foreground text-sm outline-none focus:border-purple dark:focus:border-gold"
                     />
@@ -148,8 +274,9 @@ export default function RoomDetailPage({
                     </label>
                     <input
                       type="date"
+                      min={checkIn || today}
                       value={checkOut}
-                      onChange={(e) => setCheckOut(e.target.value)}
+                      onChange={(e) => { setCheckOut(e.target.value); setLocalError(null); }}
                       className="bg-white/5 border border-border rounded-xl px-3 py-2.5
                         text-foreground text-sm outline-none focus:border-purple dark:focus:border-gold"
                     />
@@ -170,8 +297,14 @@ export default function RoomDetailPage({
                   </div>
                 </div>
 
+                {/* Total */}
                 <div className="flex items-center justify-between pt-3 border-t border-border">
-                  <span className="text-foreground/60 text-sm">{t("totalPrice")}</span>
+                  <span className="text-foreground/60 text-sm">
+                    {t("totalPrice")}
+                    {checkIn && checkOut && (
+                      <span className="text-foreground/40 ml-1">({nights} nuit{nights > 1 ? "s" : ""})</span>
+                    )}
+                  </span>
                   <span
                     className="text-foreground font-bold text-lg"
                     style={{ fontFamily: "var(--font-playfair)" }}
@@ -180,15 +313,43 @@ export default function RoomDetailPage({
                   </span>
                 </div>
 
+                {/* Error messages */}
+                {(localError || bookingError) && (
+                  <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-red-300 text-sm">{localError || bookingError}</p>
+                  </div>
+                )}
+
+                {/* Book button */}
                 <button
-                  disabled={room.statut !== "DISPONIBLE"}
+                  onClick={handleBook}
+                  disabled={!isRoomAvailable || isBooking}
                   className="w-full py-3.5 rounded-xl font-bold text-sm
                     bg-purple dark:bg-gold text-white dark:text-[#1c1714]
                     hover:opacity-90 transition-opacity
-                    disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled:opacity-40 disabled:cursor-not-allowed
+                    flex items-center justify-center gap-2"
                 >
-                  {t("bookButton")}
+                  {isBooking ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t("checkIn") === "Arrivée" ? "Réservation en cours…" : "Booking…"}
+                    </>
+                  ) : (
+                    t("bookButton")
+                  )}
                 </button>
+
+                {/* Login nudge for guests */}
+                {!isAuthenticated && (
+                  <p className="text-foreground/40 text-xs text-center">
+                    {t("checkIn") === "Arrivée"
+                      ? <>Vous devez être <button onClick={() => router.push(`/${locale}/login`)} className="text-purple dark:text-gold underline">connecté</button> pour réserver.</>
+                      : <>You must be <button onClick={() => router.push(`/${locale}/login`)} className="text-purple dark:text-gold underline">logged in</button> to book.</>
+                    }
+                  </p>
+                )}
               </div>
             </aside>
           </div>
