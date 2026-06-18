@@ -63,7 +63,7 @@ export default function FeaturesSection() {
       >
         {/* Ambient Background Glow (Reveals smoothly on hover) */}
         <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full
-          bg-purple/20 dark:bg-gold/20 blur-3xl opacity-0 group-hover:opacity-100
+          bg-purple/20 dark:bg-gold/20 blur-3xl opacity-0 
           transition-opacity duration-700 -z-10 pointer-events-none" />
 
         {/* Header: Icon & Minimalist Numbering */}

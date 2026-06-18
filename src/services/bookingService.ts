@@ -39,6 +39,15 @@ export async function getBookingsForUser(
   return mockBookings.filter((b) => b.client_user_id === userId);
 }
 
+// ── getBookingsForHotel ───────────────────────────────────────────────────────
+
+export async function getBookingsForHotel(
+  hotelId: string
+): Promise<BackendBookingDTO[]> {
+  await fakeDelay(500);
+  return mockBookings.filter((b) => b.hotel_identifier === hotelId);
+}
+
 // ── createBooking ─────────────────────────────────────────────────────────────
 
 export async function createBooking(

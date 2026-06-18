@@ -4,7 +4,7 @@ import Link from "next/link";
 import RoomCard from "@/src/components/RoomCard";
 import AddRoomModal from "@/src/components/AddRoomModal";
 import type { Chambre } from "@/types/chambre";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/store/authStore";
 import { useCurrencyStore } from "@/store/currencyStore";
@@ -13,15 +13,14 @@ import ModeToggle from "@/src/components/ModeTogge";
 import LanguageToggle from "@/src/components/LanguageToggle";
 import CurrencyToggle from "@/src/components/CurrencyToggle";
 import {
-  mockReservations,
   mockAvis,
   mockDirecteurHotel,
   weeklyOccupancyData,
-  recentBookings,
   latestReviews,
   staffMembers,
 } from "@/mocks/dashboardMocks";
 import { useHotelsStore } from "@/store/hotelsStore";
+import { useReservationStore } from "@/store/reservationStore";
 import type { Room } from "@/services/hotel";
 import {
   LayoutDashboard,
@@ -103,23 +102,28 @@ export default function DirectorDashboard() {
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
   const { addRoom, updateRoom, deleteRoom, toggleRoomStatus, getHotelRooms } = useHotelsStore();
-  /** The hotel this Director manages — scoped to "Royal Palace" (h4) */
-  const DIRECTOR_HOTEL_ID = "h4";
+  const DIRECTOR_HOTEL_ID = (user as any)?.assigned_hotel_id ?? "h1";
   const chambres = getHotelRooms(DIRECTOR_HOTEL_ID) as Chambre[];
+  
+  const { bookings, fetchHotelBookings } = useReservationStore();
+
+  useEffect(() => {
+    fetchHotelBookings(DIRECTOR_HOTEL_ID);
+  }, [DIRECTOR_HOTEL_ID, fetchHotelBookings]);
   const [reponses, setReponses] = useState<Record<string, string>>({});
   const [bookingFilter, setBookingFilter] = useState<string>("all");
   const [reviewFilter, setReviewFilter] = useState<string>("all");
   const [reviewPeriod, setReviewPeriod] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
 
-  const selectedBookingData = selectedBooking ? recentBookings.find(b => b.id === selectedBooking) : null;
+  const selectedBookingData = selectedBooking ? bookings.find((b) => b.id === selectedBooking) : null;
 
   const toggleStatut = (id: string) => toggleRoomStatus(DIRECTOR_HOTEL_ID, id);
 
   const filteredBookings =
     bookingFilter === "all"
-      ? recentBookings
-      : recentBookings.filter((b) => b.status === bookingFilter.toUpperCase());
+      ? bookings
+      : bookings.filter((b) => b.statut === bookingFilter.toUpperCase());
 
   const filteredReviews =
     reviewFilter === "all"
@@ -298,7 +302,7 @@ export default function DirectorDashboard() {
                   },
                   {
                     label: t("kpi.activeBookings"),
-                    value: mockReservations.filter(
+                    value: bookings.filter(
                       (r) => r.statut === "CONFIRMEE",
                     ).length,
                     trend: "+5",
@@ -489,30 +493,30 @@ export default function DirectorDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {recentBookings.slice(0, 5).map((booking) => (
+                      {filteredBookings.slice(0, 5).map((booking) => (
                         <tr
                           key={booking.id}
                           className="border-b border-white/5 hover:bg-white/5 transition-colors"
                         >
                           <td className="py-4 px-4 text-white font-medium">
-                            {booking.guest}
+                            Client ({booking.id.slice(-4)})
                           </td>
                           <td className="py-4 px-4 text-white/70">
-                            {booking.roomType}
+                            {booking.chambreType}
                           </td>
                           <td className="py-4 px-4 text-white/70">
-                            {booking.checkIn}
+                            {booking.jourDebut}
                           </td>
                           <td className="py-4 px-4 text-white/70">
-                            {booking.checkOut}
+                            {booking.jourFin}
                           </td>
                           <td className="py-4 px-4">
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                STATUT_RES_STYLE[booking.status]
+                                STATUT_RES_STYLE[booking.statut]
                               }`}
                             >
-                              {STATUT_RES_LABEL[booking.status]}
+                              {STATUT_RES_LABEL[booking.statut]}
                             </span>
                           </td>
                         </tr>
@@ -598,25 +602,25 @@ export default function DirectorDashboard() {
                   <thead>
                     <tr className="border-b border-gold/10">
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        ID
+                        {t("bookings.table.id")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.room")}
+                        {t("bookings.table.guest")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.chambre")}
+                        {t("bookings.table.room")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.dates")}
+                        {t("bookings.table.dates")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.price")}
+                        {t("bookings.table.price")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.table.status")}
+                        {t("bookings.table.status")}
                       </th>
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
-                        {t("directeurDashboard.bookings.table.actions")}
+                        {t("bookings.table.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -630,29 +634,29 @@ export default function DirectorDashboard() {
                           {booking.id}
                         </td>
                         <td className="py-4 px-4 text-white font-medium">
-                          {booking.guest}
+                          Client ({booking.id.slice(-4)})
                         </td>
                         <td className="py-4 px-4 text-white/70">
-                          {booking.roomType}
+                          {booking.chambreType}
                         </td>
                         <td className="py-4 px-4 text-white/70 text-sm">
-                          {booking.checkIn} - {booking.checkOut}
+                          {booking.jourDebut} - {booking.jourFin}
                         </td>
                         <td className="py-4 px-4 text-gold font-semibold">
-                          {booking.price != null ? formatPrice(booking.price, currency, locale) : "—"}
+                          {booking.montantTotal != null ? formatPrice(booking.montantTotal, currency, locale) : "—"}
                         </td>
                         <td className="py-4 px-4">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              STATUT_RES_STYLE[booking.status]
+                              STATUT_RES_STYLE[booking.statut]
                             }`}
                           >
-                            {STATUT_RES_LABEL[booking.status]}
+                            {STATUT_RES_LABEL[booking.statut]}
                           </span>
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex gap-2">
-                            {booking.status === "EN_ATTENTE" ? (
+                            {booking.statut === "EN_ATTENTE" ? (
                               <>
                                 <button className="p-2 rounded-lg bg-gold/20 hover:bg-gold/30 text-gold transition-colors">
                                   <Check className="w-4 h-4" />
@@ -690,31 +694,31 @@ export default function DirectorDashboard() {
                     <div className="space-y-4">
                       <div>
                         <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
-                          {t("client")}
+                          {t("bookings.table.guest")}
                         </p>
                         <p className="text-white font-semibold">
-                          {selectedBookingData?.guest}
+                          Client ({selectedBookingData?.id?.slice(-4)})
                         </p>
                       </div>
                       <div>
                         <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
-                          {t("email")}
+                          {t("bookings.modal.email")}
                         </p>
-                        <p className="text-white/70">{selectedBookingData?.guest.toLowerCase().replace(" ", ".")}@email.com</p>
+                        <p className="text-white/70">client.{selectedBookingData?.id?.slice(-4).toLowerCase()}@email.com</p>
                       </div>
                       <div>
                         <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
-                          {t("phone")}
+                          {t("bookings.modal.phone")}
                         </p>
                         <p className="text-white/70">+237 699 123 456</p>
                       </div>
                       <div className="pt-4 border-t border-gold/10">
                         <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
-                          {t("transactions")}
+                          {t("bookings.modal.transaction")}
                         </p>
                         <p className="text-gold font-semibold">
-                          {selectedBookingData?.price != null ? formatPrice(selectedBookingData.price, currency, locale) : "—"}{" "}
-                          — {STATUT_RES_LABEL[selectedBookingData?.status ?? "CONFIRMEE"]}
+                          {selectedBookingData?.montantTotal != null ? formatPrice(selectedBookingData.montantTotal, currency, locale) : "—"}{" "}
+                          — {STATUT_RES_LABEL[selectedBookingData?.statut ?? "CONFIRMEE"]}
                         </p>
                       </div>
                     </div>
@@ -1018,7 +1022,7 @@ export default function DirectorDashboard() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
-                      {t("phone")}
+                      {t("bookings.modal.phone")}
                     </label>
                     <input
                       defaultValue={mockDirecteurHotel.telephone}

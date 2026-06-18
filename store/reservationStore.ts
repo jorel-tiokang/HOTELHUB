@@ -22,6 +22,9 @@ interface ReservationState {
   /** Load all bookings for the logged-in user */
   fetchBookings: (userId: string) => Promise<void>;
 
+  /** Load all bookings for a specific hotel (for directors) */
+  fetchHotelBookings: (hotelId: string) => Promise<void>;
+
   /** Create a new booking (also marks the room as INDISPONIBLE in hotelsStore) */
   createBooking: (payload: CreateBookingPayload) => Promise<ClientReservation>;
 
@@ -41,6 +44,17 @@ export const useReservationStore = create<ReservationState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const rawBookings = await bookingService.getBookingsForUser(userId);
+      const bookings = mapManyBackendBookings(rawBookings);
+      set({ bookings, isLoading: false });
+    } catch (err: any) {
+      set({ error: err.message, isLoading: false });
+    }
+  },
+
+  fetchHotelBookings: async (hotelId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const rawBookings = await bookingService.getBookingsForHotel(hotelId);
       const bookings = mapManyBackendBookings(rawBookings);
       set({ bookings, isLoading: false });
     } catch (err: any) {
