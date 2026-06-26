@@ -195,7 +195,7 @@ dark:group-hover:text-gold transition-colors"
 
       {/* ── Mobile drawer ── */}
       <div
-        className={`fixed inset-0 z-40 transition-all duration-300
+        className={`fixed inset-0 z-50 transition-all duration-300
           ${menuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         {/* Backdrop */}

@@ -2,57 +2,16 @@
  * mock-db.ts
  * Single source of truth for all seeded mock data used by the service layer.
  * When switching to a real backend, this file is simply deleted.
- *
- * IMPORTANT: these interfaces deliberately use "backend-style" naming
- * (snake_case / different attribute names) to prove the Adapter layer works.
  */
 
-// ── Backend-style user DTO (what the real API would return) ──────────────────
+import type {
+  BackendRole,
+  BackendUserDTO,
+  BackendBookingStatus,
+  BackendBookingDTO,
+} from "@/services/api.types";
 
-export type BackendRole = "CLIENT" | "PDG" | "DIRECTEUR";
-
-export interface BackendUserDTO {
-  user_id: string;
-  full_name: string;
-  email_address: string;
-  phone_number: string;
-  user_role: BackendRole;
-  // optional fields
-  location?: string;
-  gender?: string;
-  birth_date?: string;
-  home_address?: string;
-  assigned_hotel_id?: string;
-  // auth
-  hashed_password: string;
-  access_token: string;
-}
-
-// ── Backend-style booking DTO ────────────────────────────────────────────────
-
-export type BackendBookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CANCELLED"
-  | "COMPLETED";
-
-export interface BackendBookingDTO {
-  booking_ref: string;
-  hotel_identifier: string;
-  hotel_name: string;
-  hotel_city: string;
-  hotel_cover_url: string;
-  room_identifier: string;
-  room_category: string;
-  room_number: number;
-  start_date: string;  // "YYYY-MM-DD"
-  end_date: string;    // "YYYY-MM-DD"
-  guest_count: number;
-  total_cost_xaf: number;
-  booking_status: BackendBookingStatus;
-  created_at_date: string;
-  client_user_id: string;
-}
+export type { BackendRole, BackendUserDTO, BackendBookingStatus, BackendBookingDTO };
 
 // ── Seeded users ─────────────────────────────────────────────────────────────
 

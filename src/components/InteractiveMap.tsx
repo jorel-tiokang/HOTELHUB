@@ -124,13 +124,11 @@ export default function InteractiveMap({
         zoom={11}
         scrollWheelZoom
         className="h-full w-full"
-        style={{ background: "#1a1a2e" }}
       >
-      {/* Dark-themed OpenStreetMap tiles */}
+      {/* Standard Light OpenStreetMap tiles */}
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-        subdomains="abcd"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         maxZoom={19}
       />
 

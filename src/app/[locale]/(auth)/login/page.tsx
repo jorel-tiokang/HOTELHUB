@@ -38,13 +38,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[url('/landscape.jpg')] bg-cover bg-center bg-fixed bg-no-repeat">
+    <div className="h-screen overflow-hidden w-full flex items-center justify-center bg-[url('/landscape.jpg')] bg-cover bg-center bg-fixed bg-no-repeat">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50" />
 
       <div className="relative z-10 w-full max-w-md mx-4">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <Link href={`/${locale}`} className="flex items-center justify-center gap-2 mb-8 hover:opacity-80 transition-opacity">
           <img
             src="/hotelhublogo.png"
             alt="HotelHub Logo"
@@ -53,7 +53,7 @@ export default function LoginPage() {
           <span className="text-purple font-bold text-2xl tracking-wide">
             HOTELHUB
           </span>
-        </div>
+        </Link>
 
         {/* Card */}
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl">

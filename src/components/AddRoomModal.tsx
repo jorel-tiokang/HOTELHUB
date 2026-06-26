@@ -347,7 +347,7 @@ export default function AddRoomModal({
     >
       <div className="bg-charcoal rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* ── Header ── */}
-        <div className="sticky top-0 bg-charcoal z-10 flex items-center justify-between px-8 py-5 border-b border-white/10">
+        <div className="sticky top-0 bg-charcoal z-10 flex items-center justify-between px-4 sm:px-8 py-5 border-b border-white/10">
           <h3
             className="text-xl font-bold text-white"
             style={{ fontFamily: "var(--font-playfair)" }}
@@ -365,7 +365,7 @@ export default function AddRoomModal({
         </div>
 
         {/* ── Body ── */}
-        <div className="px-8 py-6 space-y-6">
+        <div className="px-4 sm:px-8 py-6 space-y-6">
           {/* Image upload — full width, prominent */}
           <ImageUploadZone
             previews={imagePreviews}
@@ -456,7 +456,7 @@ export default function AddRoomModal({
         </div>
 
         {/* ── Footer ── */}
-        <div className="sticky bottom-0 bg-charcoal px-8 py-5 border-t border-white/10 flex gap-3">
+        <div className="sticky bottom-0 bg-charcoal px-4 sm:px-8 py-5 border-t border-white/10 flex gap-3">
           <button
             onClick={handleSubmit}
             className="flex-1 bg-purple hover:bg-purple/90 text-white py-3 rounded-xl

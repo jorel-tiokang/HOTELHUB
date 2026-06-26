@@ -43,6 +43,7 @@ import {
   MessageSquare,
   Send,
   LogOut,
+  Menu,
 } from "lucide-react";
 import {
   BarChart,
@@ -100,7 +101,10 @@ export default function DirectorDashboard() {
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
+  
+  const isSidebarExpanded = sidebarHovered || isMobileMenuOpen;
   const { addRoom, updateRoom, deleteRoom, toggleRoomStatus, getHotelRooms } = useHotelsStore();
   const DIRECTOR_HOTEL_ID = (user as any)?.assigned_hotel_id ?? "h1";
   const chambres = getHotelRooms(DIRECTOR_HOTEL_ID) as Chambre[];
@@ -149,16 +153,24 @@ export default function DirectorDashboard() {
         }}
       />
 
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
-        className={`fixed left-0 top-0 h-full backdrop-blur-md z-40 transition-all duration-300 ease-in-out flex flex-col ${
-          sidebarHovered ? "w-[240px]" : "w-[72px]"
-        }`}
+        className={`fixed left-0 top-0 h-full backdrop-blur-xl bg-black/90 md:bg-black/40 z-50 transition-all duration-300 ease-in-out flex flex-col ${
+          isMobileMenuOpen ? "translate-x-0 w-[240px]" : "-translate-x-full md:translate-x-0"
+        } ${sidebarHovered ? "md:w-[240px]" : "md:w-[72px]"}`}
       >
         {/* Logo */}
-        <div className="p-4 border-b border-white/10">
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex item-center gap-3">
               <img
@@ -169,7 +181,7 @@ export default function DirectorDashboard() {
             </div>
             <div
               className={`overflow-hidden transition-all duration-300 ${
-                sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                isSidebarExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
               }`}
             >
               <p
@@ -183,6 +195,14 @@ export default function DirectorDashboard() {
               </p>
             </div>
           </div>
+          {isMobileMenuOpen && (
+            <button
+              className="md:hidden p-2 text-white/70 hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -206,7 +226,7 @@ export default function DirectorDashboard() {
                 <Icon className="w-5 h-5 shrink-0" />
                 <span
                   className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                    sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                    isSidebarExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
                   }`}
                 >
                   {t(`nav.${item.id}`)}
@@ -224,7 +244,7 @@ export default function DirectorDashboard() {
             </div>
             <div
               className={`overflow-hidden transition-all duration-300 ${
-                sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                isSidebarExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
               }`}
             >
               <p className="text-white font-semibold text-sm whitespace-nowrap">
@@ -239,13 +259,13 @@ export default function DirectorDashboard() {
             <button
               onClick={logout}
               className={`mt-3 w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white rounded-lg hover:bg-white/5 transition-all ${
-                sidebarHovered ? "" : "justify-center"
+                isSidebarExpanded ? "" : "justify-center"
               }`}
             >
               <LogOut className="w-4 h-4" />
               <span
                 className={`text-xs overflow-hidden transition-all duration-300 ${
-                  sidebarHovered ? "opacity-100 w-auto" : "opacity-0 w-0"
+                  isSidebarExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
                 }`}
               >
                 {t("logout")}
@@ -257,24 +277,32 @@ export default function DirectorDashboard() {
 
       {/* Main Content */}
       <main
-        className={`transition-all duration-300 ${
-          sidebarHovered ? "ml-[240px]" : "ml-[72px]"
+        className={`transition-all duration-300 min-h-screen ${
+          sidebarHovered ? "md:ml-[240px]" : "md:ml-[72px]"
         }`}
       >
         {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-black/60 backdrop-blur-md border-b border-gold/10">
-          <div className="px-8 py-4 flex items-center justify-between gap-4">
-            <div>
-              <h1
-                className="text-2xl font-black text-white"
-                style={{ fontFamily: "var(--font-playfair)" }}
+          <div className="px-4 md:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                className="md:hidden p-2 -ml-2 text-white/70 hover:text-white"
+                onClick={() => setIsMobileMenuOpen(true)}
               >
-                {t(`nav.${activeTab}`)}
-              </h1>
-              <p className="text-white/80 text-sm capitalize">{currentDate}</p>
+                <Menu className="w-6 h-6" />
+              </button>
+              <div>
+                <h1
+                  className="text-xl md:text-2xl font-black text-white"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  {t(`nav.${activeTab}`)}
+                </h1>
+                <p className="text-white/80 text-xs md:text-sm capitalize">{currentDate}</p>
+              </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 md:gap-4 self-end sm:self-auto">
               <ModeToggle />
               <LanguageToggle />
               <CurrencyToggle />
@@ -286,7 +314,7 @@ export default function DirectorDashboard() {
           </div>
         </header>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {/* Overview Tab */}
           {activeTab === "overview" && (
             <div className="space-y-8">
@@ -464,7 +492,7 @@ export default function DirectorDashboard() {
               </div>
 
               {/* Recent Bookings Table */}
-              <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
+              <div className="bg-charcoal rounded-2xl p-4 md:p-6 shadow-lg overflow-x-auto">
                 <h3
                   className="text-lg font-bold text-white mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
@@ -472,7 +500,7 @@ export default function DirectorDashboard() {
                   {t("overview.recentBookings")}
                 </h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full min-w-[600px]">
                     <thead>
                       <tr className="border-b border-gold/10">
                         <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
@@ -597,8 +625,8 @@ export default function DirectorDashboard() {
           {activeTab === "bookings" && (
             <div className="space-y-6">
               {/* Bookings Table */}
-              <div className="bg-charcoal rounded-2xl p-6 shadow-lg overflow-x-auto">
-                <table className="w-full">
+              <div className="bg-charcoal rounded-2xl p-4 md:p-6 shadow-lg overflow-x-auto">
+                <table className="w-full min-w-[800px]">
                   <thead>
                     <tr className="border-b border-gold/10">
                       <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
@@ -683,8 +711,8 @@ export default function DirectorDashboard() {
 
               {/* Booking Detail Modal */}
               {selectedBooking && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                  <div className="bg-charcoal rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl">
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                  <div className="bg-charcoal rounded-2xl p-6 md:p-8 max-w-md w-full shadow-xl">
                     <h3
                       className="text-xl font-bold text-white mb-6"
                       style={{ fontFamily: "var(--font-playfair)" }}

@@ -163,7 +163,7 @@ export default function HotelsPage() {
       <button
         id="open-map-fab"
         onClick={() => setIsMapOpen(true)}
-        className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2
+        className="sm:hidden fixed bottom-6 right-6 z-30 flex items-center gap-2
           px-5 py-3 rounded-2xl shadow-2xl font-bold text-sm
           transition-all duration-200 active:scale-95"
         style={{

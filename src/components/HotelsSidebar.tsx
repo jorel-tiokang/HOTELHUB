@@ -165,7 +165,7 @@ export default function HotelsSidebar() {
         <div
           onClick={() => setIsModalOpen(true)}
           className="h-40 w-full rounded-xl overflow-hidden border border-border cursor-pointer
-            hover:border-purple dark:hover:border-gold transition-colors relative group"
+            hover:border-purple dark:hover:border-gold transition-colors relative group z-0"
         >
           <MapWrapper hotels={hotelsData} userLocation={userLocation} />
           {/* Overlay hint */}
