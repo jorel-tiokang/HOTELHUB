@@ -60,7 +60,7 @@ export default function HotelsPage() {
       if (checkIn && checkOut) {
         // Real date-based availability check
         const availableRoomIds = activeRooms
-          .filter(r => isRoomAvailable(r.id, checkIn, checkOut, bookings))
+          .filter(r => isRoomAvailable(r.id, checkIn, checkOut, bookings, hotel.id))
           .map(r => r.id);
 
         matchesAvailability = !showAvailableOnly || availableRoomIds.length > 0;

@@ -38,6 +38,8 @@ export interface Hotel {
   receptionHours: ReceptionHours;
   /** Plain-text cancellation / refund policy shown to clients */
   cancellationPolicy: string;
+  /** Custom price for booking the entire hotel per night. If undefined, privatization is not allowed or calculated differently. */
+  prixPrivatisationParNuit?: number;
   /** If false, the hotel is hidden from the client catalogue */
   actif: boolean;
   /** System fields (non-editable by director) */

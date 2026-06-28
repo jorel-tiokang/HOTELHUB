@@ -30,7 +30,22 @@ export default function RoomDetailPage({
   const { toggleRoomStatus, hotels } = useHotelsStore();
 
   const hotel = hotels.find((h) => h.id === hotelId);
-  const room = hotel?.rooms.find((r) => r.id === roomId);
+  const isPrivatization = roomId === "PRIVATISATION";
+  
+  const room = isPrivatization 
+    ? {
+        id: "PRIVATISATION",
+        hotelId: hotelId,
+        numero: 0,
+        type: "Privatisation Complète",
+        capacite: hotel?.rooms.reduce((acc, r) => acc + r.capacite, 0) || 0,
+        prixParNuit: hotel?.prixPrivatisationParNuit || 0,
+        description: "Privatisation intégrale de l'hôtel. Toutes les chambres et espaces communs sont réservés pour vous.",
+        equipements: ["Exclusivité", "Service Premium", "Sur Mesure"],
+        statut: "DISPONIBLE" as const,
+        images: hotel?.images || []
+      }
+    : hotel?.rooms.find((r) => r.id === roomId);
 
   // Pre-fill dates from URL params (passed by BookableRoomCard when dates are selected)
   const searchParams = useSearchParams();
@@ -44,7 +59,7 @@ export default function RoomDetailPage({
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  if (!hotel || !room) return notFound();
+  if (!hotel || !room || (isPrivatization && !hotel.prixPrivatisationParNuit)) return notFound();
 
   const nights =
     checkIn && checkOut

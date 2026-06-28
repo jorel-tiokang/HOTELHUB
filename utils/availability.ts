@@ -8,11 +8,33 @@ export function isRoomAvailable(
   roomId: string,
   checkIn: Date,
   checkOut: Date,
+  allBookings: ClientReservation[],
+  hotelId?: string // Optional, needed to check if the entire hotel is privatized
+): boolean {
+  return !allBookings.some(
+    (b) =>
+      // The room is blocked if this specific room is booked OR the entire hotel is privatized
+      (b.chambreId === roomId || (hotelId && b.hotelId === hotelId && b.chambreId === "PRIVATISATION")) &&
+      b.statut !== "ANNULEE" &&
+      b.statut !== "TERMINEE" &&
+      new Date(b.jourDebut) < checkOut &&
+      new Date(b.jourFin) > checkIn
+  );
+}
+
+/**
+ * Returns true if NO room in the hotel is booked (including no existing privatization)
+ * for the requested date range.
+ */
+export function isHotelAvailableForPrivatization(
+  hotelId: string,
+  checkIn: Date,
+  checkOut: Date,
   allBookings: ClientReservation[]
 ): boolean {
   return !allBookings.some(
     (b) =>
-      b.chambreId === roomId &&
+      b.hotelId === hotelId &&
       b.statut !== "ANNULEE" &&
       b.statut !== "TERMINEE" &&
       new Date(b.jourDebut) < checkOut &&

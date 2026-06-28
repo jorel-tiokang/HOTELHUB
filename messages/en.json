@@ -358,7 +358,13 @@
       "reviews": "reviews",
       "perNight": "/ night",
       "capacity": "guests",
-      "localisation": "Yaounde, CE Cameroon"
+      "localisation": "Yaounde, CE Cameroon",
+      "privatizeTitle": "Privatize the Establishment",
+      "privatizeDesc": "Book the entire hotel exclusively for your events or group stays.",
+      "pricePerNight": "Price per night",
+      "selectDatesPrivatize": "Select your dates",
+      "privatizeUnavailable": "Unavailable for these dates",
+      "bookEntireHotel": "Privatize the hotel"
     },
     "room": {
       "description": "Description",
@@ -628,7 +634,8 @@
       "editProfile": "Edit Profile",
       "notifications": "Notifications",
       "save": "Save Changes",
-      "newPassword": "New Password"
+      "newPassword": "New Password",
+      "noNotifications": "You have no new notifications."
     },
     "detail": {
       "title": "Booking Details",

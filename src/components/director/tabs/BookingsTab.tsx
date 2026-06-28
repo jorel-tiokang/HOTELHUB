@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Eye } from "lucide-react";
+import { Check, X, Eye, Crown } from "lucide-react";
 import type { ClientReservation } from "@/store/reservationStore";
 import type { CurrencyCode } from "@/store/currencyStore";
 import { formatPrice } from "@/utils/currency";
@@ -64,10 +64,24 @@ export default function BookingsTab({ t, bookings, currency, locale, onAction }:
           </thead>
           <tbody>
             {filteredBookings.map((booking) => (
-              <tr key={booking.id} className="border-b border-foreground/5 hover:bg-foreground/5 transition-colors">
+              <tr
+                key={booking.id}
+                className={`border-b border-foreground/5 hover:bg-foreground/5 transition-colors ${
+                  booking.chambreId === "PRIVATISATION" ? "bg-gold/[0.04]" : ""
+                }`}
+              >
                 <td className="py-4 px-4 text-foreground/50 text-sm">{booking.id}</td>
                 <td className="py-4 px-4 text-foreground font-medium">{booking.clientName || `Client (${booking.id.slice(-4)})`}</td>
-                <td className="py-4 px-4 text-foreground/70">{booking.chambreType}</td>
+                <td className="py-4 px-4 text-foreground/70">
+                  {booking.chambreId === "PRIVATISATION" ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold/15 border border-gold/30 text-gold text-xs font-bold">
+                      <Crown className="w-3 h-3" />
+                      Privatisation
+                    </span>
+                  ) : (
+                    booking.chambreType
+                  )}
+                </td>
                 <td className="py-4 px-4 text-foreground/70 text-sm">{booking.jourDebut} - {booking.jourFin}</td>
                 <td className="py-4 px-4 text-gold font-semibold">
                   {booking.montantTotal != null ? formatPrice(booking.montantTotal, currency, locale) : "—"}

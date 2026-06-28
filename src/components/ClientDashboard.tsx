@@ -638,7 +638,13 @@ function QuickActions() {
 // ============================================================================
 // SECTION: Past Bookings
 // ============================================================================
-function PastBookings() {
+function PastBookings({
+  reviewedIds,
+  setReviewingBooking
+}: {
+  reviewedIds: Set<string>;
+  setReviewingBooking: (booking: ClientReservation) => void;
+}) {
   const t = useTranslations("clientDashboard");
   const { showPastBookings, togglePastBookings } = useClientDashboardStore();
   const { bookings } = useReservationStore();
@@ -680,10 +686,16 @@ function PastBookings() {
                   <div className="absolute bottom-4 right-4">
                     <button
                       id={`review-${b.id}`}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/25 text-gold text-xs font-semibold hover:bg-gold/20 transition-colors"
+                      disabled={reviewedIds.has(b.id)}
+                      onClick={() => setReviewingBooking(b)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shrink-0 ${
+                        reviewedIds.has(b.id)
+                          ? "bg-foreground/5 text-foreground/40 cursor-not-allowed"
+                          : "bg-gold/10 border border-gold/25 hover:bg-gold/20 text-gold"
+                      }`}
                     >
-                      <Star className="w-3 h-3" />
-                      {t("past.leaveReview")}
+                      <Star className="w-4 h-4" />
+                      {reviewedIds.has(b.id) ? "Avis soumis" : t("past.leaveReview")}
                     </button>
                   </div>
                 )}
@@ -703,7 +715,11 @@ function AccountCard() {
   const t = useTranslations("clientDashboard");
   const locale = useLocale();
   const { user, logout } = useAuthStore();
+  const { setActiveTab } = useClientDashboardStore();
+  const { getUnreadCount } = useMessagesStore();
+  const unreadCount = user ? getUnreadCount(user.id) : 0;
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [showNoNotif, setShowNoNotif] = useState(false);
   const [formData, setFormData] = useState({
     telephone: user?.telephone ?? "",
     adresse:   (user as any)?.adresse ?? "",
@@ -762,10 +778,30 @@ function AccountCard() {
 
           <button
             id="account-notifications"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-foreground/20 text-foreground/70 hover:text-foreground text-sm font-semibold transition-all"
+            onClick={() => {
+              if (unreadCount > 0) {
+                setActiveTab("messages");
+              } else {
+                setShowNoNotif(true);
+                setTimeout(() => setShowNoNotif(false), 3000);
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-foreground/20 text-foreground/70 hover:text-foreground text-sm font-semibold transition-all relative"
           >
             <Bell className="w-4 h-4" />
             {t("account.notifications")}
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                {unreadCount}
+              </span>
+            )}
+            
+            {/* Small inline modal/toast for no notifications */}
+            {showNoNotif && (
+              <div className="absolute top-full left-0 mt-2 w-max max-w-[200px] z-50 bg-charcoal border border-foreground/10 shadow-xl rounded-xl p-3 text-xs text-foreground/80 animate-in fade-in slide-in-from-top-2">
+                {t("account.noNotifications") || "Vous n'avez aucune nouvelle notification."}
+              </div>
+            )}
           </button>
 
           <Link
@@ -1018,7 +1054,7 @@ export default function ClientDashboard() {
                 <HeroStats />
                 <UpcomingBookings />
                 <QuickActions />
-                <PastBookings />
+                <PastBookings reviewedIds={reviewedIds} setReviewingBooking={setReviewingBooking} />
               </div>
 
               {/* Sticky sidebar (desktop) */}

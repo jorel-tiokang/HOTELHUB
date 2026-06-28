@@ -358,7 +358,13 @@
       "reviews": "avis",
       "perNight": "/ nuit",
       "capacity": "personnes",
-      "localisation": "Yaoundé, CE Cameroun"
+      "localisation": "Yaoundé, CE Cameroun",
+      "privatizeTitle": "Privatiser l'établissement",
+      "privatizeDesc": "Réservez l'intégralité de l'hôtel en exclusivité pour vos événements ou séjours de groupe.",
+      "pricePerNight": "Prix par nuit",
+      "selectDatesPrivatize": "Sélectionnez vos dates",
+      "privatizeUnavailable": "Indisponible à ces dates",
+      "bookEntireHotel": "Privatiser l'hôtel"
     },
     "room": {
       "description": "Description",
@@ -628,7 +634,8 @@
       "editProfile": "Modifier le profil",
       "notifications": "Notifications",
       "save": "Enregistrer les modifications",
-      "newPassword": "Nouveau mot de passe"
+      "newPassword": "Nouveau mot de passe",
+      "noNotifications": "Vous n'avez aucune nouvelle notification."
     },
     "detail": {
       "title": "Détails de la réservation",

@@ -7,6 +7,7 @@ import {
   User,
   X,
   BedDouble,
+  Crown,
 } from "lucide-react";
 import type { ClientReservation } from "@/store/reservationStore";
 import type { Chambre } from "@/types/chambre";
@@ -41,7 +42,8 @@ const BOOKING_COLORS = [
   { bg: "bg-orange-500/80",   border: "border-orange-400",   text: "text-white"       },
 ];
 
-function getColorForBooking(bookingId: string) {
+function getColorForBooking(bookingId: string, isPrivatization?: boolean) {
+  if (isPrivatization) return { bg: "bg-gold/75", border: "border-gold", text: "text-foreground" };
   let hash = 0;
   for (let i = 0; i < bookingId.length; i++) {
     hash = bookingId.charCodeAt(i) + ((hash << 5) - hash);
@@ -215,7 +217,8 @@ export default function GanttCalendarTab({
               </div>
             ) : (
               chambres.map((chambre, roomIdx) => {
-                const roomBookings = bookingsByRoom[chambre.id] ?? [];
+                // Include both room-specific bookings and full-hotel privatizations
+                const roomBookings = [...(bookingsByRoom[chambre.id] ?? []), ...(bookingsByRoom["PRIVATISATION"] ?? [])];
                 const isEven = roomIdx % 2 === 0;
 
                 return (
@@ -273,7 +276,8 @@ export default function GanttCalendarTab({
                               bookingStart.getFullYear() === cellDay.getFullYear() &&
                               bookingStart.getMonth() === cellDay.getMonth() &&
                               bookingStart.getDate() === cellDay.getDate();
-                            const color = getColorForBooking(coveringBooking.id);
+                            const isPrivatization = coveringBooking.chambreId === "PRIVATISATION";
+                            const color = getColorForBooking(coveringBooking.id, isPrivatization);
 
                             if (!isFirstDay) {
                               return (
@@ -291,9 +295,13 @@ export default function GanttCalendarTab({
                                   flex items-center gap-1 px-1.5 overflow-hidden
                                   hover:brightness-110 transition-all z-10 cursor-pointer`}
                               >
-                                <User className="w-2.5 h-2.5 shrink-0 text-white" />
-                                <span className="text-[9px] font-bold truncate text-white whitespace-nowrap">
-                                  {(coveringBooking.clientName || "Client").split(" ")[0]}
+                                {isPrivatization ? (
+                                  <Crown className="w-2.5 h-2.5 shrink-0" />
+                                ) : (
+                                  <User className="w-2.5 h-2.5 shrink-0 text-white" />
+                                )}
+                                <span className="text-[9px] font-bold truncate whitespace-nowrap">
+                                  {isPrivatization ? "PRIVATISATION" : (coveringBooking.clientName || "Client").split(" ")[0]}
                                 </span>
                               </button>
                             );
@@ -323,6 +331,10 @@ export default function GanttCalendarTab({
           <div className="w-3 h-3 rounded-sm bg-purple/20" />
           <span>{t("gantt.legendToday") || "Aujourd'hui"}</span>
         </div>
+        <div className="flex items-center gap-1.5">
+          <Crown className="w-3 h-3 text-gold" />
+          <span>{t("gantt.legendPrivatization") || "Privatisation"}</span>
+        </div>
       </div>
 
       {/* ── Booking Detail Modal ── */}
@@ -339,7 +351,11 @@ export default function GanttCalendarTab({
             <div className="flex items-start justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-xl ${selectedBooking.color.bg} border ${selectedBooking.color.border} flex items-center justify-center shrink-0`}>
-                  <User className="w-5 h-5 text-white" />
+                  {selectedBooking.booking.chambreId === "PRIVATISATION" ? (
+                    <Crown className="w-5 h-5" />
+                  ) : (
+                    <User className="w-5 h-5 text-white" />
+                  )}
                 </div>
                 <div>
                   <h3

@@ -72,7 +72,7 @@ export default function BookableRoomCard({
 
   // Date-aware availability: if dates provided, check against bookings; else use static status.
   const available = checkIn && checkOut
-    ? isRoomAvailable(room.id, checkIn, checkOut, bookings)
+    ? isRoomAvailable(room.id, checkIn, checkOut, bookings, hotelId)
     : room.statut === "DISPONIBLE";
 
   const statutKey = available ? "DISPONIBLE" : "INDISPONIBLE";

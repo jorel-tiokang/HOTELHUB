@@ -8,7 +8,8 @@ import { useHotelsStore } from "@/store/hotelsStore";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 import { useReservationStore } from "@/store/reservationStore";
 import { useAuthStore } from "@/store/authStore";
-import { isRoomAvailable, calcNights } from "@/utils/availability";
+import { isRoomAvailable, isHotelAvailableForPrivatization, calcNights } from "@/utils/availability";
+import { useRouter } from "next/navigation";
 import BookableRoomCard from "./BookableRoomCard";
 import Header from "./Header";
 import { Footer } from "./footer";
@@ -32,6 +33,7 @@ export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
   // Date-based availability
   const { checkIn: storeCheckIn, checkOut: storeCheckOut } = useHotelsFilterStore();
   const { bookings } = useReservationStore();
+  const router = useRouter();
   const [localCheckIn, setLocalCheckIn] = useState<Date | undefined>(storeCheckIn ?? undefined);
   const [localCheckOut, setLocalCheckOut] = useState<Date | undefined>(storeCheckOut ?? undefined);
 
@@ -46,15 +48,59 @@ export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
   // Date-aware room availability
   const rooms = activeRooms.filter(r => {
     const dateAvailable = activeCheckIn && activeCheckOut
-      ? isRoomAvailable(r.id, activeCheckIn, activeCheckOut, bookings)
+      ? isRoomAvailable(r.id, activeCheckIn, activeCheckOut, bookings, hotel.id)
       : r.statut === "DISPONIBLE" || !availableOnly;
     if (availableOnly) {
       return activeCheckIn && activeCheckOut
-        ? isRoomAvailable(r.id, activeCheckIn, activeCheckOut, bookings)
+        ? isRoomAvailable(r.id, activeCheckIn, activeCheckOut, bookings, hotel.id)
         : r.statut === "DISPONIBLE";
     }
     return true;
   });
+
+  const canPrivatize = hotel.prixPrivatisationParNuit !== undefined 
+    && activeCheckIn 
+    && activeCheckOut 
+    && isHotelAvailableForPrivatization(hotel.id, activeCheckIn, activeCheckOut, bookings);
+
+  const privatizationCard = hotel.prixPrivatisationParNuit !== undefined ? (
+    <div className="bg-gradient-to-br from-purple/10 to-gold/10 border border-purple/20 dark:border-gold/20 rounded-2xl p-5 shadow-sm w-full flex flex-col gap-3">
+      <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: "var(--font-playfair)" }}>
+        {t("privatizeTitle") || "Privatiser l'établissement"}
+      </h3>
+      <p className="text-sm text-foreground/70">
+        {t("privatizeDesc") || "Réservez l'intégralité de l'hôtel en exclusivité pour vos événements ou séjours de groupe."}
+      </p>
+      
+      <div className="flex justify-between items-end mt-2">
+        <div className="flex flex-col">
+          <span className="text-foreground/50 text-xs">{t("pricePerNight") || "Prix par nuit"}</span>
+          <span className="text-foreground font-bold text-xl">{hotel.prixPrivatisationParNuit.toLocaleString()} FCFA</span>
+        </div>
+      </div>
+
+      {canPrivatize ? (
+        <button
+          onClick={() => {
+            if (activeCheckIn && activeCheckOut) {
+              router.push(`/hotels/${hotel.id}/rooms/PRIVATISATION?checkIn=${activeCheckIn.toISOString()}&checkOut=${activeCheckOut.toISOString()}`);
+            } else {
+              alert(t("selectDatesPrivatize") || "Veuillez sélectionner vos dates de séjour.");
+            }
+          }}
+          className="w-full mt-2 py-3 rounded-xl bg-foreground text-background font-bold text-sm hover:opacity-90 transition-opacity"
+        >
+          {t("bookEntireHotel") || "Privatiser l'hôtel"}
+        </button>
+      ) : (
+        <div className="w-full mt-2 py-3 rounded-xl bg-foreground/10 text-foreground/50 font-bold text-sm text-center">
+          {!activeCheckIn || !activeCheckOut 
+            ? (t("selectDatesPrivatize") || "Sélectionnez vos dates") 
+            : (t("privatizeUnavailable") || "Indisponible à ces dates")}
+        </div>
+      )}
+    </div>
+  ) : null;
 
   return (
     <>
@@ -160,10 +206,13 @@ export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
 
     {/* 📱 CARTE VERSION MOBILE ET TABLETTE uniquement */}
     {/* Elle s'affiche ici sur mobile (sous les services), mais disparaît sur PC */}
-    <div className="block lg:hidden w-full">
-      <h3 className="text-lg font-bold text-foreground mb-3">{t("localisation") || "Localisation"}</h3>
-      <div className="bg-card rounded-2xl border border-border p-3 shadow-sm">
-        <SimpleMap />
+    <div className="block lg:hidden w-full flex flex-col gap-4">
+      {privatizationCard}
+      <div>
+        <h3 className="text-lg font-bold text-foreground mb-3">{t("localisation") || "Localisation"}</h3>
+        <div className="bg-card rounded-2xl border border-border p-3 shadow-sm">
+          <SimpleMap />
+        </div>
       </div>
     </div>
 
@@ -215,6 +264,9 @@ export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
       <h3 className="text-lg font-bold text-foreground mb-3">{t("localisation") || "Localisation"}</h3>
       <SimpleMap />
     </div>
+
+    {/* Privatization card */}
+    {privatizationCard}
 
     {/* Contact hotel button */}
     <button

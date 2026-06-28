@@ -27,6 +27,7 @@ export const hotelsData: Hotel[] = [
     reviewCount: 342,
     receptionHours: { open: "08:00", close: "23:00" },
     cancellationPolicy: "Annulation gratuite jusqu'à 48h avant l'arrivée. Au-delà, la première nuit sera facturée.",
+    prixPrivatisationParNuit: 1500000,
     actif: true,
     createdAt: "2023-01-10",
     updatedAt: "2026-05-12",
