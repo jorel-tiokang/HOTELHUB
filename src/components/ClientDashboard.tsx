@@ -22,10 +22,12 @@ import {
   Mail,
   MapPin,
   Bell,
+  MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useClientDashboardStore } from "@/store/clientDashboardStore";
 import { useReservationStore } from "@/store/reservationStore";
+import { useMessagesStore } from "@/store/messagesStore";
 import type { ClientReservation, StatutReservationClient } from "@/mocks/clientBookings";
 import Header from "@/src/components/Header";
 import { Footer } from "@/src/components/footer";
@@ -37,6 +39,7 @@ import ReviewModal from "@/src/components/ReviewModal";
 import { hasReviewedBooking, getReviewsForClient } from "@/src/services/reviewService";
 import type { BackendReviewDTO } from "@/services/api.types";
 import { useHotelsStore } from "@/store/hotelsStore";
+import MessagesTab from "@/src/components/shared/MessagesTab";
 
 // ── Status colour map ────────────────────────────────────────────────────────
 const STATUT_STYLES: Record<StatutReservationClient, string> = {
@@ -848,8 +851,9 @@ function AccountCard() {
 // ============================================================================
 export default function ClientDashboard() {
   const t = useTranslations("clientDashboard");
-  const { user } = useAuthStore();
+  const { user, directors } = useAuthStore();
   const { bookings, fetchBookings, isLoading } = useReservationStore();
+  const { getUnreadCount, messages } = useMessagesStore();
   const { activeTab, setActiveTab, selectedBooking, isDetailOpen, closeDetail } =
     useClientDashboardStore();
 
@@ -876,11 +880,56 @@ export default function ClientDashboard() {
     }
   }, [user?.id, fetchBookings]);
 
-  type Tab = "reservations" | "avis" | "profil";
+  type Tab = "reservations" | "avis" | "profil" | "messages";
 
-  const tabs: { key: Tab; label: string }[] = [
+  // Build director contacts from the hotels where the client has bookings
+  const myHotelIds = [...new Set(bookings.map((b) => b.hotelId))];
+  const baseContacts = directors
+    .filter((d) => myHotelIds.includes(d.hotelId))
+    .map((d) => ({
+      id: d.id,
+      name: d.nom,
+      role: "Directeur d'hôtel",
+      avatarInitial: d.nom.charAt(0).toUpperCase(),
+    }));
+
+  const messageContacts = [...baseContacts];
+  const contactIds = new Set(baseContacts.map(c => c.id));
+
+  // Add directors the client chatted with even if no booking yet
+  if (user) {
+    const chatIds = new Set(
+      messages
+        .filter(m => m.senderId === user.id || m.receiverId === user.id)
+        .map(m => m.senderId === user.id ? m.receiverId : m.senderId)
+    );
+
+    chatIds.forEach(id => {
+      if (!contactIds.has(id)) {
+        const dir = directors.find(d => d.id === id);
+        if (dir) {
+          messageContacts.push({
+            id: dir.id,
+            name: dir.nom,
+            role: "Directeur d'hôtel",
+            avatarInitial: dir.nom.charAt(0).toUpperCase(),
+          });
+          contactIds.add(dir.id);
+        }
+      }
+    });
+  }
+
+  const clientCurrentUser = user
+    ? { id: user.id, name: user.nom, role: "Client" }
+    : null;
+
+  const unreadCount = user ? getUnreadCount(user.id) : 0;
+
+  const tabs: { key: Tab; label: string; badge?: number }[] = [
     { key: "reservations", label: t("tabs.bookings") },
     { key: "avis",         label: t("tabs.reviews") },
+    { key: "messages",     label: t("tabs.messages") || "Messages", badge: unreadCount },
     { key: "profil",       label: t("tabs.profile") },
   ];
 
@@ -938,19 +987,24 @@ export default function ClientDashboard() {
             </div>
 
             {/* Tab switcher */}
-            <div className="flex gap-1 bg-white/5 border border-white/10 rounded-2xl p-1 w-fit">
-              {tabs.map(({ key, label }) => (
+            <div className="flex gap-1 bg-white/5 border border-white/10 rounded-2xl p-1 w-fit flex-wrap">
+              {tabs.map(({ key, label, badge }) => (
                 <button
                   key={key}
                   id={`tab-${key}`}
                   onClick={() => setActiveTab(key)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                     activeTab === key
                       ? "bg-purple dark:bg-gold text-white dark:text-[#1c1714] shadow"
                       : "text-white/50 hover:text-white"
                   }`}
                 >
                   {label}
+                  {badge && badge > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">
+                      {badge}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -1053,6 +1107,26 @@ export default function ClientDashboard() {
 
               {bookings.filter((b) => b.statut === "TERMINEE").length === 0 && (
                 <p className="text-white/30 text-sm text-center py-12">{t("past.empty")}</p>
+              )}
+            </div>
+          )}
+
+          {/* ── Tab: Messages ───────────────────────────────────────────── */}
+          {activeTab === "messages" && clientCurrentUser && (
+            <div>
+              {messageContacts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 gap-4 text-white/40">
+                  <MessageSquare className="w-12 h-12" />
+                  <p className="text-sm text-center max-w-xs">
+                    {t("messages.noContacts") || "Vous n'avez pas encore de réservation active. Réservez un hôtel pour pouvoir contacter son directeur."}
+                  </p>
+                </div>
+              ) : (
+                <MessagesTab
+                  currentUser={clientCurrentUser}
+                  contacts={messageContacts}
+                  t={t}
+                />
               )}
             </div>
           )}

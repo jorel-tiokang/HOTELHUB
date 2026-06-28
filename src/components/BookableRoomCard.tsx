@@ -3,9 +3,11 @@
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import type { Room } from "@/services/hotel";
+import type { ClientReservation } from "@/mocks/clientBookings";
 import React from "react";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { formatPrice } from "@/utils/currency";
+import { isRoomAvailable } from "@/utils/availability";
 import {
   Wifi,
   Tv,
@@ -54,15 +56,32 @@ function getEquipementIcon(eq: string): React.ElementType | null {
 export default function BookableRoomCard({
   room,
   hotelId,
+  checkIn,
+  checkOut,
+  bookings = [],
 }: {
   room: Room;
   hotelId: string;
+  checkIn?: Date;
+  checkOut?: Date;
+  bookings?: ClientReservation[];
 }) {
   const t = useTranslations("hotelsPage.detail");
   const locale = useLocale();
   const { currency } = useCurrencyStore();
-  const available = room.statut === "DISPONIBLE";
+
+  // Date-aware availability: if dates provided, check against bookings; else use static status.
+  const available = checkIn && checkOut
+    ? isRoomAvailable(room.id, checkIn, checkOut, bookings)
+    : room.statut === "DISPONIBLE";
+
   const statutKey = available ? "DISPONIBLE" : "INDISPONIBLE";
+
+  // Build the link href, carrying dates if available so RoomDetailPage can pre-fill them
+  const dateParams = checkIn && checkOut
+    ? `?checkIn=${checkIn.toISOString()}&checkOut=${checkOut.toISOString()}`
+    : "";
+  const roomHref = `/${locale}/hotels/${hotelId}/rooms/${room.id}${dateParams}`;
 
   return (
     <article
@@ -147,7 +166,7 @@ export default function BookableRoomCard({
           </p>
 
           <Link
-            href={`/${locale}/hotels/${hotelId}/rooms/${room.id}`}
+            href={roomHref}
             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all
               ${available
                 ? "bg-purple dark:bg-gold text-white dark:text-[#1c1714] hover:opacity-90 shadow-lg shadow-gold/20"

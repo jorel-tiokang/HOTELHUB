@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { ClientReservation, StatutReservationClient } from "@/mocks/clientBookings";
 
 // ── Tab types ────────────────────────────────────────────────────────────────
-export type DashboardTab = "reservations" | "avis" | "profil";
+export type DashboardTab = "reservations" | "avis" | "profil" | "messages";
 
 // ── Sort options for the bookings list ──────────────────────────────────────
 export type SortBy = "date-asc" | "date-desc" | "price-asc" | "price-desc";

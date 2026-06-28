@@ -6,6 +6,7 @@ import { useState } from "react";
 import DatePicker from "./DatePicker";
 import { useRouter } from "next/navigation";
 import { hotelsData } from "@/mocks/hotelsData";
+import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 
 export default function HeroSection() {
   const t = useTranslations("hero");
@@ -18,6 +19,8 @@ export default function HeroSection() {
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guests, setGuests] = useState("");
 
+  const { setCheckIn: storeSetCheckIn, setCheckOut: storeSetCheckOut, setGuests: storeSetGuests, setSelectedCity } = useHotelsFilterStore();
+
   // Extract unique cities from hotelsData
   const availableCities = Array.from(new Set(hotelsData.map(h => h.city)));
 
@@ -26,6 +29,12 @@ export default function HeroSection() {
       alert("La date de départ doit être ultérieure à la date d'arrivée.");
       return;
     }
+
+    // Push dates & guests into the global filter store so HotelsListPage picks them up
+    storeSetCheckIn(checkIn ?? null);
+    storeSetCheckOut(checkOut ?? null);
+    storeSetGuests(parseInt(guests) || 1);
+    if (location) setSelectedCity(location);
 
     const params = new URLSearchParams();
     if (location) params.append("city", location);

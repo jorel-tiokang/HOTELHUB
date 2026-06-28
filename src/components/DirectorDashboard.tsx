@@ -22,7 +22,7 @@ import {
 } from "@/mocks/dashboardMocks";
 import {
   LayoutDashboard, BedDouble, CalendarCheck, BarChart3,
-  Star, Users, Settings, Bell, Menu, MessageSquare
+  Star, Users, Settings, Bell, Menu, MessageSquare, CalendarRange
 } from "lucide-react";
 
 // Sub-components
@@ -34,15 +34,16 @@ import ReviewsTab from "@/src/components/director/tabs/ReviewsTab";
 import StatisticsTab from "@/src/components/director/tabs/StatisticsTab";
 import StaffTab from "@/src/components/director/tabs/StaffTab";
 import SettingsTab from "@/src/components/director/tabs/SettingsTab";
+import GanttCalendarTab from "@/src/components/director/tabs/GanttCalendarTab";
 import MessagesTab from "@/src/components/shared/MessagesTab";
 
-type Tab = "overview" | "rooms" | "bookings" | "reviews" | "statistics" | "staff" | "settings" | "messages";
+type Tab = "overview" | "rooms" | "bookings" | "calendar" | "reviews" | "statistics" | "staff" | "settings" | "messages";
 
 export default function DirectorDashboard() {
   const t = useTranslations("directeurDashboard");
   const { user, logout, directors } = useAuthStore();
   const { currency } = useCurrencyStore();
-  const { getUnreadCount } = useMessagesStore();
+  const { getUnreadCount, messages } = useMessagesStore();
   const locale = useLocale();
 
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -144,13 +145,45 @@ export default function DirectorDashboard() {
     role: "Directeur",
     avatarInitial: d.nom.charAt(0)
   }));
-  const messageContacts = [pdgContact, ...otherDirectors];
+
+  // Unique clients from bookings
+  const clientContacts = Array.from(new Map(bookings.map(b => [b.clientId, b])).values())
+    .map(b => ({
+      id: b.clientId,
+      name: b.clientName || "Client",
+      role: "Client",
+      avatarInitial: (b.clientName || "C").charAt(0).toUpperCase()
+    }));
+
+  const baseContacts = [pdgContact, ...clientContacts, ...otherDirectors];
+  const messageContacts = [...baseContacts];
+  const contactIds = new Set(baseContacts.map(c => c.id));
+
+  // Add any client who sent a message but hasn't booked yet
+  const chatIds = new Set(
+    messages
+      .filter(m => m.senderId === currentUser.id || m.receiverId === currentUser.id)
+      .map(m => m.senderId === currentUser.id ? m.receiverId : m.senderId)
+  );
+
+  chatIds.forEach(id => {
+    if (!contactIds.has(id)) {
+      messageContacts.push({
+        id,
+        name: "Client (Nouveau)",
+        role: "Client",
+        avatarInitial: "C"
+      });
+      contactIds.add(id);
+    }
+  });
   const unreadMessagesCount = getUnreadCount(currentUser.id);
 
   const navItems = [
     { id: "overview", label: t("nav.overview"), icon: LayoutDashboard },
     { id: "rooms", label: t("nav.rooms"), icon: BedDouble },
     { id: "bookings", label: t("nav.bookings"), icon: CalendarCheck },
+    { id: "calendar", label: t("nav.calendar") || "Calendrier", icon: CalendarRange },
     { id: "statistics", label: t("nav.statistics"), icon: BarChart3 },
     { id: "reviews", label: t("nav.reviews"), icon: Star },
     { id: "staff", label: t("nav.staff"), icon: Users },
@@ -255,6 +288,13 @@ export default function DirectorDashboard() {
               currency={currency}
               locale={locale}
               onAction={handleBookingAction}
+            />
+          )}
+          {activeTab === "calendar" && (
+            <GanttCalendarTab
+              t={t}
+              chambres={chambres}
+              bookings={bookings}
             />
           )}
           {activeTab === "reviews" && (

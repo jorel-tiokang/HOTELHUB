@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { notFound } from "next/navigation";
 import BookableRoomCard from "./BookableRoomCard";
 import Header from "./Header";
@@ -32,8 +32,13 @@ export default function RoomDetailPage({
   const hotel = hotels.find((h) => h.id === hotelId);
   const room = hotel?.rooms.find((r) => r.id === roomId);
 
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  // Pre-fill dates from URL params (passed by BookableRoomCard when dates are selected)
+  const searchParams = useSearchParams();
+  const urlCheckIn = searchParams?.get("checkIn");
+  const urlCheckOut = searchParams?.get("checkOut");
+
+  const [checkIn, setCheckIn] = useState(urlCheckIn ? new Date(urlCheckIn).toISOString().slice(0, 10) : "");
+  const [checkOut, setCheckOut] = useState(urlCheckOut ? new Date(urlCheckOut).toISOString().slice(0, 10) : "");
   const [guests, setGuests] = useState(1);
   const [expectedArrivalTime, setExpectedArrivalTime] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -317,7 +322,7 @@ export default function RoomDetailPage({
                 </div>
 
                 {hotel.cancellationPolicy && (
-                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-xs text-blue-400">
+                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 text-xs text-purple-400">
                     <span className="font-bold">Politique :</span> {hotel.cancellationPolicy}
                   </div>
                 )}

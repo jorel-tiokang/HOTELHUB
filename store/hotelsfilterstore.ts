@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
 interface HotelsFilterState {
+  checkIn: Date | null;
+  checkOut: Date | null;
+  guests: number;
+
   searchQuery: string;
   priceMax: number;
   showAvailableOnly: boolean;
@@ -10,6 +14,9 @@ interface HotelsFilterState {
   selectedCity: string | null;
   selectedCountry: string | null;
 
+  setCheckIn: (date: Date | null) => void;
+  setCheckOut: (date: Date | null) => void;
+  setGuests: (n: number) => void;
   setSearchQuery: (q: string) => void;
   setPriceMax: (p: number) => void;
   toggleAvailableOnly: () => void;
@@ -21,6 +28,9 @@ interface HotelsFilterState {
 }
 
 export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
+  checkIn: null,
+  checkOut: null,
+  guests: 1,
   searchQuery: "",
   priceMax: 200000,
   showAvailableOnly: false,
@@ -29,6 +39,9 @@ export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
   selectedCity: null,
   selectedCountry: null,
 
+  setCheckIn: (date) => set({ checkIn: date }),
+  setCheckOut: (date) => set({ checkOut: date }),
+  setGuests: (n) => set({ guests: n }),
   setSearchQuery: (q) => set({ searchQuery: q }),
   setPriceMax: (p) => set({ priceMax: p }),
   toggleAvailableOnly: () =>

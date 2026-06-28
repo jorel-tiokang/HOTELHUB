@@ -39,6 +39,7 @@ export function mapBackendBookingToClient(
     statut: STATUS_MAP[dto.booking_status],
     createdAt: dto.created_at_date,
     clientName: dto.client_full_name,
+    clientId: dto.client_user_id,
     expectedArrivalTime: dto.expected_arrival_time,
   };
 }

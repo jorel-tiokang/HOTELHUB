@@ -1,11 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
-import { Search, MapPin, Map } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Search, MapPin, Map, CalendarDays, X } from "lucide-react";
 import { getAvailableRooms } from "@/mocks/hotelsData";
 import { useHotelsStore } from "@/store/hotelsStore";
 import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
+import { useReservationStore } from "@/store/reservationStore";
+import { isRoomAvailable, hotelHasAvailableRooms } from "@/utils/availability";
 import HotelsSidebar from "./HotelsSidebar";
 import HotelCard from "./Hotelcard";
 import MapModal from "./MapModal";
@@ -23,9 +25,14 @@ export default function HotelsPage() {
     selectedAmenities,
     selectedCity,
     selectedCountry,
+    checkIn,
+    checkOut,
+    setCheckIn,
+    setCheckOut,
   } = useHotelsFilterStore();
 
   const { hotels } = useHotelsStore();
+  const { bookings } = useReservationStore();
 
   const filteredHotels = useMemo(() => {
     return hotels.filter((hotel) => {
@@ -46,24 +53,40 @@ export default function HotelsPage() {
       // Filter out inactive rooms
       const activeRooms = hotel.rooms.filter(r => r.actif !== false);
 
-      // 3. Availability and Price
-      const availableRooms = activeRooms.filter((r) => r.statut === "DISPONIBLE");
-      const rooms = showAvailableOnly ? availableRooms : activeRooms;
-      const matchesAvailability = !showAvailableOnly || rooms.length > 0;
-      const matchesPrice = rooms.some((r) => r.prixParNuit <= priceMax) || rooms.length === 0;
+      // 3. Availability — date-aware if checkIn/checkOut set, fallback to status
+      let matchesAvailability = true;
+      let matchesPrice = true;
+
+      if (checkIn && checkOut) {
+        // Real date-based availability check
+        const availableRoomIds = activeRooms
+          .filter(r => isRoomAvailable(r.id, checkIn, checkOut, bookings))
+          .map(r => r.id);
+
+        matchesAvailability = !showAvailableOnly || availableRoomIds.length > 0;
+        matchesPrice = activeRooms
+          .filter(r => availableRoomIds.includes(r.id))
+          .some(r => r.prixParNuit <= priceMax) || activeRooms.length === 0;
+      } else {
+        // Fallback: static status check
+        const availableRooms = activeRooms.filter(r => r.statut === "DISPONIBLE");
+        const rooms = showAvailableOnly ? availableRooms : activeRooms;
+        matchesAvailability = !showAvailableOnly || rooms.length > 0;
+        matchesPrice = rooms.some(r => r.prixParNuit <= priceMax) || rooms.length === 0;
+      }
 
       // 4. Amenities
       const hotelAmenities = new Set([
         ...hotel.amenities,
-        ...activeRooms.flatMap((r) => r.equipements)
+        ...activeRooms.flatMap(r => r.equipements)
       ]);
-      const matchesAmenities = selectedAmenities.every((amenity) =>
+      const matchesAmenities = selectedAmenities.every(amenity =>
         hotelAmenities.has(amenity)
       );
 
       return matchesQuery && matchesCountry && matchesCity && matchesAvailability && matchesPrice && matchesAmenities;
     });
-  }, [hotels, searchQuery, showAvailableOnly, priceMax, selectedCity, selectedCountry, selectedAmenities]);
+  }, [hotels, bookings, searchQuery, showAvailableOnly, priceMax, selectedCity, selectedCountry, selectedAmenities, checkIn, checkOut]);
 
   return (
     <>
@@ -114,11 +137,25 @@ export default function HotelsPage() {
             <div className="flex flex-col gap-6">
 
               {/* Count + Map button row */}
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-foreground/50">
-                  <span className="font-bold text-foreground">{filteredHotels.length}</span>{" "}
-                  {t("map.hotelsFound")}
-                </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-foreground/50">
+                    <span className="font-bold text-foreground">{filteredHotels.length}</span>{" "}
+                    {t("map.hotelsFound")}
+                  </p>
+                  {/* Active date filter badge */}
+                  {checkIn && checkOut && (
+                    <div className="flex items-center gap-2 text-xs bg-purple/10 border border-purple/20 text-purple dark:text-gold dark:bg-gold/10 dark:border-gold/20 px-3 py-1.5 rounded-full w-fit">
+                      <CalendarDays className="w-3.5 h-3.5" />
+                      <span>
+                        {checkIn.toLocaleDateString()} → {checkOut.toLocaleDateString()}
+                      </span>
+                      <button onClick={() => { setCheckIn(null); setCheckOut(null); }} className="ml-1 hover:text-red-400 transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button
                   id="open-map-button"
                   onClick={() => setIsMapOpen(true)}

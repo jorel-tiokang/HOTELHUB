@@ -348,6 +348,11 @@
       "rooms": "Rooms",
       "about": "About this hotel",
       "amenities": "Amenities",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "contactHotel": "Contact Hotel",
+      "noDirector": "Director unavailable",
+      "noDirectorDesc": "No director has been assigned to this hotel yet.",
       "viewDetails": "View Details",
       "bookNow": "Book Now",
       "reviews": "reviews",
@@ -454,6 +459,7 @@
         "overview": "Overview",
         "rooms": "Rooms",
         "bookings": "Bookings",
+        "calendar": "Calendar",
         "staff": "Staff",
         "statistics": "Statistics",
         "reviews": "Reviews",
@@ -507,6 +513,22 @@
           "paid": "Paid",
           "close": "Close"
         }
+      },
+      "gantt": {
+        "totalBookings": "Bookings this month",
+        "occupiedRooms": "Occupied rooms",
+        "occupancyRate": "Occupancy rate",
+        "noRooms": "No rooms configured",
+        "legendOccupied": "Room with active booking",
+        "legendFree": "Available room",
+        "legendToday": "Today",
+        "bookingRef": "Ref.",
+        "modalRoom": "Room",
+        "modalCheckIn": "Check-in",
+        "modalCheckOut": "Check-out",
+        "modalGuests": "Guests",
+        "modalStatus": "Status",
+        "close": "Close"
       },
       "status": {
         "IMPAYEE": "Unpaid",
@@ -621,7 +643,17 @@
     "tabs": {
       "bookings": "Bookings",
       "reviews": "My Reviews",
+      "messages": "Messages",
       "profile": "Profile"
+    },
+    "messages": {
+      "title": "Messages",
+      "contacts": "My Hotels",
+      "placeholder": "Write your message...",
+      "send": "Send",
+      "noMessages": "No messages yet. Ask the hotel anything!",
+      "selectUser": "Select a hotel to start chatting.",
+      "noContacts": "No bookings yet. Book a hotel to start chatting with its director."
     }
   }
 }

@@ -32,6 +32,7 @@ export interface ClientReservation {
   montantTotal: number;
   statut: StatutReservationClient;
   createdAt: string;   // ISO "YYYY-MM-DD"
+  clientId: string;
   clientName?: string;
   expectedArrivalTime?: string;
 }
@@ -55,6 +56,8 @@ export const clientBookings: ClientReservation[] = [
     montantTotal: 740000,
     statut: "CONFIRMEE",
     createdAt: "2026-06-15",
+    clientId: "u-client-1",
+    clientName: "Jean Dupont",
   },
   {
     id: "CB002",
@@ -72,6 +75,8 @@ export const clientBookings: ClientReservation[] = [
     montantTotal: 232000,
     statut: "EN_ATTENTE",
     createdAt: "2026-06-17",
+    clientId: "u-client-1",
+    clientName: "Jean Dupont",
   },
   {
     id: "CB003",
@@ -89,6 +94,8 @@ export const clientBookings: ClientReservation[] = [
     montantTotal: 260000,
     statut: "TERMINEE",
     createdAt: "2026-03-10",
+    clientId: "u-client-1",
+    clientName: "Jean Dupont",
   },
   {
     id: "CB004",
@@ -106,6 +113,8 @@ export const clientBookings: ClientReservation[] = [
     montantTotal: 360000,
     statut: "ANNULEE",
     createdAt: "2026-02-01",
+    clientId: "u-client-1",
+    clientName: "Jean Dupont",
   },
 ];
 

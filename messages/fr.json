@@ -348,6 +348,11 @@
       "rooms": "Chambres",
       "about": "À propos de cet hôtel",
       "amenities": "Équipements",
+      "checkIn": "Arrivée",
+      "checkOut": "Départ",
+      "contactHotel": "Contacter l'hôtel",
+      "noDirector": "Directeur non disponible",
+      "noDirectorDesc": "Aucun directeur n'est encore assigné à cet hôtel.",
       "viewDetails": "Voir les détails",
       "bookNow": "Réserver",
       "reviews": "avis",
@@ -454,6 +459,7 @@
         "overview": "Vue d'ensemble",
         "rooms": "Chambres",
         "bookings": "Réservations",
+        "calendar": "Calendrier",
         "staff": "Personnel",
         "statistics": "Statistiques",
         "reviews": "Avis",
@@ -507,6 +513,22 @@
           "paid": "Payee",
           "close": "Fermer"
         }
+      },
+      "gantt": {
+        "totalBookings": "Réservations ce mois",
+        "occupiedRooms": "Chambres occupées",
+        "occupancyRate": "Taux d'occupation",
+        "noRooms": "Aucune chambre configurée",
+        "legendOccupied": "Chambre avec réservation active",
+        "legendFree": "Chambre libre",
+        "legendToday": "Aujourd'hui",
+        "bookingRef": "Réf.",
+        "modalRoom": "Chambre",
+        "modalCheckIn": "Arrivée",
+        "modalCheckOut": "Départ",
+        "modalGuests": "Voyageurs",
+        "modalStatus": "Statut",
+        "close": "Fermer"
       },
       "status": {
         "IMPAYEE": "Impayée",
@@ -621,7 +643,17 @@
     "tabs": {
       "bookings": "Réservations",
       "reviews": "Mes avis",
+      "messages": "Messages",
       "profile": "Profil"
+    },
+    "messages": {
+      "title": "Messagerie",
+      "contacts": "Mes Hôtels",
+      "placeholder": "Écrivez votre message...",
+      "send": "Envoyer",
+      "noMessages": "Aucun message encore. Posez vos questions à l'hôtel !",
+      "selectUser": "Sélectionnez un hôtel pour commencer la conversation.",
+      "noContacts": "Vous n'avez pas encore de réservation. Réservez un hôtel pour pouvoir contacter son directeur."
     }
   }
 }
