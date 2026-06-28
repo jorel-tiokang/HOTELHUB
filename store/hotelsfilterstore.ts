@@ -8,6 +8,7 @@ interface HotelsFilterState {
 
   selectedAmenities: string[];
   selectedCity: string | null;
+  selectedCountry: string | null;
 
   setSearchQuery: (q: string) => void;
   setPriceMax: (p: number) => void;
@@ -16,6 +17,7 @@ interface HotelsFilterState {
   requestGeolocation: () => void;
   toggleAmenity: (amenity: string) => void;
   setSelectedCity: (city: string | null) => void;
+  setSelectedCountry: (country: string | null) => void;
 }
 
 export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
@@ -25,6 +27,7 @@ export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
   userLocation: null,
   selectedAmenities: [],
   selectedCity: null,
+  selectedCountry: null,
 
   setSearchQuery: (q) => set({ searchQuery: q }),
   setPriceMax: (p) => set({ priceMax: p }),
@@ -38,6 +41,7 @@ export const useHotelsFilterStore = create<HotelsFilterState>((set) => ({
         : [...state.selectedAmenities, amenity],
     })),
   setSelectedCity: (city) => set({ selectedCity: city }),
+  setSelectedCountry: (country) => set({ selectedCountry: country, selectedCity: null }), // reset city when country changes
 
   requestGeolocation: () => {
     if (!navigator.geolocation) return;

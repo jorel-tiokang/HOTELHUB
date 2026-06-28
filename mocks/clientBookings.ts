@@ -8,6 +8,8 @@
  */
 
 export type StatutReservationClient =
+  | "IMPAYEE"
+  | "PAYEE"
   | "EN_ATTENTE"
   | "CONFIRMEE"
   | "ANNULEE"
@@ -30,6 +32,8 @@ export interface ClientReservation {
   montantTotal: number;
   statut: StatutReservationClient;
   createdAt: string;   // ISO "YYYY-MM-DD"
+  clientName?: string;
+  expectedArrivalTime?: string;
 }
 
 // ── Mock data — linked to hotelsData.ts IDs ─────────────────────────────────
@@ -113,7 +117,7 @@ today.setHours(0, 0, 0, 0);
 /** Bookings that haven't finished yet (checkOut is today or future) */
 export function getUpcomingBookings(): ClientReservation[] {
   return clientBookings.filter((b) => {
-    if (b.statut === "ANNULEE" || b.statut === "TERMINEE") return false;
+    if (b.statut === "ANNULEE" || b.statut === "TERMINEE" || b.statut === "IMPAYEE") return false;
     return new Date(b.jourFin) >= today;
   });
 }

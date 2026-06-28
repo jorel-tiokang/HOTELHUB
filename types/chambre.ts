@@ -13,6 +13,7 @@ export interface Chambre {
   description: string;
   equipements: string[];
   statut: StatutChambre;
+  actif?: boolean;
   /** Local object URLs (from File) or remote URLs */
   images: string[];
   createdAt?: string;
@@ -27,4 +28,5 @@ export interface NewChambreFormData {
   description: string;
   equipements: string;
   images: File[];
+  actif: boolean;
 }

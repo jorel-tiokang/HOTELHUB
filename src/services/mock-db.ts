@@ -9,9 +9,11 @@ import type {
   BackendUserDTO,
   BackendBookingStatus,
   BackendBookingDTO,
+  BackendNotificationDTO,
+  BackendReviewDTO,
 } from "@/services/api.types";
 
-export type { BackendRole, BackendUserDTO, BackendBookingStatus, BackendBookingDTO };
+export type { BackendRole, BackendUserDTO, BackendBookingStatus, BackendBookingDTO, BackendNotificationDTO, BackendReviewDTO };
 
 // ── Seeded users ─────────────────────────────────────────────────────────────
 
@@ -85,7 +87,7 @@ export let mockBookings: BackendBookingDTO[] = [
     end_date: "2026-08-06",
     guest_count: 2,
     total_cost_xaf: 232000,
-    booking_status: "PENDING",
+    booking_status: "UNPAID",
     created_at_date: "2026-06-17",
     client_user_id: "u-client-001",
   },
@@ -126,6 +128,14 @@ export let mockBookings: BackendBookingDTO[] = [
     client_user_id: "u-client-001",
   },
 ];
+
+// ── Notifications (mutable) ──────────────────────────────────────────────────
+
+export let mockNotifications: BackendNotificationDTO[] = [];
+
+// ── Reviews (mutable) ────────────────────────────────────────────────────────
+
+export let mockReviews: BackendReviewDTO[] = [];
 
 // ── Helper ───────────────────────────────────────────────────────────────────
 

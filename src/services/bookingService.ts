@@ -13,7 +13,14 @@ import {
   type BackendBookingDTO,
   type BackendBookingStatus,
 } from "./mock-db";
+import {
+  notifyDirectorNewBooking,
+  notifyDirectorCancelledBooking,
+  notifyClientBookingAccepted,
+  notifyClientBookingCompleted,
+} from "./notificationService";
 import type { Hotel } from "@/services/hotel";
+import { useHotelsStore } from "@/store/hotelsStore";
 
 export interface CreateBookingPayload {
   hotelId: string;
@@ -28,6 +35,8 @@ export interface CreateBookingPayload {
   guestCount: number;
   totalCostXaf: number;
   clientUserId: string;
+  clientFullName: string;
+  expectedArrivalTime?: string;
 }
 
 // ── getBookingsForUser ────────────────────────────────────────────────────────
@@ -54,6 +63,21 @@ export async function createBooking(
   payload: CreateBookingPayload
 ): Promise<BackendBookingDTO> {
   await fakeDelay(700);
+
+  const hotel = useHotelsStore.getState().hotels.find((h) => h.id === payload.hotelId);
+  if (!hotel) {
+    throw new Error("L'hôtel sélectionné est introuvable.");
+  }
+
+  // Arrival time validation
+  if (payload.expectedArrivalTime && hotel.receptionHours) {
+    const { open, close } = hotel.receptionHours;
+    if (payload.expectedArrivalTime < open || payload.expectedArrivalTime > close) {
+      throw new Error(
+        `L'heure d'arrivée (${payload.expectedArrivalTime}) est en dehors des heures d'ouverture de la réception (${open} - ${close}).`
+      );
+    }
+  }
 
   // Check that the room isn't already booked for overlapping dates
   const conflict = mockBookings.find(
@@ -84,12 +108,22 @@ export async function createBooking(
     end_date: payload.endDate,
     guest_count: payload.guestCount,
     total_cost_xaf: payload.totalCostXaf,
-    booking_status: "CONFIRMED",
+    booking_status: "UNPAID",
     created_at_date: new Date().toISOString().slice(0, 10),
     client_user_id: payload.clientUserId,
+    client_full_name: payload.clientFullName,
+    expected_arrival_time: payload.expectedArrivalTime,
   };
 
   mockBookings.push(newBooking);
+
+  // Notify the hotel director about the new booking
+  await notifyDirectorNewBooking(
+    payload.hotelId,
+    payload.clientFullName,
+    newBooking.booking_ref
+  );
+
   return newBooking;
 }
 
@@ -109,6 +143,34 @@ export async function cancelBooking(
   }
 
   mockBookings[idx] = { ...booking, booking_status: "CANCELLED" };
+
+  // Notify the hotel director about the cancellation
+  await notifyDirectorCancelledBooking(
+    booking.hotel_identifier,
+    booking.client_full_name ?? "Un client",
+    bookingRef
+  );
+
+  return mockBookings[idx];
+}
+
+// ── payBooking (client use) ───────────────────────────────────────────────────
+
+export async function payBooking(
+  bookingRef: string
+): Promise<BackendBookingDTO> {
+  await fakeDelay(800); // simulate payment gateway delay
+
+  const idx = mockBookings.findIndex((b) => b.booking_ref === bookingRef);
+  if (idx === -1) throw new Error("Réservation introuvable.");
+
+  const booking = mockBookings[idx];
+  if (booking.booking_status !== "UNPAID") {
+    throw new Error("Cette réservation ne peut pas être payée dans son état actuel.");
+  }
+
+  mockBookings[idx] = { ...booking, booking_status: "PAID" };
+  
   return mockBookings[idx];
 }
 
@@ -123,6 +185,24 @@ export async function updateBookingStatus(
   const idx = mockBookings.findIndex((b) => b.booking_ref === bookingRef);
   if (idx === -1) throw new Error("Réservation introuvable.");
 
-  mockBookings[idx] = { ...mockBookings[idx], booking_status: status };
-  return mockBookings[idx];
+  const prev = mockBookings[idx];
+  mockBookings[idx] = { ...prev, booking_status: status };
+  const updated = mockBookings[idx];
+
+  // Notify the client depending on the new status
+  if (status === "CONFIRMED") {
+    await notifyClientBookingAccepted(
+      updated.client_user_id,
+      updated.hotel_name,
+      bookingRef
+    );
+  } else if (status === "COMPLETED") {
+    await notifyClientBookingCompleted(
+      updated.client_user_id,
+      updated.hotel_name,
+      bookingRef
+    );
+  }
+
+  return updated;
 }

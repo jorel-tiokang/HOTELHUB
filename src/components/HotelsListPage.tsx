@@ -22,37 +22,48 @@ export default function HotelsPage() {
     userLocation,
     selectedAmenities,
     selectedCity,
+    selectedCountry,
   } = useHotelsFilterStore();
 
   const { hotels } = useHotelsStore();
 
   const filteredHotels = useMemo(() => {
     return hotels.filter((hotel) => {
+      // 0. Active Status
+      if (hotel.actif === false) return false;
+
       // 1. Search Query
       const matchesQuery =
         hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         hotel.city.toLowerCase().includes(searchQuery.toLowerCase());
 
+      // 1.5 Country
+      const matchesCountry = !selectedCountry || hotel.countryCode === selectedCountry;
+
       // 2. City
       const matchesCity = !selectedCity || hotel.city === selectedCity;
 
+      // Filter out inactive rooms
+      const activeRooms = hotel.rooms.filter(r => r.actif !== false);
+
       // 3. Availability and Price
-      const rooms = showAvailableOnly ? getAvailableRooms(hotel) : hotel.rooms;
+      const availableRooms = activeRooms.filter((r) => r.statut === "DISPONIBLE");
+      const rooms = showAvailableOnly ? availableRooms : activeRooms;
       const matchesAvailability = !showAvailableOnly || rooms.length > 0;
       const matchesPrice = rooms.some((r) => r.prixParNuit <= priceMax) || rooms.length === 0;
 
       // 4. Amenities
       const hotelAmenities = new Set([
         ...hotel.amenities,
-        ...hotel.rooms.flatMap((r) => r.equipements)
+        ...activeRooms.flatMap((r) => r.equipements)
       ]);
       const matchesAmenities = selectedAmenities.every((amenity) =>
         hotelAmenities.has(amenity)
       );
 
-      return matchesQuery && matchesCity && matchesAvailability && matchesPrice && matchesAmenities;
+      return matchesQuery && matchesCountry && matchesCity && matchesAvailability && matchesPrice && matchesAmenities;
     });
-  }, [hotels, searchQuery, showAvailableOnly, priceMax, selectedCity, selectedAmenities]);
+  }, [hotels, searchQuery, showAvailableOnly, priceMax, selectedCity, selectedCountry, selectedAmenities]);
 
   return (
     <>

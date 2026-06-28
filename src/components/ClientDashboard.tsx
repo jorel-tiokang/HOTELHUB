@@ -33,13 +33,19 @@ import BookingCard from "@/src/components/BookingCard";
 import StatCard from "@/src/components/StatCard";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { formatPrice } from "@/utils/currency";
+import ReviewModal from "@/src/components/ReviewModal";
+import { hasReviewedBooking, getReviewsForClient } from "@/src/services/reviewService";
+import type { BackendReviewDTO } from "@/services/api.types";
+import { useHotelsStore } from "@/store/hotelsStore";
 
 // ── Status colour map ────────────────────────────────────────────────────────
 const STATUT_STYLES: Record<StatutReservationClient, string> = {
+  IMPAYEE:   "bg-orange-500/20 text-orange-400 border border-orange-500/30",
+  PAYEE:     "bg-purple-500/20 text-purple-400 border border-purple-500/30",
   CONFIRMEE: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
   EN_ATTENTE: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
   ANNULEE:   "bg-red-500/20 text-red-400 border border-red-500/30",
-  TERMINEE:  "bg-white/10 text-white/50 border border-white/15",
+  TERMINEE:  "bg-foreground/10 text-foreground/50 border border-foreground/15",
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -103,13 +109,26 @@ function BookingDetailModal({
   const t = useTranslations("clientDashboard");
   const locale = useLocale();
   const { currency } = useCurrencyStore();
-  const { cancelBooking, isLoading } = useReservationStore();
+  const { cancelBooking, payBooking, isLoading } = useReservationStore();
+  
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showPayConfirm, setShowPayConfirm] = useState(false);
+
   const nights = nightsBetween(booking.jourDebut, booking.jourFin);
-  const isCancellable = booking.statut === "EN_ATTENTE" || booking.statut === "CONFIRMEE";
+  const isCancellable = booking.statut === "EN_ATTENTE" || booking.statut === "CONFIRMEE" || booking.statut === "IMPAYEE" || booking.statut === "PAYEE";
+  const isPayable = booking.statut === "IMPAYEE";
+
+  const { hotels } = useHotelsStore();
+  const hotel = hotels.find((h) => h.id === booking.hotelId);
+  const cancellationPolicy = hotel?.cancellationPolicy || "Aucune politique d'annulation spécifiée.";
 
   const handleCancel = async () => {
-    if (!confirm("Voulez-vous vraiment annuler cette réservation ?")) return;
     await cancelBooking(booking.id);
+    onClose();
+  };
+
+  const handlePay = async () => {
+    await payBooking(booking.id);
     onClose();
   };
 
@@ -127,7 +146,7 @@ function BookingDetailModal({
       />
 
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-lg bg-[#1c1714] rounded-3xl border border-white/10 shadow-2xl shadow-black/60 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative z-10 w-full max-w-lg bg-charcoal rounded-3xl border border-foreground/10 shadow-2xl shadow-black/60 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Hotel image banner */}
         <div className="relative h-40 overflow-hidden">
           <img
@@ -159,13 +178,14 @@ function BookingDetailModal({
         <div className="p-6 flex flex-col gap-5">
           <div>
             <h2
-              className="text-white font-bold text-xl leading-tight"
+              className="text-foreground font-bold text-xl leading-tight"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               {booking.hotelNom}
             </h2>
-            <p className="text-white/50 text-sm mt-1">
-              📍 {booking.hotelVille} — {booking.chambreType} #{booking.chambreNumero}
+            <p className="flex items-center gap-1 text-foreground/50 text-sm mt-1">
+              <MapPin className="w-3.5 h-3.5" />
+              {booking.hotelVille} — {booking.chambreType} #{booking.chambreNumero}
             </p>
           </div>
 
@@ -195,20 +215,20 @@ function BookingDetailModal({
             ].map(({ icon: Icon, label, value }) => (
               <div
                 key={label}
-                className="bg-white/5 rounded-xl p-3 flex flex-col gap-1"
+                className="bg-foreground/5 rounded-xl p-3 flex flex-col gap-1"
               >
-                <div className="flex items-center gap-1.5 text-white/40">
+                <div className="flex items-center gap-1.5 text-foreground/40">
                   <Icon className="w-3.5 h-3.5" />
                   <span className="text-xs uppercase tracking-wider">{label}</span>
                 </div>
-                <p className="text-white text-sm font-semibold">{value}</p>
+                <p className="text-foreground text-sm font-semibold">{value}</p>
               </div>
             ))}
           </div>
 
           {/* Total */}
           <div className="flex items-center justify-between bg-gold/8 border border-gold/20 rounded-2xl px-5 py-4">
-            <span className="text-white/60 text-sm">{t("detail.total")}</span>
+            <span className="text-foreground/60 text-sm">{t("detail.total")}</span>
             <span
               className="text-gold font-black text-2xl"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -218,34 +238,95 @@ function BookingDetailModal({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-3">
-              <button
-                id="booking-detail-download"
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 text-sm font-semibold transition-all"
-              >
-                <Download className="w-4 h-4" />
-                {t("actions.downloadReceipt")}
-              </button>
-              <button
-                id="booking-detail-dismiss"
-                onClick={onClose}
-                className="flex-1 py-3 rounded-xl bg-purple text-white font-bold text-sm hover:opacity-90 dark:bg-gold dark:text-[#1c1714] transition-all"
-              >
-                {t("detail.close")}
-              </button>
+          {!showCancelConfirm && !showPayConfirm && (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-3">
+                <button
+                  id="booking-detail-download"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-foreground/15 text-foreground/60 hover:text-foreground hover:border-foreground/30 text-sm font-semibold transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  {t("actions.downloadReceipt")}
+                </button>
+                <button
+                  id="booking-detail-dismiss"
+                  onClick={onClose}
+                  className="flex-1 py-3 rounded-xl bg-purple text-white font-bold text-sm hover:opacity-90 dark:bg-gold dark:text-[#1c1714] transition-all"
+                >
+                  {t("detail.close")}
+                </button>
+              </div>
+              
+              {isPayable && (
+                <button
+                  onClick={() => setShowPayConfirm(true)}
+                  className="w-full py-3 rounded-xl bg-purple hover:bg-purple-600 text-white font-semibold text-sm transition-colors"
+                >
+                  Payer la réservation
+                </button>
+              )}
+
+              {isCancellable && (
+                <button
+                  onClick={() => setShowCancelConfirm(true)}
+                  className="w-full py-3 rounded-xl border border-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/10 transition-colors"
+                >
+                  Annuler la réservation
+                </button>
+              )}
             </div>
-            
-            {isCancellable && (
-              <button
-                onClick={handleCancel}
-                disabled={isLoading}
-                className="w-full py-3 rounded-xl border border-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/10 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? "Annulation..." : "Annuler la réservation"}
-              </button>
-            )}
-          </div>
+          )}
+
+          {/* Cancellation Confirmation */}
+          {showCancelConfirm && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex flex-col gap-3 animate-in fade-in">
+              <h3 className="text-red-400 font-bold">Confirmer l'annulation</h3>
+              <p className="text-foreground/70 text-sm">Politique d'annulation de l'établissement :</p>
+              <p className="text-foreground/90 text-sm italic border-l-2 border-red-500/50 pl-3">{cancellationPolicy}</p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="flex-1 py-2 rounded-lg border border-foreground/15 text-foreground/70 text-sm hover:bg-foreground/5"
+                >
+                  Retour
+                </button>
+                <button
+                  onClick={handleCancel}
+                  disabled={isLoading}
+                  className="flex-1 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 disabled:opacity-50"
+                >
+                  {isLoading ? "En cours..." : "Confirmer"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Payment Confirmation */}
+          {showPayConfirm && (
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex flex-col gap-3 animate-in fade-in">
+              <h3 className="text-purple-400 font-bold">Confirmer le paiement</h3>
+              <p className="text-foreground/70 text-sm">
+                Vous êtes sur le point de régler <span className="font-bold text-foreground">{formatPrice(booking.montantTotal, currency, locale)}</span>.
+              </p>
+              <p className="text-foreground/70 text-sm">Politique d'annulation applicable :</p>
+              <p className="text-foreground/90 text-sm italic border-l-2 border-purple-500/50 pl-3">{cancellationPolicy}</p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => setShowPayConfirm(false)}
+                  className="flex-1 py-2 rounded-lg border border-foreground/15 text-foreground/70 text-sm hover:bg-foreground/5"
+                >
+                  Retour
+                </button>
+                <button
+                  onClick={handlePay}
+                  disabled={isLoading}
+                  className="flex-1 py-2 rounded-lg bg-purple-500 text-white text-sm font-semibold hover:bg-purple-600 disabled:opacity-50"
+                >
+                  {isLoading ? "Traitement..." : "Payer"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -313,31 +394,61 @@ function UpcomingBookings() {
   const locale = useLocale();
   const { openDetail } = useClientDashboardStore();
   const { bookings } = useReservationStore();
-  const upcoming = getUpcomingBookings(bookings);
+  
+  const [filterStatus, setFilterStatus] = useState<"ALL" | "PAYEE" | "IMPAYEE">("ALL");
+
+  const allUpcoming = getUpcomingBookings(bookings);
+  const upcoming = allUpcoming.filter(b => {
+    if (filterStatus === "ALL") return true;
+    return b.statut === filterStatus;
+  });
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2
-          className="text-white font-bold text-xl"
-          style={{ fontFamily: "var(--font-playfair)" }}
-        >
-          {t("upcoming.title")}
-        </h2>
-        <span className="text-white/40 text-sm">{upcoming.length}</span>
+        <div className="flex items-center gap-3">
+          <h2
+            className="text-foreground font-bold text-white text-xl"
+            style={{ fontFamily: "var(--font-playfair)" }}
+          >
+            {t("upcoming.title")}
+          </h2>
+          <span className="text-foreground/40 text-white text-sm">({upcoming.length})</span>
+        </div>
+        
+        {/* Filters */}
+        <div className="flex bg-foreground/5 rounded-lg p-1 text-sm border border-foreground/10">
+          {(["ALL", "PAYEE", "IMPAYEE"] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilterStatus(f)}
+              className={`px-3 py-1 rounded-md transition-colors ${
+                filterStatus === f
+                  ? "bg-foreground/10 text-white font-bold text-foreground"
+                  : "text-white/50 hover:text-white"
+              }`}
+            >
+              {f === "ALL" ? "Toutes" : f === "PAYEE" ? "Payées" : "Impayées"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {upcoming.length === 0 ? (
-        <div className="bg-charcoal rounded-2xl border border-white/10 p-10 text-center flex flex-col items-center gap-4">
-          <Hotel className="w-10 h-10 text-white/20" />
-          <p className="text-white/40 text-sm">{t("upcoming.empty")}</p>
-          <Link
-            id="upcoming-browse-hotels"
-            href={`/${locale}/hotels`}
-            className="px-6 py-2.5 rounded-xl bg-purple dark:bg-gold text-white dark:text-[#1c1714] font-bold text-sm hover:opacity-90 transition-all"
-          >
-            {t("upcoming.emptyAction")}
-          </Link>
+        <div className="bg-charcoal rounded-2xl border border-foreground/10 p-10 text-center flex flex-col items-center gap-4">
+          <Hotel className="w-10 h-10 text-foreground/20" />
+          <p className="text-foreground/40 text-sm">
+            {filterStatus === "ALL" ? t("upcoming.empty") : "Aucune réservation avec ce statut."}
+          </p>
+          {filterStatus === "ALL" && (
+            <Link
+              id="upcoming-browse-hotels"
+              href={`/${locale}/hotels`}
+              className="px-6 py-2.5 rounded-xl bg-purple dark:bg-gold text-white dark:text-[#1c1714] font-bold text-sm hover:opacity-90 transition-all"
+            >
+              {t("upcoming.emptyAction")}
+            </Link>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -480,7 +591,7 @@ function QuickActions() {
   return (
     <section className="flex flex-col gap-4">
       <h2
-        className="text-white font-bold text-xl"
+        className="text-foreground font-bold text-xl"
         style={{ fontFamily: "var(--font-playfair)" }}
       >
         {t("actions.title")}
@@ -493,7 +604,7 @@ function QuickActions() {
             transition-all duration-200
             ${action.variant === "primary"
               ? "bg-purple dark:bg-gold text-white dark:text-[#1c1714] hover:opacity-90 shadow-md shadow-purple/20 dark:shadow-gold/20"
-              : "bg-charcoal border border-white/10 text-white/70 hover:text-white hover:border-white/25"
+              : "bg-charcoal border border-foreground/10 text-foreground/70 hover:text-foreground hover:border-foreground/25"
             }
             ${action.disabled ? "opacity-40 cursor-not-allowed" : ""}
           `;
@@ -536,19 +647,19 @@ function PastBookings() {
       <button
         id="toggle-past-bookings"
         onClick={togglePastBookings}
-        className="flex items-center justify-between w-full bg-charcoal rounded-2xl border border-white/10 px-5 py-4 text-left hover:border-white/20 transition-colors group"
+        className="flex items-center justify-between w-full bg-charcoal rounded-2xl border border-foreground/10 px-5 py-4 text-left hover:border-foreground/20 transition-colors group"
       >
         <span
-          className="text-white font-bold text-base group-hover:text-gold transition-colors"
+          className="text-foreground font-bold text-base transition-colors"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
           {t("past.title")}
-          <span className="ml-2 text-white/30 text-sm font-normal">({past.length})</span>
+          <span className="ml-2 text-foreground/30 text-sm font-normal">({past.length})</span>
         </span>
         {showPastBookings ? (
-          <ChevronUp className="w-5 h-5 text-white/40 group-hover:text-gold transition-colors" />
+          <ChevronUp className="w-5 h-5 text-foreground/40 group-hover:text-gold transition-colors" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-white/40 group-hover:text-gold transition-colors" />
+          <ChevronDown className="w-5 h-5 text-foreground/40 group-hover:text-gold transition-colors" />
         )}
       </button>
 
@@ -556,7 +667,7 @@ function PastBookings() {
       {showPastBookings && (
         <div className="flex flex-col gap-3">
           {past.length === 0 ? (
-            <p className="text-white/40 text-sm text-center py-8">{t("past.empty")}</p>
+            <p className="text-foreground/40 text-sm text-center py-8">{t("past.empty")}</p>
           ) : (
             past.map((b) => (
               <div key={b.id} className="relative">
@@ -604,7 +715,7 @@ function AccountCard() {
   return (
     <div className="flex flex-col gap-4">
       {/* Profile header */}
-      <div className="bg-charcoal rounded-2xl border border-white/10 p-6 flex flex-col gap-5">
+      <div className="bg-charcoal rounded-2xl border border-foreground/10 p-6 flex flex-col gap-5">
         {/* Avatar + name */}
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple to-purple/50 flex items-center justify-center text-white font-black text-xl shadow-lg">
@@ -612,35 +723,35 @@ function AccountCard() {
           </div>
           <div>
             <p
-              className="text-white font-bold text-base leading-tight"
+              className="text-foreground font-bold text-base leading-tight"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               {user?.nom ?? "Client"}
             </p>
-            <p className="text-white/40 text-xs mt-0.5">{t("role")}</p>
+            <p className="text-foreground/40 text-xs mt-0.5">{t("role")}</p>
           </div>
         </div>
 
         {/* Contact info rows */}
-        <div className="flex flex-col gap-2.5 border-t border-white/8 pt-4">
+        <div className="flex flex-col gap-2.5 border-t border-foreground/8 pt-4">
           {[
             { id: "email",    icon: Mail,   value: user?.email ?? "—" },
             { id: "phone",    icon: Phone,  value: user?.telephone ?? "—" },
             { id: "location", icon: MapPin, value: (user as any)?.localisation ?? "—" },
           ].map(({ id, icon: Icon, value }) => (
             <div key={id} className="flex items-center gap-3 text-sm">
-              <Icon className="w-3.5 h-3.5 text-white/30 shrink-0" />
-              <span className="text-white/60 truncate">{value}</span>
+              <Icon className="w-3.5 h-3.5 text-foreground/30 shrink-0" />
+              <span className="text-foreground/60 truncate">{value}</span>
             </div>
           ))}
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col gap-2 border-t border-white/8 pt-4">
+        <div className="flex flex-col gap-2 border-t border-foreground/8 pt-4">
           <button
             id="account-edit-profile"
             onClick={() => setIsEditOpen((v) => !v)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm font-semibold transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-foreground/20 text-foreground/70 hover:text-foreground text-sm font-semibold transition-all"
           >
             <User className="w-4 h-4" />
             {t("account.editProfile")}
@@ -648,7 +759,7 @@ function AccountCard() {
 
           <button
             id="account-notifications"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm font-semibold transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-foreground/20 text-foreground/70 hover:text-foreground text-sm font-semibold transition-all"
           >
             <Bell className="w-4 h-4" />
             {t("account.notifications")}
@@ -668,9 +779,9 @@ function AccountCard() {
 
       {/* Inline edit form (collapsible) */}
       {isEditOpen && (
-        <div className="bg-charcoal rounded-2xl border border-white/10 focus-within:border-gold/30 p-6 flex flex-col gap-4 transition-colors duration-200">
+        <div className="bg-charcoal rounded-2xl border border-foreground/10 focus-within:border-gold/30 p-6 flex flex-col gap-4 transition-colors duration-200">
           <h3
-            className="text-white font-bold text-base"
+            className="text-foreground font-bold text-base"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
             {t("account.editProfile")}
@@ -682,7 +793,7 @@ function AccountCard() {
             { key: "email" as const,     label: t("account.email"), type: "email" },
           ].map((f) => (
             <div key={f.key} className="flex flex-col gap-1.5">
-              <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+              <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                 {f.label}
               </label>
               <input
@@ -691,13 +802,13 @@ function AccountCard() {
                 onChange={(e) =>
                   setFormData({ ...formData, [f.key]: e.target.value })
                 }
-                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/40 transition-colors"
+                className="bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold/40 transition-colors"
               />
             </div>
           ))}
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+            <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
               {t("account.newPassword")}
             </label>
             <input
@@ -707,7 +818,7 @@ function AccountCard() {
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-gold/40 transition-colors"
+              className="bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm placeholder-foreground/20 focus:outline-none focus:border-gold/40 transition-colors"
             />
           </div>
 
@@ -721,7 +832,7 @@ function AccountCard() {
             <button
               id="account-cancel"
               onClick={() => setIsEditOpen(false)}
-              className="px-5 py-3 rounded-xl border border-white/15 text-white/60 hover:text-white text-sm font-semibold transition-all"
+              className="px-5 py-3 rounded-xl border border-foreground/15 text-foreground/60 hover:text-foreground text-sm font-semibold transition-all"
             >
               ✕
             </button>
@@ -741,6 +852,23 @@ export default function ClientDashboard() {
   const { bookings, fetchBookings, isLoading } = useReservationStore();
   const { activeTab, setActiveTab, selectedBooking, isDetailOpen, closeDetail } =
     useClientDashboardStore();
+
+  const [reviewingBooking, setReviewingBooking] = useState<ClientReservation | null>(null);
+  const [reviewedIds, setReviewedIds] = useState<Set<string>>(new Set());
+  const [clientReviews, setClientReviews] = useState<BackendReviewDTO[]>([]);
+
+  useEffect(() => {
+    const ids = bookings
+      .filter((b) => hasReviewedBooking(b.id))
+      .map((b) => b.id);
+    setReviewedIds(new Set(ids));
+  }, [bookings]);
+
+  useEffect(() => {
+    if (user?.id) {
+      getReviewsForClient(user.id).then(setClientReviews);
+    }
+  }, [user?.id, reviewedIds]);
 
   useEffect(() => {
     if (user?.id) {
@@ -763,6 +891,18 @@ export default function ClientDashboard() {
       {/* Booking detail modal */}
       {isDetailOpen && selectedBooking && (
         <BookingDetailModal booking={selectedBooking} onClose={closeDetail} />
+      )}
+
+      {/* Review modal */}
+      {reviewingBooking && (
+        <ReviewModal
+          booking={reviewingBooking}
+          onClose={() => setReviewingBooking(null)}
+          onSuccess={() => {
+            setReviewedIds((prev) => new Set(prev).add(reviewingBooking.id));
+            setReviewingBooking(null);
+          }}
+        />
       )}
 
       <main className="min-h-screen relative pt-28 pb-16">
@@ -839,31 +979,77 @@ export default function ClientDashboard() {
             <div className="flex flex-col gap-4">
               {bookings
                 .filter((b) => b.statut === "TERMINEE")
-                .map((b) => (
-                  <div
-                    key={b.id}
-                    className="bg-charcoal rounded-2xl border border-white/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div>
-                      <p
-                        className="text-white font-bold text-base"
-                        style={{ fontFamily: "var(--font-playfair)" }}
-                      >
-                        {b.hotelNom}
-                      </p>
-                      <p className="text-white/40 text-xs mt-0.5">
-                        {fmtDate(b.jourDebut)} → {fmtDate(b.jourFin)}
-                      </p>
-                    </div>
-                    <button
-                      id={`leave-review-${b.id}`}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold/10 border border-gold/25 hover:bg-gold/20 text-gold text-sm font-semibold transition-colors shrink-0"
+                .map((b) => {
+                  const review = clientReviews.find((r) => r.booking_ref === b.id);
+                  return (
+                    <div
+                      key={b.id}
+                      className="bg-charcoal rounded-2xl border border-foreground/10 p-5 flex flex-col gap-4"
                     >
-                      <Star className="w-4 h-4" />
-                      {t("past.leaveReview")}
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                          <p
+                            className="text-foreground font-bold text-base"
+                            style={{ fontFamily: "var(--font-playfair)" }}
+                          >
+                            {b.hotelNom}
+                          </p>
+                          <p className="text-foreground/40 text-xs mt-0.5">
+                            {fmtDate(b.jourDebut)} → {fmtDate(b.jourFin)}
+                          </p>
+                        </div>
+                        <button
+                          id={`leave-review-${b.id}`}
+                          disabled={reviewedIds.has(b.id)}
+                          onClick={() => setReviewingBooking(b)}
+                          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shrink-0 ${
+                            reviewedIds.has(b.id)
+                              ? "bg-foreground/5 text-foreground/40 cursor-not-allowed"
+                              : "bg-gold/10 border border-gold/25 hover:bg-gold/20 text-gold"
+                          }`}
+                        >
+                          <Star className="w-4 h-4" />
+                          {reviewedIds.has(b.id) ? "Avis soumis" : t("past.leaveReview")}
+                        </button>
+                      </div>
+
+                      {review && (
+                        <div className="mt-2 p-4 bg-foreground/5 rounded-xl flex flex-col gap-3">
+                          <div className="flex items-center gap-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < review.rating
+                                      ? "text-gold fill-gold"
+                                      : "text-foreground/20"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-foreground/40 text-xs">
+                              {new Date(review.created_at).toLocaleDateString("fr-FR")}
+                            </span>
+                          </div>
+                          {review.comment && (
+                            <p className="text-foreground/80 text-sm">
+                              &quot;{review.comment}&quot;
+                            </p>
+                          )}
+                          {review.director_reply && (
+                            <div className="mt-3 pl-4 border-l-2 border-purple">
+                              <p className="text-foreground/50 text-xs uppercase tracking-wider mb-1 font-semibold">
+                                Réponse du directeur
+                              </p>
+                              <p className="text-foreground/70 text-sm">{review.director_reply}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
 
               {bookings.filter((b) => b.statut === "TERMINEE").length === 0 && (
                 <p className="text-white/30 text-sm text-center py-12">{t("past.empty")}</p>

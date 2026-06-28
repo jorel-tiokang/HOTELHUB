@@ -31,6 +31,9 @@ interface ReservationState {
   /** Cancel a booking by its reference id */
   cancelBooking: (bookingId: string) => Promise<void>;
 
+  /** Pay for a booking (changes status to PAID) */
+  payBooking: (bookingId: string) => Promise<void>;
+
   clearError: () => void;
 }
 
@@ -97,6 +100,25 @@ export const useReservationStore = create<ReservationState>((set, get) => ({
       }));
     } catch (err: any) {
       set({ error: err.message });
+    }
+  },
+
+  // ── Pay ────────────────────────────────────────────────────────────────────
+  payBooking: async (bookingId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const rawBooking = await bookingService.payBooking(bookingId);
+      const updated = mapBackendBookingToClient(rawBooking);
+
+      set((state) => ({
+        bookings: state.bookings.map((b) =>
+          b.id === updated.id ? updated : b
+        ),
+        isLoading: false,
+      }));
+    } catch (err: any) {
+      set({ error: err.message, isLoading: false });
+      throw err;
     }
   },
 

@@ -419,6 +419,8 @@
         }
       },
       "status": {
+        "IMPAYEE": "Unpaid",
+        "PAYEE": "Paid",
         "CONFIRMEE": "Confirmed",
         "EN_ATTENTE": "Pending",
         "ANNULEE": "Cancelled",
@@ -498,6 +500,8 @@
       "contactSupport": "Contact Support"
     },
     "status": {
+      "IMPAYEE": "Unpaid",
+      "PAYEE": "Paid",
       "CONFIRMEE": "Confirmed",
       "EN_ATTENTE": "Pending",
       "ANNULEE": "Cancelled",

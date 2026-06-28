@@ -12,6 +12,8 @@ import type { ClientReservation, StatutReservationClient } from "@/mocks/clientB
 
 // Maps the English backend booking status to the French UI status
 const STATUS_MAP: Record<BackendBookingStatus, StatutReservationClient> = {
+  UNPAID: "IMPAYEE",
+  PAID: "PAYEE",
   PENDING: "EN_ATTENTE",
   CONFIRMED: "CONFIRMEE",
   CANCELLED: "ANNULEE",
@@ -36,6 +38,8 @@ export function mapBackendBookingToClient(
     montantTotal: dto.total_cost_xaf,
     statut: STATUS_MAP[dto.booking_status],
     createdAt: dto.created_at_date,
+    clientName: dto.client_full_name,
+    expectedArrivalTime: dto.expected_arrival_time,
   };
 }
 

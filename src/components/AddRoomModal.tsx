@@ -194,16 +194,16 @@ function ImageUploadZone({
             onClick={() => inputRef.current?.click()}
             className={`w-full h-full flex flex-col items-center justify-center gap-3
               cursor-pointer transition-colors
-              ${dragging ? "bg-purple/10 border-purple" : "hover:bg-white/10"}`}
+              ${dragging ? "bg-purple/10 border-purple" : "hover:bg-foreground/10"}`}
           >
-            <div className="p-3 rounded-full bg-white/10">
-              <ImagePlus className="w-6 h-6 text-white/40" />
+            <div className="p-3 rounded-full bg-foreground/10">
+              <ImagePlus className="w-6 h-6 text-foreground/40" />
             </div>
             <div className="text-center">
-              <p className="text-white/60 text-sm font-medium">
+              <p className="text-foreground/60 text-sm font-medium">
                 Glissez vos photos ici
               </p>
-              <p className="text-white/30 text-xs mt-1">
+              <p className="text-foreground/30 text-xs mt-1">
                 ou cliquez pour sélectionner · JPG, PNG, WEBP
               </p>
             </div>
@@ -244,7 +244,7 @@ interface FieldProps {
 function Field({ label, children }: FieldProps) {
   return (
     <div className="space-y-2">
-      <label className="text-white/50 text-xs uppercase tracking-wider font-semibold block">
+      <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold block">
         {label}
       </label>
       {children}
@@ -253,8 +253,8 @@ function Field({ label, children }: FieldProps) {
 }
 
 const inputClass =
-  "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white " +
-  "placeholder-white/30 text-sm focus:outline-none focus:border-purple transition-colors";
+  "w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground " +
+  "placeholder-foreground/30 text-sm focus:outline-none focus:border-purple transition-colors";
 
 // ─── AddRoomModal ─────────────────────────────────────────────────────────────
 
@@ -275,6 +275,7 @@ export default function AddRoomModal({
     description: initialData?.description ?? "",
     equipements: initialData?.equipements.join(", ") ?? "",
     images: [],
+    actif: initialData?.actif ?? true,
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>(
@@ -355,6 +356,7 @@ export default function AddRoomModal({
         .map((e) => e.trim())
         .filter(Boolean),
       images: imagePreviews, // caller can swap these for uploaded URLs later
+      actif: form.actif,
     });
   };
 
@@ -366,11 +368,11 @@ export default function AddRoomModal({
       className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-charcoal rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* ── Header ── */}
-        <div className="sticky top-0 bg-charcoal z-10 flex items-center justify-between px-4 sm:px-8 py-5 border-b border-white/10">
+        <div className="sticky top-0 bg-card z-10 flex items-center justify-between px-4 sm:px-8 py-5 border-b border-foreground/10">
           <h3
-            className="text-xl font-bold text-white"
+            className="text-xl font-bold text-foreground"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
             {initialData
@@ -379,7 +381,7 @@ export default function AddRoomModal({
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-xl text-foreground/40 hover:text-foreground hover:bg-foreground/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -452,6 +454,19 @@ export default function AddRoomModal({
             </Field>
           </div>
 
+          <div className="flex items-center gap-3 pt-4 border-t border-foreground/10">
+            <input
+              type="checkbox"
+              id="room-actif-checkbox"
+              checked={form.actif}
+              onChange={(e) => setForm({ ...form, actif: e.target.checked })}
+              className="w-5 h-5 accent-purple rounded border-foreground/10 cursor-pointer"
+            />
+            <label htmlFor="room-actif-checkbox" className="text-foreground text-sm font-semibold cursor-pointer select-none">
+              Chambre active (visible dans le catalogue client)
+            </label>
+          </div>
+
           <Field label="Description">
             <textarea
               rows={3}
@@ -494,8 +509,8 @@ export default function AddRoomModal({
                     }}
                     className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all border
                       ${isSelected 
-                        ? "bg-purple/20 border-purple text-white shadow-[0_0_10px_rgba(139,92,246,0.2)]" 
-                        : "bg-white/5 border-white/5 text-white/50 hover:bg-white/10 hover:text-white hover:border-white/10"
+                        ? "bg-purple/20 border-purple text-foreground shadow-[0_0_10px_rgba(139,92,246,0.2)]" 
+                        : "bg-foreground/5 border-foreground/5 text-foreground/50 hover:bg-foreground/10 hover:text-foreground hover:border-foreground/10"
                       }`}
                   >
                     <amenity.icon className="w-3.5 h-3.5" />
@@ -508,7 +523,7 @@ export default function AddRoomModal({
         </div>
 
         {/* ── Footer ── */}
-        <div className="sticky bottom-0 bg-charcoal px-4 sm:px-8 py-5 border-t border-white/10 flex gap-3">
+        <div className="sticky bottom-0 bg-card px-4 sm:px-8 py-5 border-t border-foreground/10 flex gap-3">
           <button
             onClick={handleSubmit}
             className="flex-1 bg-purple hover:bg-purple/90 text-white py-3 rounded-xl
@@ -520,8 +535,8 @@ export default function AddRoomModal({
           </button>
           <button
             onClick={onClose}
-            className="px-6 py-3 rounded-xl border border-white/10 text-white/60
-              hover:text-white hover:border-white/20 transition-colors"
+            className="px-6 py-3 rounded-xl border border-foreground/10 text-foreground/60
+              hover:text-foreground hover:border-foreground/20 transition-colors"
           >
             Annuler
           </button>

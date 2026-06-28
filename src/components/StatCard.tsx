@@ -35,7 +35,7 @@ export default function StatCard({
     <div
       className="
         flex flex-col gap-3 p-5
-        bg-charcoal rounded-2xl border border-white/10
+        bg-charcoal rounded-2xl border border-foreground/10
         shadow-lg hover:-translate-y-1 hover:shadow-gold/10 hover:shadow-xl
         transition-all duration-300
       "
@@ -62,8 +62,8 @@ export default function StatCard({
 
       {/* Label */}
       <div>
-        <p className="text-white/70 text-sm font-medium leading-snug">{label}</p>
-        {sub && <p className="text-white/35 text-xs mt-0.5">{sub}</p>}
+        <p className="text-foreground/70 text-sm font-medium leading-snug">{label}</p>
+        {sub && <p className="text-foreground/40 text-xs mt-0.5">{sub}</p>}
       </div>
     </div>
   );

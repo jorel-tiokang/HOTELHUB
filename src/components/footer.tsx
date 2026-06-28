@@ -117,13 +117,13 @@ const LanguageSelector = () => (
 );
 const FooterColumn = ({ title, links }: FooterColumn) => (
   <div className="flex flex-col gap-4">
-    <h3 className="text-white font-bold text-base">{title}</h3>
+    <h3 className="dark:text-white text-black font-bold text-base">{title}</h3>
     <ul className="flex flex-col gap-2">
       {links.map((link) => (
         <li key={link.label}>
           <a
             href={link.href}
-            className=" hover:text-white transition-colors text-dark-white/20 text-[15px] leading-relaxed"
+            className="dark:text-white/60 text-black/60 dark:hover:text-white hover:text-black transition-colors text-[15px] leading-relaxed"
           >
             {link.label}
           </a>
@@ -134,9 +134,9 @@ const FooterColumn = ({ title, links }: FooterColumn) => (
 );
 
 export const Footer: React.FC = () => {
-      const t = useTranslations("footer");
+  const t = useTranslations("footer");
   return (
-    <footer className="w-full backdrop-blur-2xl bg-gradient-to-b from-[#1c1714] to-(--purple)/20 text-white/90 font-medium selection:bg-(--purple)/40 selection:text-white border-t-0">
+    <footer className="w-full backdrop-blur-2xl bg-gradient-to-b from-[color-var(--charcoal)] to-purple/20 dark:text-white/90 text-black/90 font-medium selection:bg-purple/40 selection:text-white border-t-2 border-purple/10 dark:border-t-0">
       {/* Top Section */}
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
@@ -167,16 +167,16 @@ export const Footer: React.FC = () => {
       <div className="border-t border-(--purple)/20">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="max-w-7xl mx-auto text-center md:text-left">
-          <p className="text-[11px] tracking-wide dark:text-white/60 text-black/60 uppercase font-bold">
-            {t("copyright")}
-          </p>
-        </div>
+            <p className="text-[11px] tracking-wide dark:text-white/60 text-black/60 uppercase font-bold">
+              {t("copyright")}
+            </p>
+          </div>
           <div className="flex items-center gap-6 md:ml-auto">
             {SOCIAL_LINKS.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="text-white/60 hover:text-(--purple) transition-all transform hover:scale-110 duration-300"
+                className="dark:text-white/60 text-black/60 hover:text-purple transition-all transform hover:scale-110 duration-300"
                 aria-label={item.label}
               >
                 <item.icon className="w-6 h-6" strokeWidth={1.5} />
@@ -185,7 +185,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-     
+
     </footer>
   );
 };

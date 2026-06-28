@@ -4,7 +4,6 @@ import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
-import { getHotelById, getRoomById } from "@/mocks/hotelsData";
 import BookableRoomCard from "./BookableRoomCard";
 import Header from "./Header";
 import { Footer } from "./footer";
@@ -28,14 +27,15 @@ export default function RoomDetailPage({
   const { currency } = useCurrencyStore();
   const { user, isAuthenticated } = useAuthStore();
   const { createBooking, isLoading: isBooking, error: bookingError } = useReservationStore();
-  const { toggleRoomStatus } = useHotelsStore();
+  const { toggleRoomStatus, hotels } = useHotelsStore();
 
-  const hotel = getHotelById(hotelId);
-  const room = getRoomById(hotelId, roomId);
+  const hotel = hotels.find((h) => h.id === hotelId);
+  const room = hotel?.rooms.find((r) => r.id === roomId);
 
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
+  const [expectedArrivalTime, setExpectedArrivalTime] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -53,10 +53,10 @@ export default function RoomDetailPage({
       : 1;
 
   const total = nights * room.prixParNuit;
-  const otherRooms = hotel.rooms.filter((r) => r.id !== room.id);
+  const otherRooms = hotel.rooms.filter((r) => r.id !== room.id && r.actif !== false);
 
   const today = new Date().toISOString().slice(0, 10);
-  const isRoomAvailable = room.statut === "DISPONIBLE";
+  const isRoomAvailable = room.statut === "DISPONIBLE" && room.actif !== false;
 
   const handleBook = async () => {
     setLocalError(null);
@@ -83,6 +83,11 @@ export default function RoomDetailPage({
       return;
     }
 
+    if (!expectedArrivalTime) {
+      setLocalError("Veuillez spécifier votre heure d'arrivée prévue.");
+      return;
+    }
+
     try {
       await createBooking({
         hotelId: hotel.id,
@@ -97,6 +102,8 @@ export default function RoomDetailPage({
         guestCount: guests,
         totalCostXaf: total,
         clientUserId: user.id,
+        clientFullName: user.nom || "Client",
+        expectedArrivalTime: expectedArrivalTime,
       });
 
       // Mark room as unavailable in hotelsStore (real-time UI update)
@@ -295,7 +302,25 @@ export default function RoomDetailPage({
                         text-foreground text-sm outline-none focus:border-purple dark:focus:border-gold"
                     />
                   </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                      Heure d'arrivée prévue
+                    </label>
+                    <input
+                      type="time"
+                      value={expectedArrivalTime}
+                      onChange={(e) => { setExpectedArrivalTime(e.target.value); setLocalError(null); }}
+                      className="bg-white/5 border border-border rounded-xl px-3 py-2.5
+                        text-foreground text-sm outline-none focus:border-purple dark:focus:border-gold"
+                    />
+                  </div>
                 </div>
+
+                {hotel.cancellationPolicy && (
+                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-xs text-blue-400">
+                    <span className="font-bold">Politique :</span> {hotel.cancellationPolicy}
+                  </div>
+                )}
 
                 {/* Total */}
                 <div className="flex items-center justify-between pt-3 border-t border-border">

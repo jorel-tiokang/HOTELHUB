@@ -9,6 +9,7 @@ import { useTransition } from "react";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import Link from "next/link";
 import CurrencyToggle from "@/src/components/CurrencyToggle";
+import NotificationBell from "@/src/components/NotificationBell";
 
 /* ── Theme Toggle ─────────────────────────────────────────── */
 export function ThemeToggle() {
@@ -155,6 +156,7 @@ dark:group-hover:text-gold transition-colors"
             <ThemeToggle />
             <LanguageToggle />
             <CurrencyToggle />
+            <NotificationBell />
             <div className="w-px h-5 bg-foreground/10 mx-1" />
             <Link
               href={`/login`}
@@ -248,6 +250,7 @@ dark:group-hover:text-gold transition-colors"
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <LanguageToggle />
+              <NotificationBell />
             </div>
             <CurrencyToggle />
             <Link

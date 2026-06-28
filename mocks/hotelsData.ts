@@ -10,19 +10,26 @@ export const hotelsData: Hotel[] = [
   {
     id: "h1",
     name: "Hakuna Matata Resort",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Douala",
     address: "Boulevard de la Liberté, Douala",
     location: { lat: 4.0511, lng: 9.7679 },
     description:
       "A beautiful resort with swimming pool and ocean views, blending comfort and tropical charm.",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&auto=format&fit=crop&q=80",
+    image: "https://images.pexels.com/photos/33803734/pexels-photo-33803734.jpeg",
     images: [
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=900&auto=format&fit=crop&q=80",
+      "https://images.pexels.com/photos/33803734/pexels-photo-33803734.jpeg",
+      "https://images.pexels.com/photos/33803745/pexels-photo-33803745.jpeg",
     ],
     amenities: ["Wifi", "Piscine", "Parking", "Climatisation", "Restaurant"],
     rating: 4.9,
     reviewCount: 342,
+    receptionHours: { open: "08:00", close: "23:00" },
+    cancellationPolicy: "Annulation gratuite jusqu'à 48h avant l'arrivée. Au-delà, la première nuit sera facturée.",
+    actif: true,
+    createdAt: "2023-01-10",
+    updatedAt: "2026-05-12",
     rooms: [
       {
         id: "r1", hotelId: "h1", numero: 101, type: "Double",
@@ -45,6 +52,7 @@ export const hotelsData: Hotel[] = [
   {
     id: "h2",
     name: "Samba Valarta Hotel",
+    country: "Cameroun",
     city: "Yaoundé",
     address: "Quartier Bastos, Yaoundé",
     location: { lat: 3.8667, lng: 11.5167 },
@@ -56,6 +64,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Wifi", "Parking", "Gym", "Restaurant"],
     rating: 4.6,
     reviewCount: 198,
+    receptionHours: { open: "06:00", close: "23:59" },
+    cancellationPolicy: "Annulation sans frais 72h avant l'arrivée. Aucun remboursement en deçà.",
+    actif: true,
+    createdAt: "2022-08-05",
+    updatedAt: "2025-11-20",
     rooms: [
       {
         id: "r3", hotelId: "h2", numero: 201, type: "Simple",
@@ -70,6 +83,7 @@ export const hotelsData: Hotel[] = [
   {
     id: "h3",
     name: "Maona Loa Lodge",
+    country: "Cameroun",
     city: "Kribi",
     address: "Plage de Kribi",
     location: { lat: 2.9333, lng: 9.9167 },
@@ -81,6 +95,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Wifi", "Piscine", "Plage privée"],
     rating: 4.8,
     reviewCount: 271,
+    receptionHours: { open: "10:00", close: "20:00" },
+    cancellationPolicy: "Remboursement intégral si annulation 5 jours avant l'arrivée. 50% remboursé entre 5 et 2 jours.",
+    actif: true,
+    createdAt: "2021-04-18",
+    updatedAt: "2026-03-01",
     rooms: [
       {
         id: "r4", hotelId: "h3", numero: 301, type: "Double",
@@ -103,6 +122,8 @@ export const hotelsData: Hotel[] = [
   {
     id: "h4",
     name: "Royal Palace",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Douala",
     address: "Douala Centre",
     location: { lat: 4.0511, lng: 9.7679 },
@@ -112,6 +133,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Wifi", "Clim", "TV"],
     rating: 4.8,
     reviewCount: 120,
+    receptionHours: { open: "00:00", close: "23:59" },
+    cancellationPolicy: "Annulation gratuite jusqu'à 24h avant l'arrivée. Au-delà, le montant total du séjour est dû.",
+    actif: true,
+    createdAt: "2018-09-02",
+    updatedAt: "2026-06-11",
     rooms: [
       {
         id: "r6", hotelId: "h4", numero: 401, type: "Chambre Supérieure",
@@ -126,6 +152,8 @@ export const hotelsData: Hotel[] = [
   {
     id: "h5",
     name: "Hilton Hotel",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Yaoundé",
     address: "Centre Ville, Yaoundé",
     location: { lat: 3.8667, lng: 11.5167 },
@@ -135,6 +163,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Piscine", "Spa", "Bar"],
     rating: 4.9,
     reviewCount: 450,
+    receptionHours: { open: "00:00", close: "23:59" },
+    cancellationPolicy: "Annulation gratuite jusqu'à 48h avant l'arrivée. Passé ce délai, une nuit est facturée.",
+    actif: true,
+    createdAt: "2019-11-20",
+    updatedAt: "2026-06-25",
     rooms: [
       {
         id: "r7", hotelId: "h5", numero: 501, type: "Suite Présidentielle",
@@ -149,6 +182,8 @@ export const hotelsData: Hotel[] = [
   {
     id: "h6",
     name: "Akwa Palace",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Douala",
     address: "Boulevard de la Liberté, Douala",
     location: { lat: 4.0511, lng: 9.7679 },
@@ -158,6 +193,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Wifi", "Parking"],
     rating: 4.5,
     reviewCount: 300,
+    receptionHours: { open: "08:00", close: "18:00" },
+    cancellationPolicy: "Aucune réservation acceptée pendant la période de rénovation.",
+    actif: false, // Inactive hotel to test filtering
+    createdAt: "2015-02-12",
+    updatedAt: "2026-02-01",
     rooms: [
       {
         id: "r8", hotelId: "h6", numero: 601, type: "Chambre Standard",
@@ -172,6 +212,8 @@ export const hotelsData: Hotel[] = [
   {
     id: "h7",
     name: "Mont Fébé",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Yaoundé",
     address: "Colline du Mont Fébé, Yaoundé",
     location: { lat: 3.8667, lng: 11.5167 },
@@ -181,6 +223,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Vue", "Clim"],
     rating: 4.7,
     reviewCount: 210,
+    receptionHours: { open: "07:00", close: "21:00" },
+    cancellationPolicy: "Remboursement intégral jusqu'à 48h avant. Entre 48h et 24h : 50% remboursé. Moins de 24h : aucun remboursement.",
+    actif: true,
+    createdAt: "2017-06-25",
+    updatedAt: "2026-01-14",
     rooms: [
       {
         id: "r9", hotelId: "h7", numero: 701, type: "Junior Suite",
@@ -195,6 +242,8 @@ export const hotelsData: Hotel[] = [
   {
     id: "h8",
     name: "Sawa Hotel",
+    country: "Cameroun",
+    countryCode: "CM",
     city: "Douala",
     address: "Bonanjo, Douala",
     location: { lat: 4.0511, lng: 9.7679 },
@@ -204,6 +253,11 @@ export const hotelsData: Hotel[] = [
     amenities: ["Gym", "Resto", "Cave"],
     rating: 4.6,
     reviewCount: 185,
+    receptionHours: { open: "08:00", close: "23:00" },
+    cancellationPolicy: "Annulation sans frais 72h avant l'arrivée. Après ce délai, la totalité du premier jour est due.",
+    actif: true,
+    createdAt: "2016-08-30",
+    updatedAt: "2026-04-18",
     rooms: [
       {
         id: "r10", hotelId: "h8", numero: 801, type: "Chambre Deluxe",

@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Star, MapPin } from "lucide-react";
-import { getHotelById, getAvailableRooms } from "@/mocks/hotelsData";
+import { getAvailableRooms } from "@/mocks/hotelsData";
+import { useHotelsStore } from "@/store/hotelsStore";
 import BookableRoomCard from "./BookableRoomCard";
 import Header from "./Header";
 import { Footer } from "./footer";
@@ -13,12 +14,14 @@ import SimpleMap from "./Map";
 export default function HotelDetailPage({ hotelId }: { hotelId: string }) {
   const t = useTranslations("hotelsPage.detail");
   const tf = useTranslations("hotelsPage.filters");
-  const hotel = getHotelById(hotelId);
+  const { hotels } = useHotelsStore();
+  const hotel = hotels.find((h) => h.id === hotelId);
   const [availableOnly, setAvailableOnly] = useState(false);
 
   if (!hotel) return notFound();
 
-  const rooms = availableOnly ? getAvailableRooms(hotel) : hotel.rooms;
+  const activeRooms = hotel.rooms.filter(r => r.actif !== false);
+  const rooms = availableOnly ? activeRooms.filter(r => r.statut === "DISPONIBLE") : activeRooms;
 
   return (
     <>

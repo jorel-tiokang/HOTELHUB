@@ -2,7 +2,8 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Star, MapPin } from "lucide-react";
+import { useState } from "react";
+import { Star, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Hotel } from "@/services/hotel";
 import { getLowestPrice } from "@/mocks/hotelsData";
 import { distanceKm } from "@/store/hotelsfilterstore";
@@ -28,6 +29,19 @@ export default function HotelCard({
 
   const price = getLowestPrice(hotel, showAvailableOnly);
   const dist = userLocation ? distanceKm(userLocation, hotel.location) : null;
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const allImages = [hotel.image, ...(hotel.images || [])].filter(Boolean);
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setImgIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setImgIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
 
   return (
     <Link
@@ -37,15 +51,45 @@ export default function HotelCard({
         dark:hover:shadow-gold/5 hover:-translate-y-1.5
         transition-all duration-300"
     >
-      {/* Image */}
-      <div className="relative h-48 overflow-hidden">
+      {/* Image Carousel */}
+      <div className="relative h-48 overflow-hidden group/carousel">
         <img
-          src={hotel.image}
-          alt={hotel.name}
+          src={allImages[imgIndex]}
+          alt={`${hotel.name} - image ${imgIndex + 1}`}
           className="absolute inset-0 w-full h-full object-cover
             group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        
+        {/* Navigation arrows (shown on hover) */}
+        {allImages.length > 1 && (
+          <>
+            <button
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/60"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/60"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            
+            {/* Dots */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {allImages.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                    i === imgIndex ? "bg-white" : "bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Rating badge */}
         <div className="absolute top-3 right-3 flex items-center gap-1

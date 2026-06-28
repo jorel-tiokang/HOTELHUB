@@ -9,6 +9,7 @@ interface HotelsStoreState {
   deleteRoom: (hotelId: string, roomId: string) => void;
   toggleRoomStatus: (hotelId: string, roomId: string) => void;
   getHotelRooms: (hotelId: string) => Room[];
+  updateHotel: (hotelId: string, updates: Partial<Hotel>) => void;
 }
 
 export const useHotelsStore = create<HotelsStoreState>((set, get) => ({
@@ -67,4 +68,11 @@ export const useHotelsStore = create<HotelsStoreState>((set, get) => ({
 
   getHotelRooms: (hotelId) =>
     get().hotels.find((h) => h.id === hotelId)?.rooms ?? [],
+
+  updateHotel: (hotelId, updates) =>
+    set((state) => ({
+      hotels: state.hotels.map((h) =>
+        h.id === hotelId ? { ...h, ...updates } : h
+      ),
+    })),
 }));

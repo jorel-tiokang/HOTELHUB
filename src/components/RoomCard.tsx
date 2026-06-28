@@ -216,18 +216,25 @@ export default function RoomCard({
           </div>
 
           {/* Status badge — clickable if handler provided */}
-          <button
-            onClick={() => onToggleStatut?.(room.id)}
-            disabled={!onToggleStatut}
-            className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
-              ${STATUT_CHAMBRE_STYLE[room.statut]}
-              ${onToggleStatut ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}`}
-          >
-            <span
-              className={`w-2 h-2 rounded-full ${STATUT_DOT[room.statut]}`}
-            />
-            {STATUT_LABEL[room.statut]}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onToggleStatut?.(room.id)}
+              disabled={!onToggleStatut}
+              className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
+                ${STATUT_CHAMBRE_STYLE[room.statut]}
+                ${onToggleStatut ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}`}
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${STATUT_DOT[room.statut]}`}
+              />
+              {STATUT_LABEL[room.statut]}
+            </button>
+            {room.actif === false && (
+              <span className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                Inactif
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Description */}

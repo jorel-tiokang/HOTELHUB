@@ -6,9 +6,10 @@ import { useHotelsFilterStore } from "@/store/hotelsfilterstore";
 import { hotelsData } from "@/mocks/hotelsData";
 import MapWrapper from "./MapWrapper";
 import MapModal from "./MapModal";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { formatPrice } from "@/utils/currency";
+import { Country, City } from "country-state-city";
 
 const AMENITIES = ["Wifi", "Piscine", "Parking", "Gym", "Climatisation"];
 
@@ -27,11 +28,18 @@ export default function HotelsSidebar() {
     toggleAmenity,
     selectedCity,
     setSelectedCity,
+    selectedCountry,
+    setSelectedCountry,
     userLocation,
   } = useHotelsFilterStore();
 
-  // Extract unique cities from mock data
-  const cities = Array.from(new Set(hotelsData.map((h) => h.city))).sort();
+  const activeHotelsData = hotelsData.filter(h => h.actif !== false);
+
+  const countries = useMemo(() => Country.getAllCountries(), []);
+  const cities = useMemo(() => {
+    if (!selectedCountry) return [];
+    return City.getCitiesOfCountry(selectedCountry) || [];
+  }, [selectedCountry]);
 
   return (
     <aside
@@ -45,6 +53,25 @@ export default function HotelsSidebar() {
         </h3>
       </div>
 
+      {/* Country selector */}
+      <div className="flex flex-col gap-2">
+        <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+          Pays
+        </label>
+        <select
+          value={selectedCountry || ""}
+          onChange={(e) => setSelectedCountry(e.target.value || null)}
+          className="w-full bg-background border border-border text-foreground rounded-xl px-3 py-2 text-sm outline-none focus:border-purple dark:focus:border-gold transition-colors"
+        >
+          <option value="">Tous les pays</option>
+          {countries.map((country) => (
+            <option key={country.isoCode} value={country.isoCode}>
+              {country.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* City selector */}
       <div className="flex flex-col gap-2">
         <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
@@ -53,12 +80,13 @@ export default function HotelsSidebar() {
         <select
           value={selectedCity || ""}
           onChange={(e) => setSelectedCity(e.target.value || null)}
-          className="w-full bg-background border border-border text-foreground rounded-xl px-3 py-2 text-sm outline-none focus:border-purple dark:focus:border-gold transition-colors"
+          disabled={!selectedCountry}
+          className="w-full bg-background border border-border text-foreground rounded-xl px-3 py-2 text-sm outline-none focus:border-purple dark:focus:border-gold transition-colors disabled:opacity-50"
         >
           <option value="">{t("filters.allCities")}</option>
           {cities.map((city) => (
-            <option key={city} value={city}>
-              {city}
+            <option key={city.name} value={city.name}>
+              {city.name}
             </option>
           ))}
         </select>
@@ -167,7 +195,7 @@ export default function HotelsSidebar() {
           className="h-40 w-full rounded-xl overflow-hidden border border-border cursor-pointer
             hover:border-purple dark:hover:border-gold transition-colors relative group z-0"
         >
-          <MapWrapper hotels={hotelsData} userLocation={userLocation} />
+          <MapWrapper hotels={activeHotelsData} userLocation={userLocation} />
           {/* Overlay hint */}
           <div className="absolute inset-0 flex items-center justify-center
             bg-black/0 group-hover:bg-black/30 transition-colors duration-200 pointer-events-none">
@@ -183,7 +211,7 @@ export default function HotelsSidebar() {
       <MapModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        hotels={hotelsData}
+        hotels={activeHotelsData}
         userLocation={userLocation}
       />
     </aside>

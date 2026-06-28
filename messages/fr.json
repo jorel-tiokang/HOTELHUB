@@ -419,6 +419,8 @@
         }
       },
       "status": {
+        "IMPAYEE": "Impayée",
+        "PAYEE": "Payée",
         "CONFIRMEE": "Confirmée",
         "EN_ATTENTE": "En attente",
         "ANNULEE": "Annulée",
@@ -498,6 +500,8 @@
       "contactSupport": "Contacter le support"
     },
     "status": {
+      "IMPAYEE": "Impayée",
+      "PAYEE": "Payée",
       "CONFIRMEE": "Confirmée",
       "EN_ATTENTE": "En attente",
       "ANNULEE": "Annulée",

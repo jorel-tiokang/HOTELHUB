@@ -4,7 +4,8 @@ import Link from "next/link";
 import RoomCard from "@/src/components/RoomCard";
 import AddRoomModal from "@/src/components/AddRoomModal";
 import type { Chambre } from "@/types/chambre";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Country, City } from "country-state-city";
 import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/store/authStore";
 import { useCurrencyStore } from "@/store/currencyStore";
@@ -21,6 +22,9 @@ import {
 } from "@/mocks/dashboardMocks";
 import { useHotelsStore } from "@/store/hotelsStore";
 import { useReservationStore } from "@/store/reservationStore";
+import * as bookingService from "@/src/services/bookingService";
+import * as reviewService from "@/src/services/reviewService";
+import type { BackendReviewDTO } from "@/services/api.types";
 import type { Room } from "@/services/hotel";
 import {
   LayoutDashboard,
@@ -71,6 +75,8 @@ const STATUT_CHAMBRE_STYLE: Record<string, string> = {
 };
 
 const STATUT_RES_STYLE: Record<string, string> = {
+  IMPAYEE: "bg-orange-500/20 text-orange-400 border border-orange-500/30",
+  PAYEE: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
   CONFIRMEE: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
   EN_ATTENTE: "bg-gold/20 text-gold border border-gold/30",
   ANNULEE: "bg-red-500/20 text-red-400 border border-red-500/30",
@@ -105,7 +111,7 @@ export default function DirectorDashboard() {
   const [showAddRoom, setShowAddRoom] = useState(false);
   
   const isSidebarExpanded = sidebarHovered || isMobileMenuOpen;
-  const { addRoom, updateRoom, deleteRoom, toggleRoomStatus, getHotelRooms } = useHotelsStore();
+  const { addRoom, updateRoom, deleteRoom, toggleRoomStatus, getHotelRooms, updateHotel } = useHotelsStore();
   const DIRECTOR_HOTEL_ID = (user as any)?.assigned_hotel_id ?? "h1";
   const chambres = getHotelRooms(DIRECTOR_HOTEL_ID) as Chambre[];
   
@@ -117,9 +123,11 @@ export default function DirectorDashboard() {
   );
   
   const { bookings, fetchHotelBookings } = useReservationStore();
+  const [directorReviews, setDirectorReviews] = useState<BackendReviewDTO[]>([]);
 
   useEffect(() => {
     fetchHotelBookings(DIRECTOR_HOTEL_ID);
+    reviewService.getReviewsForHotel(DIRECTOR_HOTEL_ID).then(setDirectorReviews);
   }, [DIRECTOR_HOTEL_ID, fetchHotelBookings]);
   const [reponses, setReponses] = useState<Record<string, string>>({});
   const [bookingFilter, setBookingFilter] = useState<string>("all");
@@ -127,9 +135,112 @@ export default function DirectorDashboard() {
   const [reviewPeriod, setReviewPeriod] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
 
+  // Settings State
+  const [hotelSettings, setHotelSettings] = useState({
+    nom: mockDirecteurHotel.nom,
+    email: mockDirecteurHotel.email,
+    telephone: mockDirecteurHotel.telephone,
+    pays: (mockDirecteurHotel as any).pays || "Cameroun",
+    countryCode: (mockDirecteurHotel as any).countryCode || "CM",
+    localisation: mockDirecteurHotel.localisation,
+    location: (mockDirecteurHotel as any).location || { lat: 4.0511, lng: 9.7679 },
+    adresse: (mockDirecteurHotel as any).adresse || "",
+    receptionHoursOpen: (mockDirecteurHotel as any).receptionHours?.open || "00:00",
+    receptionHoursClose: (mockDirecteurHotel as any).receptionHours?.close || "23:59",
+    cancellationPolicy: (mockDirecteurHotel as any).cancellationPolicy || "",
+    description: (mockDirecteurHotel as any).description || "",
+    images: (mockDirecteurHotel as any).images?.join(", ") || "",
+    actif: (mockDirecteurHotel as any).actif ?? true,
+  });
+
+  const countries = useMemo(() => Country.getAllCountries(), []);
+  const cities = useMemo(() => {
+    if (!hotelSettings.countryCode) return [];
+    return City.getCitiesOfCountry(hotelSettings.countryCode) || [];
+  }, [hotelSettings.countryCode]);
+
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [settingsSavedSuccess, setSettingsSavedSuccess] = useState(false);
+
+  const handleSaveSettings = async () => {
+    setIsSavingSettings(true);
+    setSettingsSavedSuccess(false);
+    // Simulate backend call
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    // Update the mock directly
+    mockDirecteurHotel.nom = hotelSettings.nom;
+    mockDirecteurHotel.email = hotelSettings.email;
+    mockDirecteurHotel.telephone = hotelSettings.telephone;
+    (mockDirecteurHotel as any).pays = hotelSettings.pays;
+    (mockDirecteurHotel as any).countryCode = hotelSettings.countryCode;
+    mockDirecteurHotel.localisation = hotelSettings.localisation;
+    (mockDirecteurHotel as any).location = hotelSettings.location;
+    (mockDirecteurHotel as any).adresse = hotelSettings.adresse;
+    (mockDirecteurHotel as any).receptionHours = {
+      open: hotelSettings.receptionHoursOpen,
+      close: hotelSettings.receptionHoursClose,
+    };
+    (mockDirecteurHotel as any).cancellationPolicy = hotelSettings.cancellationPolicy;
+    (mockDirecteurHotel as any).description = hotelSettings.description;
+    (mockDirecteurHotel as any).images = hotelSettings.images.split(",").map((i: string) => i.trim()).filter(Boolean);
+    (mockDirecteurHotel as any).actif = hotelSettings.actif;
+
+    // Synchronize with global store
+    updateHotel(DIRECTOR_HOTEL_ID, {
+      name: hotelSettings.nom,
+      country: hotelSettings.pays,
+      countryCode: hotelSettings.countryCode,
+      city: hotelSettings.localisation,
+      location: hotelSettings.location,
+      address: hotelSettings.adresse,
+      description: hotelSettings.description,
+      cancellationPolicy: hotelSettings.cancellationPolicy,
+      receptionHours: {
+        open: hotelSettings.receptionHoursOpen,
+        close: hotelSettings.receptionHoursClose,
+      },
+      actif: hotelSettings.actif,
+      images: hotelSettings.images.split(",").map((i: string) => i.trim()).filter(Boolean),
+    });
+    setIsSavingSettings(false);
+    setSettingsSavedSuccess(true);
+    setTimeout(() => setSettingsSavedSuccess(false), 3000);
+  };
+
   const selectedBookingData = selectedBooking ? bookings.find((b) => b.id === selectedBooking) : null;
 
   const toggleStatut = (id: string) => toggleRoomStatus(DIRECTOR_HOTEL_ID, id);
+
+  // ── Booking actions (accept / reject / complete) ─────────────────────────
+  const handleBookingAction = async (
+    bookingRef: string,
+    status: "CONFIRMED" | "CANCELLED" | "COMPLETED"
+  ) => {
+    try {
+      await bookingService.updateBookingStatus(bookingRef, status);
+      // Refresh the list so the UI reflects the new status immediately
+      await fetchHotelBookings(DIRECTOR_HOTEL_ID);
+    } catch (err) {
+      console.error("Failed to update booking:", err);
+    }
+  };
+
+  // ── Review Reply Action ───────────────────────────────────────────────────
+  const handleReplyReview = async (reviewId: string) => {
+    const text = reponses[reviewId];
+    if (!text || text.trim() === "") return;
+    try {
+      const updated = await reviewService.replyToReview(reviewId, text, chambres[0]?.hotelId || DIRECTOR_HOTEL_ID);
+      // Update local state
+      setDirectorReviews((prev) =>
+        prev.map((r) => (r.id === reviewId ? updated : r))
+      );
+      // Clear reply draft
+      setReponses((prev) => ({ ...prev, [reviewId]: "" }));
+    } catch (err) {
+      console.error("Failed to reply to review:", err);
+    }
+  };
 
   const filteredBookings =
     bookingFilter === "all"
@@ -138,9 +249,9 @@ export default function DirectorDashboard() {
 
   const filteredReviews =
     reviewFilter === "all"
-      ? latestReviews
-      : latestReviews.filter((r) =>
-          reviewFilter === "replied" ? r.reply !== null : r.reply === null,
+      ? directorReviews
+      : directorReviews.filter((r) =>
+          reviewFilter === "replied" ? r.director_reply !== undefined : r.director_reply === undefined
         );
 
   const currentDate = new Date().toLocaleDateString("fr-FR", {
@@ -457,39 +568,39 @@ export default function DirectorDashboard() {
                     {t("overview.latestReviews")}
                   </h3>
                   <div className="space-y-4">
-                    {latestReviews.slice(0, 3).map((review) => (
-                      <div
-                        key={review.id}
-                        className="pb-4 border-b border-gold/10 last:border-0 last:pb-0"
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3 h-3 ${
-                                  i < review.rating
-                                    ? "text-gold fill-gold"
-                                    : "text-foreground/20"
-                                }`}
-                              />
-                            ))}
+                    {directorReviews.length === 0 ? (
+                      <p className="text-foreground/40 text-sm text-center py-4">Aucun avis récent</p>
+                    ) : (
+                      directorReviews.slice(0, 3).map((review) => (
+                        <div
+                          key={review.id}
+                          className="pb-4 border-b border-gold/10 last:border-0 last:pb-0"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-3 h-3 ${
+                                    i < review.rating
+                                      ? "text-gold fill-gold"
+                                      : "text-foreground/20"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-foreground/40 text-xs">
+                              {review.client_full_name}
+                            </span>
                           </div>
-                          <span className="text-foreground/40 text-xs">
-                            {review.guest}
-                          </span>
+                          {review.comment && (
+                            <p className="text-foreground/70 text-sm line-clamp-2">
+                              &quot;{review.comment}&quot;
+                            </p>
+                          )}
                         </div>
-                        <p className="text-foreground/70 text-sm line-clamp-2">
-                          &quot;{review.text}&quot;
-                        </p>
-                        {!review.reply && (
-                          <button className="mt-2 text-xs text-purple flex items-center gap-1">
-                            <MessageSquare className="w-3 h-3" />
-                            {t("overview.unanswered")}
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                   <button
                     onClick={() => setActiveTab("reviews")}
@@ -686,7 +797,7 @@ export default function DirectorDashboard() {
                           {booking.id}
                         </td>
                         <td className="py-4 px-4 text-foreground font-medium">
-                          Client ({booking.id.slice(-4)})
+                          {booking.clientName || `Client (${booking.id.slice(-4)})`}
                         </td>
                         <td className="py-4 px-4 text-foreground/70">
                           {booking.chambreType}
@@ -708,13 +819,55 @@ export default function DirectorDashboard() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex gap-2">
-                            {booking.statut === "EN_ATTENTE" ? (
+                            {(booking.statut === "PAYEE" || booking.statut === "EN_ATTENTE") ? (
                               <>
-                                <button className="p-2 rounded-lg bg-gold/20 hover:bg-gold/30 text-gold transition-colors">
+                                <button
+                                  title="Accepter la réservation"
+                                  onClick={() => handleBookingAction(booking.id, "CONFIRMED")}
+                                  className="p-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 transition-colors"
+                                >
                                   <Check className="w-4 h-4" />
                                 </button>
-                                <button className="p-2 rounded-lg border border-red-400/30 hover:bg-red-500/20 text-red-400 transition-colors">
+                                <button
+                                  title="Rejeter la réservation"
+                                  onClick={() => handleBookingAction(booking.id, "CANCELLED")}
+                                  className="p-2 rounded-lg border border-red-400/30 hover:bg-red-500/20 text-red-400 transition-colors"
+                                >
                                   <X className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : booking.statut === "IMPAYEE" ? (
+                              <>
+                                <button
+                                  title="Rejeter (impayée)"
+                                  onClick={() => handleBookingAction(booking.id, "CANCELLED")}
+                                  className="p-2 rounded-lg border border-red-400/30 hover:bg-red-500/20 text-red-400 transition-colors"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                                <button
+                                  title="Voir les détails"
+                                  onClick={() => setSelectedBooking(booking.id)}
+                                  className="p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground/60 hover:text-foreground transition-colors"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : booking.statut === "CONFIRMEE" ? (
+                              <>
+                                <button
+                                  title="Marquer comme terminé"
+                                  onClick={() => handleBookingAction(booking.id, "COMPLETED")}
+                                  className="p-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 transition-colors text-xs font-semibold px-3"
+                                >
+                                  Terminé
+                                </button>
+                                <button
+                                  title="Voir les détails"
+                                  onClick={() => setSelectedBooking(booking.id)}
+                                  className="p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground/60 hover:text-foreground transition-colors"
+                                >
+                                  <Eye className="w-4 h-4" />
                                 </button>
                               </>
                             ) : (
@@ -831,73 +984,83 @@ export default function DirectorDashboard() {
 
               {/* Reviews List */}
               <div className="space-y-4">
-                {filteredReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-charcoal rounded-2xl p-6 shadow-lg"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold font-semibold">
-                          {review.guest.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="text-foreground font-semibold">
-                            {review.guest}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? "text-gold fill-gold"
-                                      : "text-foreground/20"
-                                  }`}
-                                />
-                              ))}
+                {filteredReviews.length === 0 ? (
+                  <p className="text-foreground/40 text-center py-12">Aucun avis trouvé.</p>
+                ) : (
+                  filteredReviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="bg-charcoal rounded-2xl p-6 shadow-lg"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold font-semibold">
+                            {review.client_full_name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-foreground font-semibold">
+                              {review.client_full_name}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < review.rating
+                                        ? "text-gold fill-gold"
+                                        : "text-foreground/20"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-foreground/40 text-sm">
+                                {new Date(review.created_at).toLocaleDateString("fr-FR")}
+                              </span>
                             </div>
-                            <span className="text-foreground/40 text-sm">
-                              {review.date}
-                            </span>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <p className="text-foreground/80 mb-4">
-                      &quot;{review.text}&quot;
-                    </p>
-
-                    {review.reply ? (
-                      <div className="ml-4 pl-4 border-l-2 border-purple bg-purple/5 rounded-r-xl p-4">
-                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-2 font-semibold">
-                          {t("reviews.yourReply")}
+                      {review.comment && (
+                        <p className="text-foreground/80 mb-4">
+                          &quot;{review.comment}&quot;
                         </p>
-                        <p className="text-foreground/70">{review.reply}</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <textarea
-                          rows={3}
-                          placeholder={t("reviews.replyPlaceholder")}
-                          value={reponses[review.id] ?? ""}
-                          onChange={(e) =>
-                            setReponses({
-                              ...reponses,
-                              [review.id]: e.target.value,
-                            })
-                          }
-                          className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground placeholder-foreground/30 text-sm focus:outline-none focus:border-purple transition-colors resize-none"
-                        />
-                        <button className="flex items-center gap-2 bg-purple hover:bg-purple/90 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
-                          <Send className="w-4 h-4" />
-                          {t("reviews.sendReply")}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+
+                      {review.director_reply ? (
+                        <div className="ml-4 pl-4 border-l-2 border-purple bg-purple/5 rounded-r-xl p-4">
+                          <p className="text-foreground/50 text-xs uppercase tracking-wider mb-2 font-semibold">
+                            {t("reviews.yourReply")}
+                          </p>
+                          <p className="text-foreground/70">{review.director_reply}</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <textarea
+                            rows={3}
+                            placeholder={t("reviews.replyPlaceholder")}
+                            value={reponses[review.id] ?? ""}
+                            onChange={(e) =>
+                              setReponses({
+                                ...reponses,
+                                [review.id]: e.target.value,
+                              })
+                            }
+                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground placeholder-foreground/30 text-sm focus:outline-none focus:border-purple transition-colors resize-none"
+                          />
+                          <button 
+                            onClick={() => handleReplyReview(review.id)}
+                            className="flex items-center gap-2 bg-purple hover:bg-purple/90 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+                          >
+                            <Send className="w-4 h-4" />
+                            {t("reviews.sendReply")}
+                          </button>
+                        </div>
+                      )}
+
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -1118,7 +1281,6 @@ export default function DirectorDashboard() {
             </div>
           )}
 
-          {/* Settings Tab */}
           {activeTab === "settings" && (
             <div className="max-w-2xl">
               <div className="bg-charcoal/90  rounded-2xl p-6 shadow-lg">
@@ -1134,7 +1296,8 @@ export default function DirectorDashboard() {
                       {t("settings.hotelName")}
                     </label>
                     <input
-                      defaultValue={mockDirecteurHotel.nom}
+                      value={hotelSettings.nom}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, nom: e.target.value })}
                       className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
@@ -1143,7 +1306,8 @@ export default function DirectorDashboard() {
                       {t("settings.contactEmail")}
                     </label>
                     <input
-                      defaultValue={mockDirecteurHotel.email}
+                      value={hotelSettings.email}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, email: e.target.value })}
                       className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
@@ -1152,13 +1316,167 @@ export default function DirectorDashboard() {
                       {t("bookings.modal.phone")}
                     </label>
                     <input
-                      defaultValue={mockDirecteurHotel.telephone}
+                      value={hotelSettings.telephone}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, telephone: e.target.value })}
                       className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
-                  <button className="bg-purple hover:bg-purple/90 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
-                    {t("settings.save")}
-                  </button>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                        Pays
+                      </label>
+                      <input
+                        list="countries-list"
+                        value={hotelSettings.pays}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const found = countries.find((c) => c.name === val);
+                          const isNewCountry = found && found.isoCode !== hotelSettings.countryCode;
+                          setHotelSettings({ 
+                            ...hotelSettings, 
+                            pays: val, 
+                            ...(found && { countryCode: found.isoCode }),
+                            ...(isNewCountry && { localisation: "", location: { lat: 0, lng: 0 } })
+                          });
+                        }}
+                        placeholder="Rechercher un pays..."
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
+                      />
+                      <datalist id="countries-list">
+                        {countries.map((c) => (
+                          <option key={c.isoCode} value={c.name} />
+                        ))}
+                      </datalist>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                        Ville
+                      </label>
+                      <input
+                        list="cities-list"
+                        value={hotelSettings.localisation}
+                        disabled={!hotelSettings.countryCode}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const found = cities.find((c) => c.name === val);
+                          setHotelSettings({ 
+                            ...hotelSettings, 
+                            localisation: val,
+                            ...(found && { location: { lat: Number(found.latitude) || 0, lng: Number(found.longitude) || 0 } })
+                          });
+                        }}
+                        placeholder={hotelSettings.countryCode ? "Rechercher une ville..." : "Sélectionnez un pays d'abord"}
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors disabled:opacity-50"
+                      />
+                      <datalist id="cities-list">
+                        {cities.map((c) => (
+                          <option key={c.name} value={c.name} />
+                        ))}
+                      </datalist>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                      Adresse complète
+                    </label>
+                    <input
+                      value={hotelSettings.adresse}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, adresse: e.target.value })}
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                        Heure d'ouverture
+                      </label>
+                      <input
+                        type="time"
+                        value={hotelSettings.receptionHoursOpen}
+                        onChange={(e) => setHotelSettings({ ...hotelSettings, receptionHoursOpen: e.target.value })}
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                        Heure de fermeture
+                      </label>
+                      <input
+                        type="time"
+                        value={hotelSettings.receptionHoursClose}
+                        onChange={(e) => setHotelSettings({ ...hotelSettings, receptionHoursClose: e.target.value })}
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                      Politique d'annulation et de remboursement
+                    </label>
+                    <textarea
+                      value={hotelSettings.cancellationPolicy}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, cancellationPolicy: e.target.value })}
+                      rows={3}
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                      Description de l'hôtel
+                    </label>
+                    <textarea
+                      value={hotelSettings.description}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, description: e.target.value })}
+                      rows={4}
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
+                      Images (séparées par des virgules)
+                    </label>
+                    <input
+                      value={hotelSettings.images}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, images: e.target.value })}
+                      placeholder="https://image1.jpg, https://image2.jpg"
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="actif-checkbox"
+                      checked={hotelSettings.actif}
+                      onChange={(e) => setHotelSettings({ ...hotelSettings, actif: e.target.checked })}
+                      className="w-5 h-5 accent-purple rounded border-foreground/10 cursor-pointer"
+                    />
+                    <label htmlFor="actif-checkbox" className="text-foreground text-sm font-semibold cursor-pointer select-none">
+                      Hôtel actif sur le catalogue (visible pour les clients)
+                    </label>
+                  </div>
+
+                  <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
+                    <button 
+                      onClick={handleSaveSettings}
+                      disabled={isSavingSettings}
+                      className="bg-purple hover:bg-purple/90 text-white px-6 py-3 rounded-xl font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {isSavingSettings ? "Enregistrement..." : t("settings.save")}
+                    </button>
+                    {settingsSavedSuccess && (
+                      <span className="text-emerald-500 text-sm font-semibold animate-in fade-in">
+                        Modifications enregistrées !
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
