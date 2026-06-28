@@ -1,18 +1,40 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Search, MapPin, Calendar, Users } from "lucide-react";
 import { useState } from "react";
 import DatePicker from "./DatePicker";
+import { useRouter } from "next/navigation";
+import { hotelsData } from "@/mocks/hotelsData";
 
 export default function HeroSection() {
   const t = useTranslations("hero");
   const ts = useTranslations("stats");
+  const locale = useLocale();
+  const router = useRouter();
 
   const [location, setLocation] = useState("");
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined);
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guests, setGuests] = useState("");
+
+  // Extract unique cities from hotelsData
+  const availableCities = Array.from(new Set(hotelsData.map(h => h.city)));
+
+  const handleSearch = () => {
+    if (checkIn && checkOut && checkOut <= checkIn) {
+      alert("La date de départ doit être ultérieure à la date d'arrivée.");
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (location) params.append("city", location);
+    if (checkIn) params.append("checkIn", checkIn.toISOString());
+    if (checkOut) params.append("checkOut", checkOut.toISOString());
+    if (guests) params.append("guests", guests);
+
+    router.push(`/${locale}/hotels?${params.toString()}`);
+  };
 
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
@@ -85,30 +107,38 @@ export default function HeroSection() {
                   <span className="text-white/50 text-[10px] uppercase tracking-widest font-semibold">
                     {t("search.locationLabel")}
                   </span>
-                  <input
+                  <select
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder={t("search.locationPlaceholder")}
                     className="bg-transparent text-white text-sm font-medium
-                      placeholder-white/40 outline-none w-full"
-                  />
+                      placeholder-white/40 outline-none w-full appearance-none cursor-pointer"
+                  >
+                    <option value="" className="text-black dark:text-white dark:bg-charcoal">
+                      {t("search.locationPlaceholder")}
+                    </option>
+                    {availableCities.map((city) => (
+                      <option key={city} value={city} className="text-black dark:text-white dark:bg-charcoal">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               {/* Check-in */}
-              {/* Check-in */}
-      <DatePicker 
-        label={t("search.checkInLabel")}
-        selectedDate={checkIn}
-        onDateChange={setCheckIn}
-      />
+              <DatePicker 
+                label={t("search.checkInLabel")}
+                selectedDate={checkIn}
+                onDateChange={setCheckIn}
+              />
 
-      {/* Check-out */}
-      <DatePicker 
-        label={t("search.checkOutLabel")}
-        selectedDate={checkOut}
-        onDateChange={setCheckOut}
-      />
+              {/* Check-out */}
+              <DatePicker 
+                label={t("search.checkOutLabel")}
+                selectedDate={checkOut}
+                onDateChange={setCheckOut}
+                minDate={checkIn}
+              />
 
               {/* Guests + Search button */}
               <div className="flex gap-1">
@@ -133,6 +163,7 @@ export default function HeroSection() {
                 </div>
 
                 <button
+                  onClick={handleSearch}
                   className="px-5 py-3 rounded-xl
                     bg-purple dark:bg-gold
                     text-white dark:text-[#1c1714]

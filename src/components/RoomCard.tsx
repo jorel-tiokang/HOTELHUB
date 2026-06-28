@@ -203,12 +203,12 @@ export default function RoomCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h4
-              className="text-xl font-bold text-white leading-tight truncate"
+              className="text-xl font-bold text-foreground leading-tight truncate"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               Chambre {room.numero}
             </h4>
-            <p className="text-white/50 text-sm">
+            <p className="text-foreground/50 text-sm">
               {room.type}
               {floorNumber > 0 && ` — Étage ${floorNumber}`}
               {room.capacite > 0 && ` · ${room.capacite} pers.`}
@@ -232,7 +232,7 @@ export default function RoomCard({
 
         {/* Description */}
         {room.description && (
-          <p className="text-white/60 text-sm leading-relaxed line-clamp-2">
+          <p className="text-foreground/60 text-sm leading-relaxed line-clamp-2">
             {room.description}
           </p>
         )}
@@ -246,7 +246,7 @@ export default function RoomCard({
                 <span
                   key={eq}
                   className="inline-flex items-center gap-1 px-2 py-1
-                    bg-white/5 text-white/60 text-xs rounded-lg border border-white/5"
+                    bg-foreground/5 text-foreground/60 text-xs rounded-lg border border-foreground/5"
                 >
                   {Icon && <Icon className="w-3 h-3" />}
                   {eq}
@@ -263,7 +263,7 @@ export default function RoomCard({
             style={{ fontFamily: "var(--font-playfair)" }}
           >
             {formatPrice(room.prixParNuit, currency, locale)}
-            <span className="text-white/40 text-sm font-normal ml-1">/nuit</span>
+            <span className="text-foreground/40 text-sm font-normal ml-1">/nuit</span>
           </p>
 
           <div className="flex gap-2">
@@ -271,8 +271,8 @@ export default function RoomCard({
               <button
                 onClick={() => onEdit(room)}
                 aria-label="Modifier la chambre"
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60
-                  hover:text-white transition-colors"
+                className="p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground/60
+                  hover:text-foreground transition-colors"
               >
                 <Edit3 className="w-4 h-4" />
               </button>
@@ -281,8 +281,8 @@ export default function RoomCard({
               <button
                 onClick={() => onDelete(room.id)}
                 aria-label="Supprimer la chambre"
-                className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20
-                  text-white/60 hover:text-red-400 transition-colors"
+                className="p-2 rounded-lg bg-foreground/5 hover:bg-red-500/20
+                  text-foreground/60 hover:text-red-400 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

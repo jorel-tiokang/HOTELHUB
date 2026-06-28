@@ -9,7 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/store/authStore";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { formatPrice, formatCompactPrice } from "@/utils/currency";
-import ModeToggle from "@/src/components/ModeTogge";
+import { ThemeToggle } from "@/src/components/Header";
 import LanguageToggle from "@/src/components/LanguageToggle";
 import CurrencyToggle from "@/src/components/CurrencyToggle";
 import {
@@ -44,6 +44,7 @@ import {
   Send,
   LogOut,
   Menu,
+  Search,
 } from "lucide-react";
 import {
   BarChart,
@@ -70,16 +71,12 @@ const STATUT_CHAMBRE_STYLE: Record<string, string> = {
 };
 
 const STATUT_RES_STYLE: Record<string, string> = {
-  CONFIRMEE: "bg-emerald-500/20 text-emerald-400",
-  EN_ATTENTE: "bg-gold/20 text-gold",
-  ANNULEE: "bg-red-500/20 text-red-400",
+  CONFIRMEE: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+  EN_ATTENTE: "bg-gold/20 text-gold border border-gold/30",
+  ANNULEE: "bg-red-500/20 text-red-400 border border-red-500/30",
+  TERMINEE: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
 };
 
-const STATUT_RES_LABEL: Record<string, string> = {
-  CONFIRMEE: "Confirmee",
-  EN_ATTENTE: "En attente",
-  ANNULEE: "Annulee",
-};
 
 
 
@@ -96,6 +93,9 @@ export default function DirectorDashboard() {
     { id: "settings", label: t("nav.settings"), icon: Settings },
   ];
   const [editingRoom, setEditingRoom] = useState<Chambre | null>(null);
+  const [localStaff, setLocalStaff] = useState(staffMembers);
+  const [editingStaff, setEditingStaff] = useState<typeof staffMembers[0] | null>(null);
+
   const { user, logout } = useAuthStore();
   const { currency } = useCurrencyStore();
   const locale = useLocale();
@@ -108,6 +108,13 @@ export default function DirectorDashboard() {
   const { addRoom, updateRoom, deleteRoom, toggleRoomStatus, getHotelRooms } = useHotelsStore();
   const DIRECTOR_HOTEL_ID = (user as any)?.assigned_hotel_id ?? "h1";
   const chambres = getHotelRooms(DIRECTOR_HOTEL_ID) as Chambre[];
+  
+  const [roomSearchQuery, setRoomSearchQuery] = useState("");
+  const filteredRooms = chambres.filter((room) =>
+    room.type.toLowerCase().includes(roomSearchQuery.toLowerCase()) ||
+    room.numero.toString().includes(roomSearchQuery) ||
+    (room.description && room.description.toLowerCase().includes(roomSearchQuery.toLowerCase()))
+  );
   
   const { bookings, fetchHotelBookings } = useReservationStore();
 
@@ -171,7 +178,7 @@ export default function DirectorDashboard() {
       >
         {/* Logo */}
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="flex item-center gap-3">
               <img
                 src="/hotelhublogo.png"
@@ -194,7 +201,7 @@ export default function DirectorDashboard() {
                 {t("role")}
               </p>
             </div>
-          </div>
+          </Link>
           {isMobileMenuOpen && (
             <button
               className="md:hidden p-2 text-white/70 hover:text-white"
@@ -302,8 +309,8 @@ export default function DirectorDashboard() {
               </div>
             </div>
             
-            <div className="flex flex-wrap items-center gap-2 md:gap-4 self-end sm:self-auto">
-              <ModeToggle />
+            <div className="dark flex flex-wrap items-center gap-2 md:gap-4 self-end sm:self-auto">
+              <ThemeToggle />
               <LanguageToggle />
               <CurrencyToggle />
               <button className="relative p-3 rounded-xl bg-purple/30 hover:bg-purple/50 transition-colors">
@@ -359,7 +366,7 @@ export default function DirectorDashboard() {
                       className="bg-charcoal rounded-2xl p-6 shadow-md animateCardBoxHover group"
                     >
                       <div className="flex items-start justify-between mb-4">
-                        <div className="p-2 rounded-xl bg-white/10">
+                        <div className="p-2 rounded-xl bg-foreground/10">
                           <Icon className="w-5 h-5 text-gold" />
                         </div>
                         <div
@@ -381,7 +388,7 @@ export default function DirectorDashboard() {
                       >
                         {kpi.value}
                       </p>
-                      <p className="text-white/50 text-sm">{kpi.label}</p>
+                      <p className="text-foreground/50 text-sm">{kpi.label}</p>
                     </div>
                   );
                 })}
@@ -392,7 +399,7 @@ export default function DirectorDashboard() {
                 {/* Weekly Occupancy Chart */}
                 <div className="lg:col-span-2 bg-charcoal rounded-2xl p-6 shadow-lg animateCardBoxHover">
                   <h3
-                    className="text-lg font-bold text-white mb-6"
+                    className="text-lg font-bold text-foreground mb-6"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
                     {t("overview.weeklyOccupancy")}
@@ -402,25 +409,28 @@ export default function DirectorDashboard() {
                       <BarChart data={weeklyOccupancyData}>
                         <CartesianGrid
                           strokeDasharray="3 3"
-                          stroke="rgba(255,255,255,0.1)"
+                          stroke="var(--color-foreground)"
+                          strokeOpacity={0.1}
                         />
                         <XAxis
                           dataKey="day"
-                          stroke="rgba(255,255,255,0.5)"
+                          stroke="var(--color-foreground)"
+                          strokeOpacity={0.5}
                           fontSize={12}
                         />
                         <YAxis
-                          stroke="rgba(255,255,255,0.5)"
+                          stroke="var(--color-foreground)"
+                          strokeOpacity={0.5}
                           fontSize={12}
                           domain={[0, 100]}
                         />
                         <Tooltip
                           cursor={{ fill: "rgba(212, 175, 55, 0.15)" }}
                           contentStyle={{
-                            backgroundColor: "#1C1714",
+                            backgroundColor: "var(--color-charcoal)",
                             border: "1px solid rgba(212,175,55,0.3)",
                             borderRadius: "12px",
-                            color: "#fff",
+                            color: "var(--color-foreground)",
                           }}
                           // accept possibly undefined value coming from Recharts
                           formatter={(value: any) => [
@@ -441,7 +451,7 @@ export default function DirectorDashboard() {
                 {/* Latest Reviews Panel */}
                 <div className="bg-charcoal rounded-2xl p-6 shadow-lg animateCardBoxHover">
                   <h3
-                    className="text-lg font-bold text-white mb-4"
+                    className="text-lg font-bold text-foreground mb-4"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
                     {t("overview.latestReviews")}
@@ -460,16 +470,16 @@ export default function DirectorDashboard() {
                                 className={`w-3 h-3 ${
                                   i < review.rating
                                     ? "text-gold fill-gold"
-                                    : "text-white/20"
+                                    : "text-foreground/20"
                                 }`}
                               />
                             ))}
                           </div>
-                          <span className="text-white/40 text-xs">
+                          <span className="text-foreground/40 text-xs">
                             {review.guest}
                           </span>
                         </div>
-                        <p className="text-white/70 text-sm line-clamp-2">
+                        <p className="text-foreground/70 text-sm line-clamp-2">
                           &quot;{review.text}&quot;
                         </p>
                         {!review.reply && (
@@ -494,7 +504,7 @@ export default function DirectorDashboard() {
               {/* Recent Bookings Table */}
               <div className="bg-charcoal rounded-2xl p-4 md:p-6 shadow-lg overflow-x-auto">
                 <h3
-                  className="text-lg font-bold text-white mb-6"
+                  className="text-lg font-bold text-foreground mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {t("overview.recentBookings")}
@@ -503,19 +513,19 @@ export default function DirectorDashboard() {
                   <table className="w-full min-w-[600px]">
                     <thead>
                       <tr className="border-b border-gold/10">
-                        <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                        <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                           Client
                         </th>
-                        <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                        <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                           {t("bookings.table.roomType")}
                         </th>
-                        <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                        <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                           {t("bookings.table.arrival")}
                         </th>
-                        <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                        <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                           {t("bookings.table.departure")}
                         </th>
-                        <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                        <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                           {t("bookings.table.status")}
                         </th>
                       </tr>
@@ -524,18 +534,18 @@ export default function DirectorDashboard() {
                       {filteredBookings.slice(0, 5).map((booking) => (
                         <tr
                           key={booking.id}
-                          className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                          className="border-b border-foreground/5 hover:bg-foreground/5 transition-colors"
                         >
-                          <td className="py-4 px-4 text-white font-medium">
+                          <td className="py-4 px-4 text-foreground font-medium">
                             Client ({booking.id.slice(-4)})
                           </td>
-                          <td className="py-4 px-4 text-white/70">
+                          <td className="py-4 px-4 text-foreground/70">
                             {booking.chambreType}
                           </td>
-                          <td className="py-4 px-4 text-white/70">
+                          <td className="py-4 px-4 text-foreground/70">
                             {booking.jourDebut}
                           </td>
-                          <td className="py-4 px-4 text-white/70">
+                          <td className="py-4 px-4 text-foreground/70">
                             {booking.jourFin}
                           </td>
                           <td className="py-4 px-4">
@@ -544,7 +554,7 @@ export default function DirectorDashboard() {
                                 STATUT_RES_STYLE[booking.statut]
                               }`}
                             >
-                              {STATUT_RES_LABEL[booking.statut]}
+                              {t(`status.${booking.statut}`)}
                             </span>
                           </td>
                         </tr>
@@ -576,8 +586,22 @@ export default function DirectorDashboard() {
                 </button>
               </div>
 
+              {/* Room filter box */}
+              <div className="flex items-center gap-2
+                bg-charcoal border border-foreground/10 shadow-sm
+                rounded-xl px-4 py-3 mb-2">
+                <Search className="w-4 h-4 text-foreground/50" />
+                <input
+                  value={roomSearchQuery}
+                  onChange={(e) => setRoomSearchQuery(e.target.value)}
+                  placeholder="Rechercher une chambre par numéro, type..."
+                  className="bg-transparent text-foreground placeholder-foreground/40
+                    text-sm outline-none flex-1"
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {chambres.map((room) => (
+                {filteredRooms.map((room) => (
                   <RoomCard
                     key={room.id}
                     room={room}
@@ -629,25 +653,25 @@ export default function DirectorDashboard() {
                 <table className="w-full min-w-[800px]">
                   <thead>
                     <tr className="border-b border-gold/10">
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.id")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.guest")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.room")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.dates")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.price")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.status")}
                       </th>
-                      <th className="text-left py-3 px-4 text-white/50 text-xs uppercase tracking-wider font-semibold">
+                      <th className="text-left py-3 px-4 text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                         {t("bookings.table.actions")}
                       </th>
                     </tr>
@@ -656,18 +680,18 @@ export default function DirectorDashboard() {
                     {filteredBookings.map((booking) => (
                       <tr
                         key={booking.id}
-                        className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                        className="border-b border-foreground/5 hover:bg-foreground/5 transition-colors"
                       >
-                        <td className="py-4 px-4 text-white/50 text-sm">
+                        <td className="py-4 px-4 text-foreground/50 text-sm">
                           {booking.id}
                         </td>
-                        <td className="py-4 px-4 text-white font-medium">
+                        <td className="py-4 px-4 text-foreground font-medium">
                           Client ({booking.id.slice(-4)})
                         </td>
-                        <td className="py-4 px-4 text-white/70">
+                        <td className="py-4 px-4 text-foreground/70">
                           {booking.chambreType}
                         </td>
-                        <td className="py-4 px-4 text-white/70 text-sm">
+                        <td className="py-4 px-4 text-foreground/70 text-sm">
                           {booking.jourDebut} - {booking.jourFin}
                         </td>
                         <td className="py-4 px-4 text-gold font-semibold">
@@ -679,7 +703,7 @@ export default function DirectorDashboard() {
                               STATUT_RES_STYLE[booking.statut]
                             }`}
                           >
-                            {STATUT_RES_LABEL[booking.statut]}
+                            {t(`status.${booking.statut}`)}
                           </span>
                         </td>
                         <td className="py-4 px-4">
@@ -696,7 +720,7 @@ export default function DirectorDashboard() {
                             ) : (
                               <button
                                 onClick={() => setSelectedBooking(booking.id)}
-                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                                className="p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-foreground/60 hover:text-foreground transition-colors"
                               >
                                 <Eye className="w-4 h-4" />
                               </button>
@@ -714,45 +738,45 @@ export default function DirectorDashboard() {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                   <div className="bg-charcoal rounded-2xl p-6 md:p-8 max-w-md w-full shadow-xl">
                     <h3
-                      className="text-xl font-bold text-white mb-6"
+                      className="text-xl font-bold text-foreground mb-6"
                       style={{ fontFamily: "var(--font-playfair)" }}
                     >
                       {t("bookings.modal.title")}
                     </h3>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
+                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-1">
                           {t("bookings.table.guest")}
                         </p>
-                        <p className="text-white font-semibold">
+                        <p className="text-foreground font-semibold">
                           Client ({selectedBookingData?.id?.slice(-4)})
                         </p>
                       </div>
                       <div>
-                        <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
+                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-1">
                           {t("bookings.modal.email")}
                         </p>
-                        <p className="text-white/70">client.{selectedBookingData?.id?.slice(-4).toLowerCase()}@email.com</p>
+                        <p className="text-foreground/70">client.{selectedBookingData?.id?.slice(-4).toLowerCase()}@email.com</p>
                       </div>
                       <div>
-                        <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
+                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-1">
                           {t("bookings.modal.phone")}
                         </p>
-                        <p className="text-white/70">+237 699 123 456</p>
+                        <p className="text-foreground/70">+237 699 123 456</p>
                       </div>
                       <div className="pt-4 border-t border-gold/10">
-                        <p className="text-white/50 text-xs uppercase tracking-wider mb-1">
+                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-1">
                           {t("bookings.modal.transaction")}
                         </p>
                         <p className="text-gold font-semibold">
                           {selectedBookingData?.montantTotal != null ? formatPrice(selectedBookingData.montantTotal, currency, locale) : "—"}{" "}
-                          — {STATUT_RES_LABEL[selectedBookingData?.statut ?? "CONFIRMEE"]}
+                          — {t(`status.${selectedBookingData?.statut ?? "CONFIRMEE"}`)}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => setSelectedBooking(null)}
-                      className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors"
+                      className="mt-6 w-full py-3 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-xl transition-colors"
                     >
                       {t("bookings.modal.close")}
                     </button>
@@ -779,7 +803,7 @@ export default function DirectorDashboard() {
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         reviewFilter === filter.id
                           ? "bg-purple text-white"
-                          : "text-white/60 hover:text-white"
+                          : "text-foreground/60 hover:text-foreground"
                       }`}
                     >
                       {filter.label}
@@ -789,13 +813,13 @@ export default function DirectorDashboard() {
                 <select
                   value={reviewPeriod}
                   onChange={(e) => setReviewPeriod(e.target.value)}
-                  className="bg-charcoal text-white/70 px-4 py-2 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-purple"
+                  className="bg-charcoal text-foreground/70 px-4 py-2 rounded-xl border border-foreground/10 text-sm focus:outline-none focus:border-purple"
                 >
                   <option value="all">{t("reviews.periods.all")}</option>
                   <option value="week">{t("reviews.periods.week")}</option>
                   <option value="month">{t("reviews.periods.month")}</option>
                 </select>
-                <select className="bg-charcoal text-white/70 px-4 py-2 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-purple">
+                <select className="bg-charcoal text-foreground/70 px-4 py-2 rounded-xl border border-foreground/10 text-sm focus:outline-none focus:border-purple">
                   <option value="">{t("reviews.rooms.all")}</option>
                   {chambres.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -818,7 +842,7 @@ export default function DirectorDashboard() {
                           {review.guest.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-white font-semibold">
+                          <p className="text-foreground font-semibold">
                             {review.guest}
                           </p>
                           <div className="flex items-center gap-2">
@@ -829,28 +853,28 @@ export default function DirectorDashboard() {
                                   className={`w-4 h-4 ${
                                     i < review.rating
                                       ? "text-gold fill-gold"
-                                      : "text-white/20"
+                                      : "text-foreground/20"
                                   }`}
                                 />
                               ))}
                             </div>
-                            <span className="text-white/40 text-sm">
+                            <span className="text-foreground/40 text-sm">
                               {review.date}
                             </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <p className="text-white/80 mb-4">
+                    <p className="text-foreground/80 mb-4">
                       &quot;{review.text}&quot;
                     </p>
 
                     {review.reply ? (
                       <div className="ml-4 pl-4 border-l-2 border-purple bg-purple/5 rounded-r-xl p-4">
-                        <p className="text-white/50 text-xs uppercase tracking-wider mb-2 font-semibold">
+                        <p className="text-foreground/50 text-xs uppercase tracking-wider mb-2 font-semibold">
                           {t("reviews.yourReply")}
                         </p>
-                        <p className="text-white/70">{review.reply}</p>
+                        <p className="text-foreground/70">{review.reply}</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -864,7 +888,7 @@ export default function DirectorDashboard() {
                               [review.id]: e.target.value,
                             })
                           }
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple transition-colors resize-none"
+                          className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground placeholder-foreground/30 text-sm focus:outline-none focus:border-purple transition-colors resize-none"
                         />
                         <button className="flex items-center gap-2 bg-purple hover:bg-purple/90 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
                           <Send className="w-4 h-4" />
@@ -884,7 +908,7 @@ export default function DirectorDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
                   <h3
-                    className="text-lg font-bold text-white mb-6"
+                    className="text-lg font-bold text-foreground mb-6"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
                     {t("statistics.bookingsThisMonth")}
@@ -898,7 +922,7 @@ export default function DirectorDashboard() {
                 </div>
                 <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
                   <h3
-                    className="text-lg font-bold text-white mb-6"
+                    className="text-lg font-bold text-foreground mb-6"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
                     {t("statistics.revenueThisMonth")}
@@ -914,13 +938,13 @@ export default function DirectorDashboard() {
 
               <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
                 <h3
-                  className="text-lg font-bold text-white mb-6"
+                  className="text-lg font-bold text-foreground mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {t("statistics.occupancyRate")}
                 </h3>
                 <div className="flex items-center gap-6">
-                  <div className="flex-1 h-4 bg-white/10 rounded-full overflow-hidden">
+                  <div className="flex-1 h-4 bg-foreground/10 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gold rounded-full transition-all duration-500"
                       style={{
@@ -939,7 +963,7 @@ export default function DirectorDashboard() {
 
               <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
                 <h3
-                  className="text-lg font-bold text-white mb-6"
+                  className="text-lg font-bold text-foreground mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {t("statistics.roomAvailability")}
@@ -976,30 +1000,30 @@ export default function DirectorDashboard() {
             <div className="space-y-6">
               <div className="bg-charcoal rounded-2xl p-6 shadow-lg">
                 <h3
-                  className="text-lg font-bold text-white mb-6"
+                  className="text-lg font-bold text-foreground mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {t("staff.title")}
                 </h3>
                 <div className="space-y-4">
-                  {staffMembers.map((staff) => (
+                  {localStaff.map((staff) => (
                     <div
                       key={staff.id}
-                      className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                      className="flex items-center justify-between p-4 bg-foreground/5 rounded-xl hover:bg-foreground/10 transition-colors"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold font-semibold">
                           {staff.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-white font-semibold">
+                          <p className="text-foreground font-semibold">
                             {staff.name}
                           </p>
-                          <p className="text-white/50 text-sm">{staff.role}</p>
+                          <p className="text-foreground/50 text-sm">{staff.role}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
-                        <p className="text-white/50 text-sm hidden sm:block">
+                      <div className="flex items-center gap-4">
+                        <p className="text-foreground/50 text-sm hidden sm:block">
                           {staff.contact}
                         </p>
                         <span
@@ -1011,11 +1035,86 @@ export default function DirectorDashboard() {
                         >
                           {staff.status}
                         </span>
+                        <button
+                          onClick={() => setEditingStaff(staff)}
+                          className="p-2 bg-foreground/5 hover:bg-foreground/10 rounded-lg text-foreground/50 hover:text-foreground transition-colors ml-2"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Edit Staff Modal */}
+              {editingStaff && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                  <div className="bg-charcoal w-full max-w-md rounded-2xl shadow-2xl p-6 border border-foreground/10 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-playfair)" }}>
+                        Modifier le profil
+                      </h3>
+                      <button onClick={() => setEditingStaff(null)} className="text-foreground/50 hover:text-foreground transition-colors">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-foreground/50 text-xs font-semibold uppercase tracking-wider mb-2 block">Nom complet</label>
+                        <input
+                          type="text"
+                          value={editingStaff.name}
+                          onChange={(e) => setEditingStaff({ ...editingStaff, name: e.target.value })}
+                          className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-foreground/50 text-xs font-semibold uppercase tracking-wider mb-2 block">Rôle</label>
+                        <input
+                          type="text"
+                          value={editingStaff.role}
+                          onChange={(e) => setEditingStaff({ ...editingStaff, role: e.target.value })}
+                          className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-foreground/50 text-xs font-semibold uppercase tracking-wider mb-2 block">Contact</label>
+                        <input
+                          type="text"
+                          value={editingStaff.contact}
+                          onChange={(e) => setEditingStaff({ ...editingStaff, contact: e.target.value })}
+                          className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-foreground/50 text-xs font-semibold uppercase tracking-wider mb-2 block">Statut</label>
+                        <select
+                          value={editingStaff.status}
+                          onChange={(e) => setEditingStaff({ ...editingStaff, status: e.target.value })}
+                          className="w-full bg-[#1c1714] border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
+                        >
+                          <option value="Actif">Actif</option>
+                          <option value="Inactif">Inactif</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 flex gap-3">
+                      <button
+                        onClick={() => {
+                          setLocalStaff((prev) => prev.map((s) => s.id === editingStaff.id ? editingStaff : s));
+                          setEditingStaff(null);
+                        }}
+                        className="flex-1 bg-gold hover:bg-gold/90 text-charcoal font-semibold py-3 rounded-xl transition-colors"
+                      >
+                        Sauvegarder
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1024,37 +1123,37 @@ export default function DirectorDashboard() {
             <div className="max-w-2xl">
               <div className="bg-charcoal/90  rounded-2xl p-6 shadow-lg">
                 <h3
-                  className="text-lg font-bold text-white mb-6"
+                  className="text-lg font-bold text-foreground mb-6"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {t("settings.title")}
                 </h3>
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                       {t("settings.hotelName")}
                     </label>
                     <input
                       defaultValue={mockDirecteurHotel.nom}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple transition-colors"
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                       {t("settings.contactEmail")}
                     </label>
                     <input
                       defaultValue={mockDirecteurHotel.email}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple transition-colors"
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-white/50 text-xs uppercase tracking-wider font-semibold">
+                    <label className="text-foreground/50 text-xs uppercase tracking-wider font-semibold">
                       {t("bookings.modal.phone")}
                     </label>
                     <input
                       defaultValue={mockDirecteurHotel.telephone}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple transition-colors"
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-purple transition-colors"
                     />
                   </div>
                   <button className="bg-purple hover:bg-purple/90 text-white px-6 py-3 rounded-xl font-semibold transition-colors">

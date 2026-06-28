@@ -11,7 +11,7 @@ import Link from "next/link";
 import CurrencyToggle from "@/src/components/CurrencyToggle";
 
 /* ── Theme Toggle ─────────────────────────────────────────── */
-function ThemeToggle() {
+export function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {

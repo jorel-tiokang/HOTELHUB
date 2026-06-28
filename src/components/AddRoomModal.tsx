@@ -8,7 +8,28 @@ import {
   ImagePlus,
   ChevronLeft,
   ChevronRight,
+  Wifi,
+  Tv,
+  Wind,
+  Coffee,
+  Car,
+  Dumbbell,
+  Waves,
+  Sprout,
+  Martini,
 } from "lucide-react";
+
+const PREDEFINED_AMENITIES = [
+  { id: "Wifi", label: "Wifi", icon: Wifi },
+  { id: "TV", label: "TV", icon: Tv },
+  { id: "Climatisation", label: "Climatisation", icon: Wind },
+  { id: "Café", label: "Café", icon: Coffee },
+  { id: "Parking", label: "Parking", icon: Car },
+  { id: "Gym", label: "Salle de sport", icon: Dumbbell },
+  { id: "Piscine", label: "Piscine", icon: Waves },
+  { id: "Spa", label: "Spa", icon: Sprout },
+  { id: "Bar", label: "Minibar", icon: Martini },
+];
 import type { Chambre, NewChambreFormData } from "../../types/chambre";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { convertToXAF, getCurrencySymbol } from "@/utils/currency";
@@ -443,15 +464,46 @@ export default function AddRoomModal({
             />
           </Field>
 
-          <Field label="Équipements (séparés par des virgules)">
-            <input
-              value={form.equipements}
-              onChange={(e) =>
-                setForm({ ...form, equipements: e.target.value })
-              }
-              placeholder="Wifi, Clim, TV, Coffre-fort…"
-              className={inputClass}
-            />
+          <Field label="Équipements inclus">
+            <div className="flex flex-wrap gap-2 mt-1">
+              {PREDEFINED_AMENITIES.map((amenity) => {
+                const currentList = form.equipements
+                  .split(",")
+                  .map((e) => e.trim())
+                  .filter(Boolean);
+                
+                // Match case-insensitively just in case
+                const isSelected = currentList.some((e) => e.toLowerCase() === amenity.id.toLowerCase());
+
+                return (
+                  <button
+                    key={amenity.id}
+                    type="button"
+                    onClick={() => {
+                      if (isSelected) {
+                        setForm({
+                          ...form,
+                          equipements: currentList.filter((e) => e.toLowerCase() !== amenity.id.toLowerCase()).join(", ")
+                        });
+                      } else {
+                        setForm({
+                          ...form,
+                          equipements: [...currentList, amenity.id].join(", ")
+                        });
+                      }
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all border
+                      ${isSelected 
+                        ? "bg-purple/20 border-purple text-white shadow-[0_0_10px_rgba(139,92,246,0.2)]" 
+                        : "bg-white/5 border-white/5 text-white/50 hover:bg-white/10 hover:text-white hover:border-white/10"
+                      }`}
+                  >
+                    <amenity.icon className="w-3.5 h-3.5" />
+                    {amenity.label}
+                  </button>
+                );
+              })}
+            </div>
           </Field>
         </div>
 

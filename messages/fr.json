@@ -418,6 +418,12 @@
           "close": "Fermer"
         }
       },
+      "status": {
+        "CONFIRMEE": "Confirmée",
+        "EN_ATTENTE": "En attente",
+        "ANNULEE": "Annulée",
+        "TERMINEE": "Terminée"
+      },
       "reviews": {
         "filters": {
           "all": "Tous",

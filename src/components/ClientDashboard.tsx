@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import {
   CalendarDays,
@@ -355,7 +356,96 @@ function UpcomingBookings() {
 function QuickActions() {
   const t = useTranslations("clientDashboard");
   const locale = useLocale();
+  const { currency } = useCurrencyStore();
   const { selectedBooking } = useClientDashboardStore();
+
+  const generateReceipt = () => {
+    if (!selectedBooking) return;
+    const b = selectedBooking;
+    const nights = Math.round(
+      (new Date(b.jourFin).getTime() - new Date(b.jourDebut).getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+    const formattedAmount = new Intl.NumberFormat("fr-CM", {
+      style: "currency",
+      currency: "XAF",
+      maximumFractionDigits: 0,
+    }).format(b.montantTotal);
+
+    const receiptHTML = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reçu HotelHub — ${b.id}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fff; color: #1a1a1a; padding: 40px; max-width: 640px; margin: 0 auto; }
+    .logo { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .logo span { color: #c9a84c; }
+    .tagline { color: #888; font-size: 12px; margin-bottom: 32px; }
+    .divider { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: #d1fae5; color: #065f46; margin-bottom: 20px; }
+    h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .ref { color: #888; font-size: 13px; margin-bottom: 28px; }
+    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #999; margin-bottom: 12px; }
+    .row { display: flex; justify-content: space-between; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: #555; }
+    .row .value { font-weight: 600; text-align: right; }
+    .total-row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; padding: 16px 0 0; color: #c9a84c; }
+    .footer { margin-top: 40px; text-align: center; color: #bbb; font-size: 11px; line-height: 1.8; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="logo">Hotel<span>Hub</span></div>
+  <p class="tagline">Votre partenaire hébergement au Cameroun</p>
+
+  <div class="badge">✓ Réservation ${b.statut === "CONFIRMEE" ? "Confirmée" : b.statut}</div>
+  <h1>${b.hotelNom}</h1>
+  <p class="ref">Référence : ${b.id} &nbsp;•&nbsp; Généré le ${new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}</p>
+
+  <hr class="divider" />
+
+  <p class="section-title">Détails du séjour</p>
+  <div class="row"><span class="label">Hôtel</span><span class="value">${b.hotelNom}</span></div>
+  <div class="row"><span class="label">Ville</span><span class="value">${b.hotelVille}</span></div>
+  <div class="row"><span class="label">Chambre</span><span class="value">${b.chambreType} — N°${b.chambreNumero}</span></div>
+  <div class="row"><span class="label">Arrivée</span><span class="value">${new Date(b.jourDebut).toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}</span></div>
+  <div class="row"><span class="label">Départ</span><span class="value">${new Date(b.jourFin).toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}</span></div>
+  <div class="row"><span class="label">Durée</span><span class="value">${nights} nuit${nights > 1 ? "s" : ""}</span></div>
+  <div class="row"><span class="label">Voyageurs</span><span class="value">${b.nombrePersonnes} personne${b.nombrePersonnes > 1 ? "s" : ""}</span></div>
+
+  <hr class="divider" />
+
+  <p class="section-title">Récapitulatif de paiement</p>
+  <div class="row"><span class="label">Prix par nuit</span><span class="value">${new Intl.NumberFormat("fr-CM", { style: "currency", currency: "XAF", maximumFractionDigits: 0 }).format(Math.round(b.montantTotal / nights))}</span></div>
+  <div class="row"><span class="label">Nombre de nuits</span><span class="value">× ${nights}</span></div>
+  <div class="total-row"><span>Total réglé</span><span>${formattedAmount}</span></div>
+
+  <hr class="divider" />
+
+  <div class="footer">
+    <p>Merci de votre confiance — HotelHub &copy; ${new Date().getFullYear()}</p>
+    <p>Ce document est une confirmation de réservation et peut servir de reçu.</p>
+    <p style="margin-top:8px; color: #ccc;">support@hotelhub.cm &nbsp;•&nbsp; www.hotelhub.cm</p>
+  </div>
+
+  <script>window.onload = () => window.print();</script>
+</body>
+</html>`;
+
+    const blob = new Blob([receiptHTML], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `recu-hotelhub-${b.id}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const actions = [
     {
@@ -365,6 +455,7 @@ function QuickActions() {
       href: `/${locale}/hotels`,
       disabled: false,
       variant: "primary",
+      onClick: undefined as (() => void) | undefined,
     },
     {
       id: "action-download-receipt",
@@ -373,6 +464,7 @@ function QuickActions() {
       href: undefined,
       disabled: !selectedBooking,
       variant: "secondary",
+      onClick: generateReceipt,
     },
     {
       id: "action-contact-support",
@@ -381,6 +473,7 @@ function QuickActions() {
       href: `/${locale}/contact`,
       disabled: false,
       variant: "secondary",
+      onClick: undefined as (() => void) | undefined,
     },
   ];
 
@@ -415,6 +508,7 @@ function QuickActions() {
               key={action.id}
               id={action.id}
               disabled={action.disabled}
+              onClick={action.onClick}
               className={cls}
             >
               <action.icon className="w-4 h-4" />
@@ -671,12 +765,21 @@ export default function ClientDashboard() {
         <BookingDetailModal booking={selectedBooking} onClose={closeDetail} />
       )}
 
-      <main 
-        className="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat relative pt-28 pb-16"
-        style={{ backgroundImage: "url('https://images.pexels.com/photos/7820321/pexels-photo-7820321.jpeg')" }}
-      >
+      <main className="min-h-screen relative pt-28 pb-16">
+        {/* Optimized Background Image for max LCP speed */}
+        <div className="fixed inset-0 -z-20">
+          <Image 
+            src="https://images.pexels.com/photos/7820321/pexels-photo-7820321.jpeg"
+            alt="Client Dashboard Background"
+            fill
+            quality={90}
+            priority
+            className="object-cover"
+          />
+        </div>
+
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/75 z-0" />
+        <div className="fixed inset-0 bg-black/75 -z-10" />
         
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-10 relative z-10">
 

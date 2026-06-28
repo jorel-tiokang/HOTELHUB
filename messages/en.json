@@ -418,6 +418,12 @@
           "close": "Close"
         }
       },
+      "status": {
+        "CONFIRMEE": "Confirmed",
+        "EN_ATTENTE": "Pending",
+        "ANNULEE": "Cancelled",
+        "TERMINEE": "Completed"
+      },
       "reviews": {
         "filters": {
           "all": "All",

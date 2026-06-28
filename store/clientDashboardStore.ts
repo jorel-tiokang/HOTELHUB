@@ -53,5 +53,6 @@ export const useClientDashboardStore = create<ClientDashboardState>((set) => ({
 
   openDetail: (booking) => set({ selectedBooking: booking, isDetailOpen: true }),
 
-  closeDetail: () => set({ selectedBooking: null, isDetailOpen: false }),
+  // Keeps selectedBooking set so Quick Actions (e.g. Download Receipt) remain enabled
+  closeDetail: () => set({ isDetailOpen: false }),
 }));

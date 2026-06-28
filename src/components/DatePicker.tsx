@@ -10,9 +10,10 @@ interface DatePickerProps {
   label: string;
   selectedDate: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
+  minDate?: Date;
 }
 
-export default function DatePicker({ label, selectedDate, onDateChange }: DatePickerProps) {
+export default function DatePicker({ label, selectedDate, onDateChange, minDate }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -54,6 +55,7 @@ export default function DatePicker({ label, selectedDate, onDateChange }: DatePi
                 onDateChange(date);
                 setIsOpen(false);
               }}
+              disabled={{ before: minDate || new Date(new Date().setHours(0,0,0,0)) }}
               modifiersClassNames={{
                 selected: "bg-gold text-black font-bold rounded-lg hover:bg-gold/90",
                 today: "text-gold font-bold",

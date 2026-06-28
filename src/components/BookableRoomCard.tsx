@@ -94,12 +94,12 @@ export default function BookableRoomCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h4
-              className="text-xl font-bold text-white leading-tight truncate"
+              className="text-xl font-bold text-foreground leading-tight truncate"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               {room.type} — N°{room.numero}
             </h4>
-            <p className="text-white/40 text-xs mt-1">
+            <p className="text-foreground/40 text-xs mt-1">
               {room.capacite} {t("capacity")}
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function BookableRoomCard({
                 <span
                   key={eq}
                   className="inline-flex items-center gap-1 px-2 py-1
-                    bg-white/5 text-white/60 text-xs rounded-lg border border-white/5"
+                    bg-foreground/5 text-foreground/60 text-xs rounded-lg border border-foreground/5"
                 >
                   {Icon && <Icon className="w-3 h-3" />}
                   {eq}
@@ -141,7 +141,7 @@ export default function BookableRoomCard({
             style={{ fontFamily: "var(--font-playfair)" }}
           >
             {formatPrice(room.prixParNuit, currency, locale)}
-            <span className="text-white/40 text-xs font-normal ml-1">
+            <span className="text-foreground/40 text-xs font-normal ml-1">
               {t("perNight")}
             </span>
           </p>
@@ -151,7 +151,7 @@ export default function BookableRoomCard({
             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all
               ${available
                 ? "bg-purple dark:bg-gold text-white dark:text-[#1c1714] hover:opacity-90 shadow-lg shadow-gold/20"
-                : "bg-white/10 text-white/40 cursor-not-allowed pointer-events-none"
+                : "bg-foreground/10 text-foreground/40 cursor-not-allowed pointer-events-none"
               }`}
           >
             {t("viewDetails")}
