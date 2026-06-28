@@ -27,6 +27,20 @@ export interface AuthUser {
   hotelId?: string;
 }
 
+/** Account created by the PDG for a Director General */
+export interface DirectorAccount {
+  id: string;
+  nom: string;
+  email: string;
+  motDePasse: string;      // stored in plain text (mock only)
+  telephone?: string;
+  telephone2?: string;
+  sexe?: string;
+  role: "DIRECTEUR";
+  hotelId: string;         // hotel assigned by the PDG
+  createdAt: string;
+}
+
 export interface RegisterClientData {
   nom: string;
   email: string;
@@ -45,11 +59,19 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
+  /** In-memory list of Director accounts created by the PDG */
+  directors: DirectorAccount[];
+
   login: (email: string, motDePasse: string) => Promise<void>;
   register: (data: RegisterClientData) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<AuthUser>) => void;
   clearError: () => void;
+
+  // Director CRUD (PDG only)
+  addDirector: (data: Omit<DirectorAccount, "id" | "createdAt">) => DirectorAccount;
+  removeDirector: (id: string) => void;
+  updateDirector: (id: string, data: Partial<DirectorAccount>) => void;
 
   // Role guards
   isClient: () => boolean;
@@ -66,21 +88,33 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      directors: [],
 
       // ── Login ──────────────────────────────────────────────────────────────
       login: async (email, motDePasse) => {
         set({ isLoading: true, error: null });
         try {
-          // 1. Call the Service Layer (mock or real — doesn't matter)
-          const { user: dto, token } = await authService.login({
-            email,
-            motDePasse,
-          });
+          // 1. Check in-memory directors list first (created by PDG)
+          const director = get().directors.find(
+            (d) => d.email === email && d.motDePasse === motDePasse
+          );
+          if (director) {
+            const directorUser: AuthUser = {
+              id: director.id,
+              nom: director.nom,
+              email: director.email,
+              telephone: director.telephone || "",
+              role: "DIRECTEUR",
+              sexe: director.sexe,
+              hotelId: director.hotelId,
+            };
+            set({ user: directorUser, token: `local-${director.id}`, isAuthenticated: true, isLoading: false });
+            return;
+          }
 
-          // 2. Run through the Adapter to get a clean frontend AuthUser
+          // 2. Fall back to the service layer (mock or real backend)
+          const { user: dto, token } = await authService.login({ email, motDePasse });
           const user = mapBackendUserToClient(dto);
-
-          // 3. Update state
           set({ user, token, isAuthenticated: true, isLoading: false });
         } catch (err: any) {
           set({ error: err.message ?? "Erreur de connexion.", isLoading: false });
@@ -103,7 +137,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () =>
         set({ user: null, token: null, isAuthenticated: false, error: null }),
 
-      // ── Profile update (client-side only — no service call needed) ─────────
+      // ── Profile update ─────────────────────────────────────────────────────
       updateProfile: (data) => {
         const current = get().user;
         if (!current) return;
@@ -111,6 +145,25 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearError: () => set({ error: null }),
+
+      // ── Director CRUD (PDG only) ───────────────────────────────────────────
+      addDirector: (data) => {
+        const newDirector: DirectorAccount = {
+          ...data,
+          id: `dir-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ directors: [...state.directors, newDirector] }));
+        return newDirector;
+      },
+
+      removeDirector: (id) =>
+        set((state) => ({ directors: state.directors.filter((d) => d.id !== id) })),
+
+      updateDirector: (id, data) =>
+        set((state) => ({
+          directors: state.directors.map((d) => (d.id === id ? { ...d, ...data } : d)),
+        })),
 
       // ── Role guards ────────────────────────────────────────────────────────
       isClient: () => get().user?.role === "CLIENT",
@@ -137,7 +190,9 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        directors: state.directors,
       }),
     }
   )
 );
+

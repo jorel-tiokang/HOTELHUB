@@ -12,6 +12,7 @@ import {
   mapManyBackendBookings,
 } from "@/src/adapters/bookingAdapter";
 import type { ClientReservation } from "@/mocks/clientBookings";
+export type { ClientReservation };
 import type { CreateBookingPayload } from "@/src/services/bookingService";
 
 interface ReservationState {
