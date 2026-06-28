@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { useHotelsStore } from "@/store/hotelsStore";
 import { useReservationStore } from "@/store/reservationStore";
+import { useMessagesStore } from "@/store/messagesStore";
 import * as bookingService from "@/src/services/bookingService";
 import * as reviewService from "@/src/services/reviewService";
 import type { BackendReviewDTO } from "@/services/api.types";
@@ -21,7 +22,7 @@ import {
 } from "@/mocks/dashboardMocks";
 import {
   LayoutDashboard, BedDouble, CalendarCheck, BarChart3,
-  Star, Users, Settings, Bell, Menu,
+  Star, Users, Settings, Bell, Menu, MessageSquare
 } from "lucide-react";
 
 // Sub-components
@@ -33,13 +34,15 @@ import ReviewsTab from "@/src/components/director/tabs/ReviewsTab";
 import StatisticsTab from "@/src/components/director/tabs/StatisticsTab";
 import StaffTab from "@/src/components/director/tabs/StaffTab";
 import SettingsTab from "@/src/components/director/tabs/SettingsTab";
+import MessagesTab from "@/src/components/shared/MessagesTab";
 
-type Tab = "overview" | "rooms" | "bookings" | "reviews" | "statistics" | "staff" | "settings";
+type Tab = "overview" | "rooms" | "bookings" | "reviews" | "statistics" | "staff" | "settings" | "messages";
 
 export default function DirectorDashboard() {
   const t = useTranslations("directeurDashboard");
-  const { user, logout } = useAuthStore();
+  const { user, logout, directors } = useAuthStore();
   const { currency } = useCurrencyStore();
+  const { getUnreadCount } = useMessagesStore();
   const locale = useLocale();
 
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -132,6 +135,18 @@ export default function DirectorDashboard() {
     }
   };
 
+  // Messages Integration
+  const currentUser = { id: user?.id || "u-dir", name: user?.nom || "Directeur", role: "Directeur" };
+  const pdgContact = { id: "u-pdg-001", name: t("messages.pdgName"), role: "PDG", avatarInitial: "P" };
+  const otherDirectors = directors.filter(d => d.id !== currentUser.id).map(d => ({
+    id: d.id,
+    name: d.nom,
+    role: "Directeur",
+    avatarInitial: d.nom.charAt(0)
+  }));
+  const messageContacts = [pdgContact, ...otherDirectors];
+  const unreadMessagesCount = getUnreadCount(currentUser.id);
+
   const navItems = [
     { id: "overview", label: t("nav.overview"), icon: LayoutDashboard },
     { id: "rooms", label: t("nav.rooms"), icon: BedDouble },
@@ -139,6 +154,7 @@ export default function DirectorDashboard() {
     { id: "statistics", label: t("nav.statistics"), icon: BarChart3 },
     { id: "reviews", label: t("nav.reviews"), icon: Star },
     { id: "staff", label: t("nav.staff"), icon: Users },
+    { id: "messages", label: t("nav.messages"), icon: MessageSquare, unreadCount: unreadMessagesCount },
     { id: "settings", label: t("nav.settings"), icon: Settings },
   ];
 
@@ -194,9 +210,13 @@ export default function DirectorDashboard() {
               <ThemeToggle />
               <LanguageToggle />
               <CurrencyToggle />
-              <button className="relative p-3 rounded-xl bg-purple/30 hover:bg-purple/50 transition-colors">
+              <button onClick={() => setActiveTab("messages")} className="relative p-3 rounded-xl bg-purple/30 hover:bg-purple/50 transition-colors">
                 <Bell className="w-5 h-5 text-white" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-purple rounded-full" />
+                {unreadMessagesCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 border-2 border-charcoal rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                    {unreadMessagesCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -268,6 +288,9 @@ export default function DirectorDashboard() {
               isSaving={isSavingSettings}
               savedSuccess={settingsSavedSuccess}
             />
+          )}
+          {activeTab === "messages" && (
+            <MessagesTab currentUser={currentUser} contacts={messageContacts} t={t} />
           )}
         </div>
       </main>

@@ -8,6 +8,7 @@ export interface NavItem {
   id: string;
   label: string;
   icon: LucideIcon;
+  unreadCount?: number;
 }
 
 interface DashboardSidebarProps {
@@ -108,7 +109,12 @@ export default function DashboardSidebar({
               {isActive && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-purple rounded-r-full" />
               )}
-              <Icon className="w-5 h-5 shrink-0" />
+              <div className="relative shrink-0">
+                <Icon className="w-5 h-5" />
+                {(item.unreadCount ?? 0) > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-black" />
+                )}
+              </div>
               <span
                 className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
                   isSidebarExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"

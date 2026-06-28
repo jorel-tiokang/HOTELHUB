@@ -366,18 +366,108 @@
       "otherRooms": "Autres Chambres de cet Hôtel"
     }
   },
-    "directeurDashboard": {
+  "pdgDashboard": {
+    "role": "PDG",
+    "logout": "Déconnexion",
+    "espace": "Espace Direction Générale",
+    "logoSubtitle": "Direction Générale",
+    "chainStatus": "Chaîne HotelHub · {count} établissements actifs",
+    "allHotels": "Tous les hôtels",
+    "nav": {
+      "overview": "Vue d'ensemble",
+      "hotels": "Portefeuille",
+      "directors": "Directeurs",
+      "statistics": "Statistiques",
+      "reviews": "Avis",
+      "messages": "Messagerie"
+    },
+    "kpi": {
+      "activeHotels": "Hôtels actifs",
+      "totalBookings": "Réservations totales",
+      "avgOccupancy": "Taux moyen d'occupation",
+      "totalRevenue": "Recettes totales"
+    },
+    "hotels": {
+      "roomsCount": "Chambres",
+      "rating": "Note",
+      "occupancy": "Occupation",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "directors": {
+      "newDirector": "Nouveau Directeur",
+      "accountCreated": "✅ Compte créé — Identifiants à transmettre :",
+      "name": "Nom",
+      "email": "Email",
+      "password": "Mot de passe",
+      "assignedHotel": "Hôtel",
+      "emptyList": "Aucun directeur créé. Cliquez sur 'Nouveau Directeur' pour commencer.",
+      "modalTitle": "Nouveau Directeur",
+      "form": {
+        "fullName": "Nom complet *",
+        "email": "Email * (utilisé pour la connexion)",
+        "password": "Mot de passe *",
+        "gender": "Sexe *",
+        "assignedHotel": "Hôtel assigné *",
+        "phone1": "Téléphone (opt.)",
+        "phone2": "Tél. 2 (opt.)",
+        "select": "Choisir",
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre"
+      },
+      "create": "Créer le compte",
+      "update": "Mettre à jour",
+      "editTitle": "Modifier le Directeur",
+      "cancel": "Annuler"
+    },
+    "statistics": {
+      "bookings": "Réservations",
+      "revenue": "Recettes",
+      "occupancy": "Occupation",
+      "sortBy": "Trier par :",
+      "sortName": "Nom",
+      "sortRevenue": "Revenus croissants",
+      "sortRevenueDesc": "Revenus décroissants",
+      "sortOccupancy": "Meilleure occupation",
+      "sortBookings": "Réservations",
+      "searchPlaceholder": "Rechercher un hôtel ou une ville..."
+    },
+    "reviews": {
+      "empty": "Aucun avis disponible pour la sélection en cours."
+    },
+    "messages": {
+      "title": "Messagerie",
+      "placeholder": "Écrivez votre message...",
+      "send": "Envoyer",
+      "noMessages": "Aucun message pour l'instant. Commencez la conversation !",
+      "selectUser": "Sélectionnez un contact pour commencer à discuter.",
+      "contacts": "Contacts",
+      "pdgName": "Direction Générale"
+    }
+  },
+  "directeurDashboard": {
       "role": "Directeur",
       "logout": "Deconnexion",
       "espace": "Espace Directeur",
       "nav": {
         "overview": "Vue d'ensemble",
         "rooms": "Chambres",
-        "bookings": "Reservations",
+        "bookings": "Réservations",
+        "staff": "Personnel",
         "statistics": "Statistiques",
         "reviews": "Avis",
-        "staff": "Personnel",
-        "settings": "Parametres"
+        "settings": "Paramètres",
+        "messages": "Messagerie"
+      },
+      "messages": {
+        "title": "Messagerie",
+        "placeholder": "Écrivez votre message...",
+        "send": "Envoyer",
+        "noMessages": "Aucun message pour l'instant. Commencez la conversation !",
+        "selectUser": "Sélectionnez un contact pour commencer à discuter.",
+        "contacts": "Contacts",
+        "pdgName": "Direction Générale (PDG)"
       },
       "kpi": {
         "totalRooms": "Total Chambres",

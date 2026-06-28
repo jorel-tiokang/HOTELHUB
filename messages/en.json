@@ -366,7 +366,87 @@
       "otherRooms": "Other Rooms in This Hotel"
     }
   },
-    "directeurDashboard": {
+  "pdgDashboard": {
+    "role": "CEO",
+    "logout": "Logout",
+    "espace": "Executive Board",
+    "logoSubtitle": "Executive Board",
+    "chainStatus": "HotelHub Chain · {count} active properties",
+    "allHotels": "All Hotels",
+    "nav": {
+      "overview": "Overview",
+      "hotels": "Portfolio",
+      "directors": "Directors",
+      "statistics": "Statistics",
+      "reviews": "Reviews",
+      "messages": "Messages"
+    },
+    "kpi": {
+      "activeHotels": "Active Hotels",
+      "totalBookings": "Total Bookings",
+      "avgOccupancy": "Avg. Occupancy",
+      "totalRevenue": "Total Revenue"
+    },
+    "hotels": {
+      "roomsCount": "Rooms",
+      "rating": "Rating",
+      "occupancy": "Occupancy",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "directors": {
+      "newDirector": "New Director",
+      "accountCreated": "✅ Account created — Credentials to share:",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "assignedHotel": "Hotel",
+      "emptyList": "No directors created. Click 'New Director' to start.",
+      "modalTitle": "New Director",
+      "form": {
+        "fullName": "Full Name *",
+        "email": "Email * (used for login)",
+        "password": "Password *",
+        "gender": "Gender *",
+        "assignedHotel": "Assigned Hotel *",
+        "phone1": "Phone (opt.)",
+        "phone2": "Phone 2 (opt.)",
+        "select": "Select",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "create": "Create Account",
+      "update": "Update Account",
+      "editTitle": "Edit Director",
+      "cancel": "Cancel"
+    },
+    "statistics": {
+      "bookings": "Bookings",
+      "revenue": "Revenue",
+      "occupancy": "Occupancy",
+      "sortBy": "Sort by :",
+      "sortName": "Name",
+      "sortRevenue": "Revenue (Asc)",
+      "sortRevenueDesc": "Revenue (Desc)",
+      "sortOccupancy": "Highest Occupancy",
+      "sortBookings": "Most Bookings",
+      "searchPlaceholder": "Search a hotel or city..."
+    },
+    "reviews": {
+      "empty": "No reviews available for the current selection."
+    },
+    "messages": {
+      "title": "Messages",
+      "placeholder": "Type your message...",
+      "send": "Send",
+      "noMessages": "No messages yet. Start the conversation!",
+      "selectUser": "Select a contact to start chatting.",
+      "contacts": "Contacts",
+      "pdgName": "Executive Board"
+    }
+  },
+  "directeurDashboard": {
       "role": "Director",
       "logout": "Log out",
       "espace": "Space Director",
@@ -374,10 +454,20 @@
         "overview": "Overview",
         "rooms": "Rooms",
         "bookings": "Bookings",
+        "staff": "Staff",
         "statistics": "Statistics",
         "reviews": "Reviews",
-        "staff": "Staff",
-        "settings": "Settings"
+        "settings": "Settings",
+        "messages": "Messages"
+      },
+      "messages": {
+        "title": "Messages",
+        "placeholder": "Type your message...",
+        "send": "Send",
+        "noMessages": "No messages yet. Start the conversation!",
+        "selectUser": "Select a contact to start chatting.",
+        "contacts": "Contacts",
+        "pdgName": "Executive Board (CEO)"
       },
       "kpi": {
         "totalRooms": "Total Rooms",
