@@ -534,7 +534,8 @@
         "modalCheckOut": "Check-out",
         "modalGuests": "Guests",
         "modalStatus": "Status",
-        "close": "Close"
+        "close": "Close",
+        "legendPrivatization": "Privatisation"
       },
       "status": {
         "IMPAYEE": "Unpaid",

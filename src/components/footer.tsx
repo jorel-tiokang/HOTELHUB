@@ -48,7 +48,7 @@ const COMPANY_LINKS: FooterLink[] = [
 ];
 const HELP_LEGAL_LINKS: FooterLink[] = [
   {
-    label: "Apprendxre comment hotelhub fonctionne",
+    label: "Apprendre comment hotelhub fonctionne",
     href: "#",
   },
   {

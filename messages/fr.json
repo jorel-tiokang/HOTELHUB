@@ -534,7 +534,8 @@
         "modalCheckOut": "Départ",
         "modalGuests": "Voyageurs",
         "modalStatus": "Statut",
-        "close": "Fermer"
+        "close": "Fermer",
+        "legendPrivatization": "Privatisation"
       },
       "status": {
         "IMPAYEE": "Impayée",

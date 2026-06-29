@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const locale = useLocale();
   const { login, isLoading, error, clearError, getRedirectPath } = useAuthStore();
@@ -88,14 +89,31 @@ export default function LoginPage() {
               <label className="text-white/70 text-xs font-semibold uppercase tracking-wider">
                 Mot de passe
               </label>
-              <input
-                type="password"
-                name="motDePasse"
-                value={form.motDePasse}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple focus:bg-white/15 transition-all"
-              />
+
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="motDePasse"
+                  value={form.motDePasse}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  // J'ai ajouté "pr-12" pour éviter que le texte long ne passe sous l'icône
+                  className="w-full bg-white/10 border border-white/20 rounded-xl pl-4 pr-12 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple focus:bg-white/15 transition-all"
+                />
+
+                <button
+                  type="button" // CRUCIAL : empêche le bouton de soumettre le formulaire Enter/Click
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-white focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
